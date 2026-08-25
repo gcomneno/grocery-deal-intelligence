@@ -1,0 +1,14 @@
+* text=auto eol=lf
+*.json text
+*.py text
+*.md text
+*.html text
+*.js text
+*.body text
+*.headers.txt text
+
+# Raw retailer evidence: preserve acquired bytes
+*.html -text -eol
+*.body -text -eol
+*.headers -text -eol
+*.headers.txt -text -eol

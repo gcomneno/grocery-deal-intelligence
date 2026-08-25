@@ -1,0 +1,16 @@
+HTTP/2 200 
+server: myracloud
+date: Tue, 25 Aug 2026 16:04:58 GMT
+content-type: application/json
+access-control-allow-origin: *
+cache-control: no-cache, no-store, max-age=0
+cookie: 
+strict-transport-security: max-age=31536000
+x-cache-debug: 
+x-cache-id: overview___v4_____client_locale___lidl_it-IT____region_id___600____store_id___1621.json
+x-cache-tags: overview,overview_cl_lidl_it-IT,overview_ri_600,overview_si_1621
+x-content-type-options: nosniff
+x-url: /v4/overview/?client_locale=lidl%2fit-IT&region_id=600&store_id=1621
+x-vcap-request-id: d49b88d4-258d-4545-6ec5-a42ec7622e3d
+etag: "myra-31b8ebf3"
+

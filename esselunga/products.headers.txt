@@ -1,0 +1,20 @@
+HTTP/1.1 200 OK
+Date: Tue, 25 Aug 2026 16:34:41 GMT
+X-Dispatcher: disp1-prod
+X-Vhost: www.esselunga.it
+Strict-Transport-Security: max-age=63072000; includeSubdomains;
+Expires: Tue, 25 Aug 2026 16:44:41 GMT
+X-Content-Type-Options: nosniff
+Age: 0
+Last-Modified: Tue, 25 Aug 2026 16:34:41 GMT
+Accept-Ranges: bytes
+Vary: Accept-Encoding,User-Agent
+Content-Encoding: gzip
+X-Frame-Options: SAMEORIGIN
+Cache-Control: max-age=0, no-cache, must-revalidate, private
+Content-Length: 1047
+Content-Type: application/json;charset=utf-8
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Set-Cookie: BIGipServerPOOL-prod-istituzionale-AEM-http=!jLuy8cvzmCAai9I6CtzDmGtRADWr2Go8gvN25ATAv8pxsOyvNI9MUFkdj2Pt4BLElxEe19ptGPzwhA==; Path=/; Version=1; SameSite=None; Secure; Httponly
+Set-Cookie: TS01232bc6=014bb56e6c9524fc002b6cac4787a18833a6ede763a7d0cc2969b86a998bafc726000a77ea07ff90ecea1b335dfdb8f16d880a1960; Path=/; Domain=.www.esselunga.it
+

@@ -1,0 +1,2036 @@
+[
+  {
+    "retailer": "lidl",
+    "product_name": "Controfiletti di pollo",
+    "region_id": "1",
+    "price": 2.69,
+    "currency": "EUR",
+    "reference_price": 3.69,
+    "discount_text": "-27%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "400 g confezione",
+    "base_price_text": "1 kg = 6.73 €",
+    "valid_from": "2026-08-14T12:32:41.009Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Peperone Corno Sweet Palermo",
+    "region_id": "1",
+    "price": 1.79,
+    "currency": "EUR",
+    "reference_price": 2.49,
+    "discount_text": "-28%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "500 g confezione",
+    "base_price_text": "1 kg = 3.58 €",
+    "valid_from": "2026-08-14T12:32:41.015Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        5
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Petto di pollo disossato",
+    "region_id": "1",
+    "price": 3.29,
+    "currency": "EUR",
+    "reference_price": 4.29,
+    "discount_text": "-1.00€",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "400 g confezione",
+    "base_price_text": "1 kg = 8.23 €",
+    "valid_from": "2026-08-14T12:32:41.026Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        8
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Sushi set Mukawa",
+    "region_id": "1",
+    "price": 3.79,
+    "currency": "EUR",
+    "reference_price": 4.99,
+    "discount_text": "-24%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "326 g confezione",
+    "base_price_text": "1 kg = 11.63 €",
+    "valid_from": "2026-08-14T12:32:41.031Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        9
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Pizza trio",
+    "region_id": "1",
+    "price": 4.89,
+    "currency": "EUR",
+    "reference_price": 6.49,
+    "discount_text": "-24%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "1150 g confezione",
+    "base_price_text": "1 kg = 4.25 €",
+    "valid_from": "2026-08-14T12:32:41.037Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        14
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Funghi interi",
+    "region_id": "1",
+    "price": 1.39,
+    "currency": "EUR",
+    "reference_price": 1.85,
+    "discount_text": "-24%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "185 g (sgocc.) conf.",
+    "base_price_text": "1 kg (sgocc.) = 7.51 €",
+    "valid_from": "2026-08-14T12:32:41.042Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Olive Taggiasche denocciolate",
+    "region_id": "1",
+    "price": 1.89,
+    "currency": "EUR",
+    "reference_price": 2.49,
+    "discount_text": "-24%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "120 g (sgocc.) confezione",
+    "base_price_text": "1 kg (sgocc.) = 15.75 €",
+    "valid_from": "2026-08-14T12:32:41.048Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        15
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Formaggio a pasta filata",
+    "region_id": "1",
+    "price": 1.49,
+    "currency": "EUR",
+    "reference_price": 1.99,
+    "discount_text": "-25%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "300 g confezione",
+    "base_price_text": "1 kg = 4.97 €",
+    "valid_from": "2026-08-14T12:32:41.054Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        16
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Birra",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": 2.79,
+    "discount_text": "-28%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "3x 330 ml confezione",
+    "base_price_text": "1 l = 2.01 €",
+    "valid_from": "2026-08-14T12:32:41.059Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        3,
+        11,
+        16,
+        17,
+        20
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Grana Padano DOP a cubetti",
+    "region_id": "1",
+    "price": 4.29,
+    "currency": "EUR",
+    "reference_price": 4.79,
+    "discount_text": "-0.50€",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "300 g confezione",
+    "base_price_text": "1 kg = 14.30 €",
+    "valid_from": "2026-08-14T12:32:41.065Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Prosciutto cotto arrosto alle erbe",
+    "region_id": "1",
+    "price": 1.39,
+    "currency": "EUR",
+    "reference_price": 1.89,
+    "discount_text": "-26%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "100 g confezione",
+    "base_price_text": "1 kg = 13.90 €",
+    "valid_from": "2026-08-14T12:32:41.071Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Gorgonzola piccante DOP",
+    "region_id": "1",
+    "price": 2.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 12,45 €",
+    "valid_from": "2026-04-10T13:31:15.101Z",
+    "valid_to": "2027-04-08T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        17
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Uva Red Globe",
+    "region_id": "1",
+    "price": 2.19,
+    "currency": "EUR",
+    "reference_price": 2.99,
+    "discount_text": "-26%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "Al kg",
+    "base_price_text": null,
+    "valid_from": "2026-08-14T12:32:41.082Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        48
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Melone verde Piel de Sapo",
+    "region_id": "1",
+    "price": 1.19,
+    "currency": "EUR",
+    "reference_price": 1.99,
+    "discount_text": "-40%",
+    "promotion_type": "lidl_plus",
+    "requires_loyalty": true,
+    "packaging_text": "Al kg",
+    "base_price_text": null,
+    "valid_from": "2026-08-14T12:32:41.087Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/lidl-plus-kw-34-26/a10101068",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Stecco gelato alla vaniglia Bourbon con mandorle XXL",
+    "region_id": "1",
+    "price": 3.69,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "2 GELATI IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "600 g confezione",
+    "base_price_text": "1 kg = da 8.20 a 6.15 €",
+    "valid_from": "2026-08-14T12:32:41.156Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Frutta a guscio XXL",
+    "region_id": "1",
+    "price": 4.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "500g confezione",
+    "base_price_text": "1 kg = da 17.45 a 9.98 €",
+    "valid_from": "2026-08-14T12:32:41.161Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Latte parzialmente scremato XXL",
+    "region_id": "1",
+    "price": 3.89,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "6 l confezione",
+    "base_price_text": "1 l = da 0.79 a 0.65 €",
+    "valid_from": "2026-08-14T12:32:41.173Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Carciofi a spicchi XXL",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "332 g (sgocc.) conf.",
+    "base_price_text": "1 kg (sgocc.) = da 8.65 a 5.99 €",
+    "valid_from": "2026-08-14T12:32:41.179Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Tortilla chips XXL",
+    "region_id": "1",
+    "price": 1.39,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "75 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "375 g confezione",
+    "base_price_text": "1 kg = da 4.63 a 3.71 €",
+    "valid_from": "2026-08-14T12:32:41.184Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Snack di mais XXL",
+    "region_id": "1",
+    "price": 1.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = da 8.90 a 7.45 €",
+    "valid_from": "2026-08-14T12:32:41.201Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Birra",
+    "region_id": "1",
+    "price": 1.77,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "4x 0,5 l confezione",
+    "base_price_text": "1 kg = da 1.18 a 0.89 €",
+    "valid_from": "2026-08-14T12:32:41.207Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        3,
+        11,
+        16,
+        17,
+        20
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Gouda a fette XXL",
+    "region_id": "1",
+    "price": 3.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "500 g confezione",
+    "base_price_text": "1 kg = da 8.95 a 6.98 €",
+    "valid_from": "2026-08-14T12:32:41.213Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Mozzarella grattugiata XXL",
+    "region_id": "1",
+    "price": 3.69,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "500 g confezione",
+    "base_price_text": "1 kg = da 9.16 a 7.38 €",
+    "valid_from": "2026-08-14T12:32:41.218Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Salmone affumicato Norvegese XXL",
+    "region_id": "1",
+    "price": 4.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "220 g confezione",
+    "base_price_text": "1 kg = da 26.45 a 22.68 €",
+    "valid_from": "2026-08-14T12:32:41.224Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Formaggio a fette",
+    "region_id": "1",
+    "price": 1.29,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "25 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "165 g confezione",
+    "base_price_text": "1 kg = da 9.21 a 7.82 €",
+    "valid_from": "2026-08-14T12:32:41.230Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Feta DOP XXL",
+    "region_id": "1",
+    "price": 2.39,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "40 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "240 g confezione",
+    "base_price_text": "1 kg = da 11.95 a 9.96 €",
+    "valid_from": "2026-08-14T12:32:41.246Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Olive verdi denocciolate giganti XXL",
+    "region_id": "1",
+    "price": 2.29,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "60 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "320 g (sgocc.) conf.",
+    "base_price_text": "1 kg (sgocc.) = da 8.81 a 7.16 €",
+    "valid_from": "2026-08-14T12:32:41.254Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Polpa di pomodoro",
+    "region_id": "1",
+    "price": 2.33,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "3x 400 g confezione",
+    "base_price_text": "1 kg = da 2.91 a 1.94 €",
+    "valid_from": "2026-08-14T12:32:41.260Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        11
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/xxl-kw-34-26/a10100002",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Pesche Noci XXL",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "500 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1,5 kg confezione",
+    "base_price_text": "1 kg = da 1.99 a 1.33 €",
+    "valid_from": "2026-08-14T12:32:40.917Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/frutta-e-verdura-kw-34-26/a10101066",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Carote XXL",
+    "region_id": "1",
+    "price": 1.19,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "250 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1,25 kg confezione",
+    "base_price_text": "1 kg = da 1.19 a 0.95 €",
+    "valid_from": "2026-08-14T12:32:40.922Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/frutta-e-verdura-kw-34-26/a10101066",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Patate Novelle XXL",
+    "region_id": "1",
+    "price": 4.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "1 KG IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "5 kg confezione",
+    "base_price_text": "1 kg = da 1.25 a 1.00 €",
+    "valid_from": "2026-08-14T12:32:40.939Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        48
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/frutta-e-verdura-kw-34-26/a10101066",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Mele Golden XXL Alto Adige/ Trentino IGP",
+    "region_id": "1",
+    "price": 2.59,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "500 G IN PIÙ",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "2,5 kg confezione",
+    "base_price_text": "1 kg = da 1.30 a 1.04 €",
+    "valid_from": "2026-08-14T12:32:40.944Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/frutta-e-verdura-kw-34-26/a10101066",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Salsiccia di suino alla toscana XXL",
+    "region_id": "1",
+    "price": 6.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1 kg confezione",
+    "base_price_text": "1 kg = da 8.38 a 6.49 €",
+    "valid_from": "2026-08-14T12:32:40.950Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Maxi hamburger di pollo",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "APPROFITTANE ORA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "180+30 g confezione",
+    "base_price_text": "1 kg = 9.48 €",
+    "valid_from": "2026-08-14T12:32:40.956Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Cotoletta di pollo con scamorza affumicata",
+    "region_id": "1",
+    "price": 2.19,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "APPROFITTANE ORA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 10.95 €",
+    "valid_from": "2026-08-14T12:32:40.962Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Filetto di salmone marinato",
+    "region_id": "1",
+    "price": 4.79,
+    "currency": "EUR",
+    "reference_price": 5.99,
+    "discount_text": "-20%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "250 g confezione",
+    "base_price_text": "1 kg = 19.16 €",
+    "valid_from": "2026-08-14T12:32:40.968Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        9
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "2 cotolette di pesce con formaggio",
+    "region_id": "1",
+    "price": 1.49,
+    "currency": "EUR",
+    "reference_price": 1.99,
+    "discount_text": "-25%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 7.45 €",
+    "valid_from": "2026-08-14T12:32:40.985Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Hamburger di bovino",
+    "region_id": "1",
+    "price": 4.29,
+    "currency": "EUR",
+    "reference_price": 5.79,
+    "discount_text": "-25%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "400 g confezione",
+    "base_price_text": "1 kg = 10.73 €",
+    "valid_from": "2026-08-14T12:32:40.997Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        9
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Filetti di limanda panati XXL",
+    "region_id": "1",
+    "price": 5.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "FORMATO CONVENIENZA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "400 g confezione",
+    "base_price_text": "1 kg = da 16.95 a 13.73 €",
+    "valid_from": "2026-08-14T12:32:41.003Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/carne-e-pesce-kw-34-26/a10101067",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Uva sultanina",
+    "region_id": "1",
+    "price": 0.89,
+    "currency": "EUR",
+    "reference_price": 1.39,
+    "discount_text": "-35%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "250 g confezione",
+    "base_price_text": "1 kg = 3.56 €",
+    "valid_from": "2026-08-14T12:32:41.321Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        15,
+        16
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Cedrata",
+    "region_id": "1",
+    "price": 0.55,
+    "currency": "EUR",
+    "reference_price": 0.69,
+    "discount_text": "-20%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1,5 l bottiglia",
+    "base_price_text": "1 l = 0.37 €",
+    "valid_from": "2026-08-17T07:43:26.197Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        16
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Carne di bovino in gelatina",
+    "region_id": "1",
+    "price": 1.79,
+    "currency": "EUR",
+    "reference_price": 2.39,
+    "discount_text": "-25%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "215 g confezione",
+    "base_price_text": "1 kg = 8.33 €",
+    "valid_from": "2026-08-14T12:32:41.336Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Insalata di tonno",
+    "region_id": "1",
+    "price": 1.89,
+    "currency": "EUR",
+    "reference_price": 2.49,
+    "discount_text": "-24%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "250 g confezione",
+    "base_price_text": "1 kg = 7.56 €",
+    "valid_from": "2026-08-14T12:32:41.341Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        17
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Panzerottino mozzarella e prosciutto",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": "APPROFITTANE ORA",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "10x 27 g vassoio",
+    "base_price_text": "1 kg = 7.37 €",
+    "valid_from": "2026-08-14T12:32:41.355Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Patatine grigliate",
+    "region_id": "1",
+    "price": 0.95,
+    "currency": "EUR",
+    "reference_price": 1.19,
+    "discount_text": "-20%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 4.75 €",
+    "valid_from": "2026-08-14T12:32:41.360Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        18
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Vaschetta gelato alla panna",
+    "region_id": "1",
+    "price": 1.99,
+    "currency": "EUR",
+    "reference_price": 2.69,
+    "discount_text": "-26%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "500 g confezione",
+    "base_price_text": "1 kg = 3.98 €",
+    "valid_from": "2026-08-14T12:32:41.365Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/super-offerte-kw-34-26/a10101069",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Cous cous con verdure",
+    "region_id": "1",
+    "price": 1.39,
+    "currency": "EUR",
+    "reference_price": 1.89,
+    "discount_text": "-26%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 6.95 €",
+    "valid_from": "2026-08-14T12:32:41.265Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        14
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/inflazione-zero-kw-34-26/a10101071",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Chianti DOCG",
+    "region_id": "1",
+    "price": 1.89,
+    "currency": "EUR",
+    "reference_price": 2.49,
+    "discount_text": "-24%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "0.375 l bottiglia",
+    "base_price_text": "1 l = 5.04 €",
+    "valid_from": "2026-08-14T12:32:41.271Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        15
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/inflazione-zero-kw-34-26/a10101071",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Barbera Piemonte DOC",
+    "region_id": "1",
+    "price": 1.69,
+    "currency": "EUR",
+    "reference_price": 2.29,
+    "discount_text": "-26%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "0.75 l bottiglia",
+    "base_price_text": "1 l = 2.25 €",
+    "valid_from": "2026-08-14T12:32:41.276Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        15
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/inflazione-zero-kw-34-26/a10101071",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Muesli integrale",
+    "region_id": "1",
+    "price": 2.69,
+    "currency": "EUR",
+    "reference_price": 3.49,
+    "discount_text": "-22%",
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1 kg confezione",
+    "base_price_text": null,
+    "valid_from": "2026-08-14T12:32:41.281Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        15
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/inflazione-zero-kw-34-26/a10101071",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Formaggio caprino",
+    "region_id": "1",
+    "price": 3.29,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "200 g confezione",
+    "base_price_text": "1 kg = 16.45 €",
+    "valid_from": "2026-08-14T12:32:41.375Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        42
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Camembert",
+    "region_id": "1",
+    "price": 2.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "8x 30 g confezione",
+    "base_price_text": "1 kg = 10.38 €",
+    "valid_from": "2026-08-14T12:32:41.385Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        42,
+        43
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Polpette di carne suina ripiene",
+    "region_id": "1",
+    "price": 2.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "280 g confezione",
+    "base_price_text": "1 kg = 8.89 €",
+    "valid_from": "2026-08-14T12:32:41.395Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Pommes Noisettes",
+    "region_id": "1",
+    "price": 2.69,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "1 kg confezione",
+    "base_price_text": null,
+    "valid_from": "2026-08-14T12:32:41.409Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        42
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "12 Lumache ripiene",
+    "region_id": "1",
+    "price": 2.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "67 g confezione",
+    "base_price_text": "1 kg = 44.63 €",
+    "valid_from": "2026-08-14T12:32:41.413Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Paté di carne suina",
+    "region_id": "1",
+    "price": 3.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "3x 90 g confezione",
+    "base_price_text": "1 kg = 14.78 €",
+    "valid_from": "2026-08-14T12:32:41.418Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Crackers salati in stile provenzale",
+    "region_id": "1",
+    "price": 1.49,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "150 g confezione",
+    "base_price_text": "1 kg = 9.93 €",
+    "valid_from": "2026-08-14T12:32:41.427Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "unmatched",
+      "flyer_pages": []
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  },
+  {
+    "retailer": "lidl",
+    "product_name": "Biscotti di pasta frolla al burro",
+    "region_id": "1",
+    "price": 4.99,
+    "currency": "EUR",
+    "reference_price": null,
+    "discount_text": null,
+    "promotion_type": "standard",
+    "requires_loyalty": false,
+    "packaging_text": "315 g confezione",
+    "base_price_text": "1 kg = 15.84 €",
+    "valid_from": "2026-08-14T12:32:41.441Z",
+    "valid_to": "2026-08-26T22:00Z",
+    "locality": {
+      "offer_region": "600",
+      "offer_region_name": "Pontedera - Toscana",
+      "stores": [
+        "IT01621",
+        "IT00302"
+      ]
+    },
+    "verification": {
+      "locality": "verified",
+      "flyer_match": "exact",
+      "flyer_pages": [
+        44
+      ]
+    },
+    "provenance": {
+      "source_type": "official_web",
+      "campaign_url": "https://www.lidl.it/c/duc-de-coeur-sapori-in-stile-francese-kw-34-26/a10100003",
+      "flyer_id": "019ffb0b-9032-7c0d-afca-7dbfde94b923",
+      "observed_at": "2026-08-25T16:24:40.805384+00:00"
+    }
+  }
+]

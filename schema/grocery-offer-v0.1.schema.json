@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grocery-offer-v0.1.schema.json",
+  "title": "Grocery Offer v0.1",
+  "description": "Retailer-neutral representation of a localized, time-bounded, verifiable grocery offer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "retailer",
+    "product_name",
+    "price",
+    "currency",
+    "promotion",
+    "validity",
+    "locality",
+    "verification",
+    "provenance"
+  ],
+  "properties": {
+    "retailer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "product_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "reference_price": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "packaging_text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "base_price_text": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "requires_loyalty"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requires_loyalty": {
+          "type": "boolean"
+        },
+        "discount_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "validity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "locality": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "scope",
+        "stores"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "national",
+            "regional",
+            "store",
+            "unknown"
+          ]
+        },
+        "stores": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "locality_status",
+        "evidence_status"
+      ],
+      "properties": {
+        "locality_status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "unverified",
+            "unknown"
+          ]
+        },
+        "evidence_status": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unmatched",
+            "unverified"
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "source_type",
+        "source_url",
+        "observed_at"
+      ],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

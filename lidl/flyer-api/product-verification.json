@@ -1,0 +1,554 @@
+{
+  "matched": [
+    {
+      "product_name": "Peperone Corno Sweet Palermo",
+      "price": 1.79,
+      "currency": "EUR",
+      "packaging_text": "500 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        5
+      ]
+    },
+    {
+      "product_name": "Petto di pollo disossato",
+      "price": 3.29,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        8
+      ]
+    },
+    {
+      "product_name": "Sushi set Mukawa",
+      "price": 3.79,
+      "currency": "EUR",
+      "packaging_text": "326 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        9
+      ]
+    },
+    {
+      "product_name": "Pizza trio",
+      "price": 4.89,
+      "currency": "EUR",
+      "packaging_text": "1150 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        14
+      ]
+    },
+    {
+      "product_name": "Olive Taggiasche denocciolate",
+      "price": 1.89,
+      "currency": "EUR",
+      "packaging_text": "120 g (sgocc.) confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        15
+      ]
+    },
+    {
+      "product_name": "Formaggio a pasta filata",
+      "price": 1.49,
+      "currency": "EUR",
+      "packaging_text": "300 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        16
+      ]
+    },
+    {
+      "product_name": "Birra",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "3x 330 ml confezione",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        3,
+        11,
+        16,
+        17,
+        20
+      ]
+    },
+    {
+      "product_name": "Gorgonzola piccante DOP",
+      "price": 2.49,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        17
+      ]
+    },
+    {
+      "product_name": "Uva Red Globe",
+      "price": 2.19,
+      "currency": "EUR",
+      "packaging_text": "Al kg",
+      "promotion_type": "lidl_plus",
+      "pages": [
+        48
+      ]
+    },
+    {
+      "product_name": "Polpa di pomodoro",
+      "price": 2.33,
+      "currency": "EUR",
+      "packaging_text": "3x 400 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        11
+      ]
+    },
+    {
+      "product_name": "Patate Novelle XXL",
+      "price": 4.99,
+      "currency": "EUR",
+      "packaging_text": "5 kg confezione",
+      "promotion_type": "standard",
+      "pages": [
+        48
+      ]
+    },
+    {
+      "product_name": "Filetto di salmone marinato",
+      "price": 4.79,
+      "currency": "EUR",
+      "packaging_text": "250 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        9
+      ]
+    },
+    {
+      "product_name": "Hamburger di bovino",
+      "price": 4.29,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        9
+      ]
+    },
+    {
+      "product_name": "Uva sultanina",
+      "price": 0.89,
+      "currency": "EUR",
+      "packaging_text": "250 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        15,
+        16
+      ]
+    },
+    {
+      "product_name": "Cedrata",
+      "price": 0.55,
+      "currency": "EUR",
+      "packaging_text": "1,5 l bottiglia",
+      "promotion_type": "standard",
+      "pages": [
+        16
+      ]
+    },
+    {
+      "product_name": "Chill lemon",
+      "price": 1.89,
+      "currency": "EUR",
+      "packaging_text": "3x 330 ml confezione",
+      "promotion_type": "standard",
+      "pages": [
+        17
+      ]
+    },
+    {
+      "product_name": "Insalata di tonno",
+      "price": 1.89,
+      "currency": "EUR",
+      "packaging_text": "250 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        17
+      ]
+    },
+    {
+      "product_name": "Patatine grigliate",
+      "price": 0.95,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        18
+      ]
+    },
+    {
+      "product_name": "Cous cous con verdure",
+      "price": 1.39,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        14
+      ]
+    },
+    {
+      "product_name": "Chianti DOCG",
+      "price": 1.89,
+      "currency": "EUR",
+      "packaging_text": "0.375 l bottiglia",
+      "promotion_type": "standard",
+      "pages": [
+        15
+      ]
+    },
+    {
+      "product_name": "Barbera Piemonte DOC",
+      "price": 1.69,
+      "currency": "EUR",
+      "packaging_text": "0.75 l bottiglia",
+      "promotion_type": "standard",
+      "pages": [
+        15
+      ]
+    },
+    {
+      "product_name": "Muesli integrale",
+      "price": 2.69,
+      "currency": "EUR",
+      "packaging_text": "1 kg confezione",
+      "promotion_type": "standard",
+      "pages": [
+        15
+      ]
+    },
+    {
+      "product_name": "Formaggio caprino",
+      "price": 3.29,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        42
+      ]
+    },
+    {
+      "product_name": "Camembert",
+      "price": 2.49,
+      "currency": "EUR",
+      "packaging_text": "8x 30 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        42,
+        43
+      ]
+    },
+    {
+      "product_name": "Pommes Noisettes",
+      "price": 2.69,
+      "currency": "EUR",
+      "packaging_text": "1 kg confezione",
+      "promotion_type": "standard",
+      "pages": [
+        42
+      ]
+    },
+    {
+      "product_name": "Quiche Lorraine",
+      "price": 2.49,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        44
+      ]
+    },
+    {
+      "product_name": "Biscotti di pasta frolla al burro",
+      "price": 4.99,
+      "currency": "EUR",
+      "packaging_text": "315 g confezione",
+      "promotion_type": "standard",
+      "pages": [
+        44
+      ]
+    }
+  ],
+  "unmatched": [
+    {
+      "product_name": "Controfiletti di pollo",
+      "price": 2.69,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": []
+    },
+    {
+      "product_name": "Funghi interi",
+      "price": 1.39,
+      "currency": "EUR",
+      "packaging_text": "185 g (sgocc.) conf.",
+      "promotion_type": "lidl_plus",
+      "pages": []
+    },
+    {
+      "product_name": "Grana Padano DOP a cubetti",
+      "price": 4.29,
+      "currency": "EUR",
+      "packaging_text": "300 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": []
+    },
+    {
+      "product_name": "Prosciutto cotto arrosto alle erbe",
+      "price": 1.39,
+      "currency": "EUR",
+      "packaging_text": "100 g confezione",
+      "promotion_type": "lidl_plus",
+      "pages": []
+    },
+    {
+      "product_name": "Melone verde Piel de Sapo",
+      "price": 1.19,
+      "currency": "EUR",
+      "packaging_text": "Al kg",
+      "promotion_type": "lidl_plus",
+      "pages": []
+    },
+    {
+      "product_name": "Stecco gelato alla vaniglia Bourbon con mandorle XXL",
+      "price": 3.69,
+      "currency": "EUR",
+      "packaging_text": "600 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Frutta a guscio XXL",
+      "price": 4.99,
+      "currency": "EUR",
+      "packaging_text": "500g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Latte parzialmente scremato XXL",
+      "price": 3.89,
+      "currency": "EUR",
+      "packaging_text": "6 l confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Carciofi a spicchi XXL",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "332 g (sgocc.) conf.",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Tortilla chips XXL",
+      "price": 1.39,
+      "currency": "EUR",
+      "packaging_text": "375 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Snack di mais XXL",
+      "price": 1.49,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Gouda a fette XXL",
+      "price": 3.49,
+      "currency": "EUR",
+      "packaging_text": "500 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Mozzarella grattugiata XXL",
+      "price": 3.69,
+      "currency": "EUR",
+      "packaging_text": "500 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Salmone affumicato Norvegese XXL",
+      "price": 4.99,
+      "currency": "EUR",
+      "packaging_text": "220 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Formaggio a fette",
+      "price": 1.29,
+      "currency": "EUR",
+      "packaging_text": "165 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Feta DOP XXL",
+      "price": 2.39,
+      "currency": "EUR",
+      "packaging_text": "240 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Olive verdi denocciolate giganti XXL",
+      "price": 2.29,
+      "currency": "EUR",
+      "packaging_text": "320 g (sgocc.) conf.",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Pesche Noci XXL",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "1,5 kg confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Carote XXL",
+      "price": 1.19,
+      "currency": "EUR",
+      "packaging_text": "1,25 kg confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Mele Golden XXL Alto Adige/ Trentino IGP",
+      "price": 2.59,
+      "currency": "EUR",
+      "packaging_text": "2,5 kg confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Salsiccia di suino alla toscana XXL",
+      "price": 6.49,
+      "currency": "EUR",
+      "packaging_text": "1 kg confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Maxi hamburger di pollo",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "180+30 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Cotoletta di pollo con scamorza affumicata",
+      "price": 2.19,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "2 cotolette di pesce con formaggio",
+      "price": 1.49,
+      "currency": "EUR",
+      "packaging_text": "200 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Filetti di limanda panati XXL",
+      "price": 5.49,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Carne di bovino in gelatina",
+      "price": 1.79,
+      "currency": "EUR",
+      "packaging_text": "215 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Panzerottino mozzarella e prosciutto",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "10x 27 g vassoio",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Vaschetta gelato alla panna",
+      "price": 1.99,
+      "currency": "EUR",
+      "packaging_text": "500 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Polpette di carne suina ripiene",
+      "price": 2.49,
+      "currency": "EUR",
+      "packaging_text": "280 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "12 Lumache ripiene",
+      "price": 2.99,
+      "currency": "EUR",
+      "packaging_text": "67 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Paté di carne suina",
+      "price": 3.99,
+      "currency": "EUR",
+      "packaging_text": "3x 90 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Crackers salati in stile provenzale",
+      "price": 1.49,
+      "currency": "EUR",
+      "packaging_text": "150 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Pains au Chocolat",
+      "price": 2.99,
+      "currency": "EUR",
+      "packaging_text": "10x 45 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    },
+    {
+      "product_name": "Madeleines con gocce di cioccolato",
+      "price": 2.99,
+      "currency": "EUR",
+      "packaging_text": "400 g confezione",
+      "promotion_type": "standard",
+      "pages": []
+    }
+  ]
+}

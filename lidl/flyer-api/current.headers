@@ -1,0 +1,16 @@
+HTTP/2 200 
+server: myracloud
+date: Tue, 25 Aug 2026 16:12:29 GMT
+content-type: application/json
+access-control-allow-origin: *
+cache-control: no-cache, no-store, max-age=0
+cookie: 
+strict-transport-security: max-age=31536000
+x-cache-debug: 
+x-cache-id: flyer___v4_____flyer_identifier___offerte-valide-dal-20-08-al-26-08-volantino-settimanale-NAZ.json
+x-cache-tags: flyer,flyer_019ffb0b-9032-7c0d-afca-7dbfde94b923,flyer_cl_lidl_it-IT,flyer_cc_lidl_IT,flyer_c_ed767470-f298-11e6-aabb-005056ab0fb6,flyer_sc_05fead62-6251-11e7-a039-005056ab0fb6,flyer_r_700
+x-content-type-options: nosniff
+x-url: /v4/flyer?version=4&flyer_identifier=offerte-valide-dal-20-08-al-26-08-volantino-settimanale-NAZ&client=lidl
+x-vcap-request-id: 5204462a-5079-481b-6a42-ef18deea9a8c
+etag: "myra-478b3807"
+

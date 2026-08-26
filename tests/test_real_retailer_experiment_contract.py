@@ -55,7 +55,8 @@ def test_experiment_records_source_candidate_and_deterministic_decision(monkeypa
             self.base_url = base_url
             self.timeout = timeout
 
-        def generate_json(self, *, system_prompt, user_prompt):
+        def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
+            assert response_schema is not None
             return copy.deepcopy(candidate)
 
     monkeypatch.setattr(experiment, "OllamaBackend", FakeBackend)
@@ -77,7 +78,8 @@ def test_invalid_ai_candidate_cannot_become_canonical(monkeypatch):
         def __init__(self, *, model, base_url, timeout):
             pass
 
-        def generate_json(self, *, system_prompt, user_prompt):
+        def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
+            assert response_schema is not None
             return {
                 "product_name": "candidate without required canonical evidence",
                 "price": "1.83",

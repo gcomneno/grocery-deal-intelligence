@@ -8,8 +8,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ai = [
+    "giadaware-ai @ git+https://github.com/gcomneno/giadaware-ai.git@21615d47e6ab7da4a0d36595d51b3051a489079a",
+]
 dev = [
     "pytest>=8,<9",
+    "giadaware-ai @ git+https://github.com/gcomneno/giadaware-ai.git@21615d47e6ab7da4a0d36595d51b3051a489079a",
 ]
 
 [tool.setuptools]

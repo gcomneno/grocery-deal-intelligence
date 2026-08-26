@@ -18,6 +18,8 @@ accepted / rejected
 
 Diagnostics explain schema failures. They do not repair candidates, change validation results, or create canonical data.
 
+The diagnostics API itself has no AI, provider, network, or Ollama runtime dependency. It operates only on candidate data and the canonical JSON Schema.
+
 ## API
 
 ```python

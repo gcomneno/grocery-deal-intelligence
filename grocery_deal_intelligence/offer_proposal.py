@@ -5,6 +5,8 @@ from typing import Any
 
 from giadaware_ai.extension import ProposeCapability
 
+from .validation import _load_schema
+
 
 _SYSTEM_PROMPT = """
 You propose candidate canonical grocery-offer data from one supplied source record.
@@ -53,6 +55,7 @@ class ProposeOfferCandidateCapability(ProposeCapability[Mapping[str, Any], dict[
             separators=(",", ":"),
             ensure_ascii=False,
         )
+        response_schema = _load_schema()
 
         raw = self._backend.generate_json(
             system_prompt=_SYSTEM_PROMPT,
@@ -61,6 +64,7 @@ class ProposeOfferCandidateCapability(ProposeCapability[Mapping[str, Any], dict[
                 "record. Return candidate data only.\n\n"
                 f"{serialized_source}"
             ),
+            response_schema=response_schema,
         )
 
         if not isinstance(raw, Mapping):

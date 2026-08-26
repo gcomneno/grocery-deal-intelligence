@@ -7,6 +7,7 @@ from giadaware_ai.extension import CapabilityFamily, ProposeCapability
 from grocery_deal_intelligence.giadaware_ai_adapter import GiadaWareAIAdapter
 from grocery_deal_intelligence.ingestion import ingest_offer
 from grocery_deal_intelligence.offer_proposal import ProposeOfferCandidateCapability
+from grocery_deal_intelligence.validation import _load_schema
 
 
 class FakeBackend:
@@ -14,23 +15,37 @@ class FakeBackend:
         self.result = result
         self.calls = []
 
-    def generate_json(self, *, system_prompt, user_prompt):
+    def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
         self.calls.append(
             {
                 "system_prompt": system_prompt,
                 "user_prompt": user_prompt,
+                "response_schema": copy.deepcopy(response_schema),
             }
         )
         return copy.deepcopy(self.result)
 
 
+class MutatingSchemaBackend(FakeBackend):
+    def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
+        self.calls.append(
+            {
+                "system_prompt": system_prompt,
+                "user_prompt": user_prompt,
+                "response_schema": copy.deepcopy(response_schema),
+            }
+        )
+        response_schema["title"] = "mutated by backend"
+        return copy.deepcopy(self.result)
+
+
 class FailingBackend:
-    def generate_json(self, *, system_prompt, user_prompt):
+    def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
         raise RuntimeError("backend unavailable")
 
 
 class NonMappingBackend:
-    def generate_json(self, *, system_prompt, user_prompt):
+    def generate_json(self, *, system_prompt, user_prompt, response_schema=None):
         return ["not", "a", "mapping"]
 
 
@@ -96,6 +111,26 @@ def test_capability_invokes_backend_once_with_candidate_only_contract():
     assert "canonicality" in call["system_prompt"].lower()
     assert '"currency":"EUR"' in call["user_prompt"]
     assert '"name":"Latte Fresco"' in call["user_prompt"]
+
+
+def test_capability_passes_grocery_owned_canonical_schema_to_backend():
+    backend = FakeBackend(make_candidate())
+    capability = ProposeOfferCandidateCapability(backend)
+
+    capability.execute(make_source_record())
+
+    assert backend.calls[0]["response_schema"] == _load_schema()
+    assert backend.calls[0]["response_schema"]["$id"] == "grocery-offer-v0.1.schema.json"
+
+
+def test_backend_schema_mutation_does_not_mutate_grocery_schema_source():
+    expected_schema = _load_schema()
+    backend = MutatingSchemaBackend(make_candidate())
+    capability = ProposeOfferCandidateCapability(backend)
+
+    capability.execute(make_source_record())
+
+    assert _load_schema() == expected_schema
 
 
 def test_capability_does_not_mutate_source_record():

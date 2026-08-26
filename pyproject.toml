@@ -1,0 +1,19 @@
+[project]
+name = "grocery-deal-intelligence"
+version = "0.1.0"
+description = "Verifiable learning laboratory for cross-retailer grocery deal intelligence"
+requires-python = ">=3.12"
+dependencies = [
+    "jsonschema>=4.10,<5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

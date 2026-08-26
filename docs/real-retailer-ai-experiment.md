@@ -39,11 +39,13 @@ Both outcomes are valid experiment results.
 
 ## Run locally
 
+Run the experiment as a Python module from the repository root. This preserves the repository root on Python's import path and allows the application package to be imported correctly.
+
 Create/activate the project virtual environment and install development dependencies if needed, then run:
 
 ```bash
 GROCERY_DEAL_INTELLIGENCE_RUN_REAL_RETAILER_EXPERIMENT=1 \
-python experiments/run_real_retailer_ai_ingestion.py
+python -m experiments.run_real_retailer_ai_ingestion
 ```
 
 Defaults:
@@ -59,7 +61,7 @@ Optional overrides:
 GROCERY_DEAL_INTELLIGENCE_OLLAMA_BASE_URL=http://127.0.0.1:11434 \
 GROCERY_DEAL_INTELLIGENCE_OLLAMA_MODEL=qwen2.5:1.5b-instruct \
 GROCERY_DEAL_INTELLIGENCE_RUN_REAL_RETAILER_EXPERIMENT=1 \
-python experiments/run_real_retailer_ai_ingestion.py
+python -m experiments.run_real_retailer_ai_ingestion
 ```
 
 The command prints one JSON evidence document containing:

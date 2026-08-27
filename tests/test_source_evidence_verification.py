@@ -58,7 +58,7 @@ def result_by_path(results):
     return {tuple(item["path"]): item for item in results}
 
 
-def test_lidl_projection_contains_only_explicitly_supported_canonical_claims():
+def test_lidl_projection_contains_explicit_and_justified_canonical_claims():
     source = make_lidl_source()
     evidence = project_source_evidence(source, retailer="lidl")
 
@@ -73,9 +73,50 @@ def test_lidl_projection_contains_only_explicitly_supported_canonical_claims():
         "from": "2026-08-14T12:32:41.009Z",
         "to": "2026-08-26T22:00Z",
     }
-    assert evidence["locality"] == {"stores": ["IT01621", "IT00302"]}
-    assert "scope" not in evidence["locality"]
+    assert evidence["locality"] == {
+        "stores": ["IT01621", "IT00302"],
+        "scope": "store",
+    }
+    assert evidence["verification"]["locality_status"] == "verified"
+    assert evidence["verification"]["evidence_status"] == "unmatched"
     assert evidence["provenance"]["source_url"] == "https://www.lidl.it/c/example"
+
+
+def test_lidl_locality_scope_requires_verified_nonempty_store_ids():
+    source = make_lidl_source()
+    source["verification"]["locality"] = "unverified"
+    evidence = project_source_evidence(source, retailer="lidl")
+    assert "scope" not in evidence["locality"]
+
+    source = make_lidl_source()
+    source["locality"]["stores"] = []
+    evidence = project_source_evidence(source, retailer="lidl")
+    assert evidence["locality"] == {"stores": []}
+
+    source = make_lidl_source()
+    source["locality"]["stores"] = [""]
+    evidence = project_source_evidence(source, retailer="lidl")
+    assert "scope" not in evidence["locality"]
+
+
+def test_lidl_evidence_status_mapping_is_finite_and_conservative():
+    expected = {
+        "exact": "verified",
+        "partial": "partial",
+        "unmatched": "unmatched",
+        "unverified": "unverified",
+    }
+
+    for flyer_match, canonical_status in expected.items():
+        source = make_lidl_source()
+        source["verification"]["flyer_match"] = flyer_match
+        evidence = project_source_evidence(source, retailer="lidl")
+        assert evidence["verification"]["evidence_status"] == canonical_status
+
+    source = make_lidl_source()
+    source["verification"]["flyer_match"] = "mystery"
+    evidence = project_source_evidence(source, retailer="lidl")
+    assert "evidence_status" not in evidence["verification"]
 
 
 def test_esselunga_projection_uses_trusted_retailer_context_and_explicit_fields_only():

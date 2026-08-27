@@ -1,0 +1,11 @@
+source_url: https://www.despar.it/it/volantino-digitale/191/
+store_id: 191
+store_name: Interspar Montebelluna
+store_address: Via Schiavonesca Priula, 64
+store_locality: Montebelluna (TV)
+campaign_title: Sconti dal 20% al 50%
+valid_from: 2026-08-13
+valid_to: 2026-08-26
+offer: Riso Carnaroli Scotti | 1 kg | 2,49 € al pz.
+offer: Birra Speciale Pedavena | 500 ml | 1,29 € al pz.
+offer: Olio Extra Vergine di oliva Grezzo Il Casolare Farchioni | 1 L | 9,49 € | 7,59 € al pz. | Sconto extra App -20%

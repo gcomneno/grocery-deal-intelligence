@@ -35,12 +35,23 @@ def ingest_offer(
         raise ValueError("admission requires a non-empty retailer")
 
     source = deepcopy(source_record)
+    source_evidence = (
+        project_source_evidence(source, retailer=retailer)
+        if admission
+        else None
+    )
 
     if ai is None:
         candidate = source
         ai_used = False
     else:
-        candidate = ai.propose(deepcopy(source))
+        if admission and hasattr(ai, "propose_grounded"):
+            candidate = ai.propose_grounded(
+                deepcopy(source),
+                source_evidence=deepcopy(source_evidence),
+            )
+        else:
+            candidate = ai.propose(deepcopy(source))
         ai_used = True
 
     candidate = deepcopy(candidate)
@@ -72,7 +83,6 @@ def ingest_offer(
             "canonical": None,
         }
 
-    source_evidence = project_source_evidence(source, retailer=retailer)
     claim_verification = verify_candidate_claims(candidate, source_evidence)
     admission_decision = evaluate_canonical_admission(
         structurally_valid=structurally_valid,

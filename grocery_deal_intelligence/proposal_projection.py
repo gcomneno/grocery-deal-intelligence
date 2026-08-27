@@ -141,26 +141,16 @@ def _missing_required_paths(
 
     for key in sorted(required):
         required_path = path + (str(key),)
+        child_schema = properties.get(key)
+
         if key not in candidate:
-            child_schema = properties.get(key)
             if isinstance(child_schema, Mapping) and child_schema.get("type") == "object":
-                nested_required = child_schema.get("required", [])
-                if isinstance(nested_required, list) and nested_required:
-                    for nested_key in sorted(nested_required):
-                        missing.extend(
-                            _missing_required_paths({}, child_schema, path=path + (str(key),))
-                            if nested_key == sorted(nested_required)[0]
-                            else []
-                        )
-                    if not missing or missing[-1][: len(required_path)] != required_path:
-                        missing.append(required_path)
-                else:
-                    missing.append(required_path)
+                nested_missing = _missing_required_paths({}, child_schema, path=required_path)
+                missing.extend(nested_missing or [required_path])
             else:
                 missing.append(required_path)
             continue
 
-        child_schema = properties.get(key)
         child_value = candidate[key]
         if isinstance(child_schema, Mapping) and child_schema.get("type") == "object":
             if isinstance(child_value, Mapping):

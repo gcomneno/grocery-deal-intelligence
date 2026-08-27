@@ -4,7 +4,7 @@
 
 Issue #74.
 
-Current decision: **store context is proven to exist, but a reproducible store-scoped offer retrieval request is not yet pinned**.
+Decision: **watch** — store context is proven to exist and influence public product/category availability, but a reproducible store-scoped offer retrieval request is not yet pinned.
 
 No production adapter is introduced by this spike.
 
@@ -41,44 +41,48 @@ This establishes a strong public product/offer surface, but does not by itself e
 
 ALDI's public site explicitly renders a selected-store state and tells users they can change store to see specific offers.
 
-Observed selected-store context from public indexed pages:
+Observed public server-rendered selected-store context:
 
 ```text
-selected store locality: 37057 San Giovanni Lupatoto
+Negozio selezionato: 37057, San Giovanni Lupatoto
 ```
 
-A public store page also exposes:
-
-```text
-ALDI San Giovanni Lupatoto
-Via Ca' Nova Zampieri snc
-37057 San Giovanni Lupatoto
-```
-
-Separately, ALDI store URLs use stable-looking terminal identifiers such as `/h038` for a store page.
-
-A category page observed under selected-store context can return:
+The selected-store value is visible not only on store-finder pages but also on product/category surfaces. A category response under that context can state:
 
 ```text
 Questa categoria non è disponibile per il commerciante selezionato.
 ```
 
-That is direct evidence that product/category availability is evaluated against a selected merchant/store context rather than being purely global.
+This is direct evidence that returned category/product availability is evaluated against server-visible selected-merchant context rather than being purely global.
 
-## Critical unresolved mechanism
+A public store surface also identifies ALDI Camposampiero at:
 
-The inspected static offer/product URLs do **not** encode the selected store in an obvious query/path parameter.
+```text
+Via Borgo Padova 80
+35012 Camposampiero PD
+```
 
-The selected-store state therefore appears to be carried by one of:
+and ALDI public store URLs expose stable-looking store identities in their routes/pages.
 
-- cookie/session state;
-- embedded frontend state;
-- a request parameter to an internal public endpoint;
+## Trace outcome
+
+The public HTTP/HTML evidence available in this spike proves that:
+
+1. selected-store state exists;
+2. the server-rendered response is aware of it;
+3. the state can affect whether a category is available;
+4. global and weekly-offer pages remain publicly retrievable and expose strong product facts.
+
+However, the inspected public request URLs do **not** reveal a deterministic store selector in path or query parameters. The same selected-store state appears on multiple otherwise global URLs.
+
+The exact transport therefore remains unresolved. Plausible mechanisms include:
+
+- cookie/session value;
+- embedded application state;
+- internal public request parameter;
 - another client-side context mechanism.
 
-This spike has not yet established which mechanism is authoritative.
-
-No store applicability claim may therefore be attached to a globally retrieved offer merely because a store was visible elsewhere in the browsing session.
+This spike did not obtain a trustworthy browser network trace exposing that state transition. Container-level direct network access was unavailable, and no attempt was made to bypass that limitation or infer hidden request values.
 
 ## Deterministic distinction
 
@@ -94,19 +98,23 @@ For observed public product rows/pages:
 - previous price where present;
 - discount percentage where present;
 - availability start date where present;
-- weekly campaign cadence.
+- weekly/current-next-week campaign cadence.
+
+ALDI's official weekly-offer surface also states that most promotions are national while local product availability may vary by store.
 
 ### Proven about store context
 
 - ALDI supports a selected-store state;
-- selected-store context changes which categories/offers are available;
+- server-rendered pages can expose the selected store;
+- selected-store context affects category/product availability;
 - stores have public identity/address surfaces.
 
-### Not yet proven for a captured offer
+### Not proven for one captured offer
 
-- that a specific global offer applies to the selected store;
-- the exact store-context request parameter/value;
-- a deterministic store-scoped offer response suitable for hashing and replay.
+- that a specific globally rendered offer applies to one selected store;
+- the exact cookie/query/state key carrying store identity;
+- a replayable raw request/response pair whose store scope can be independently reproduced;
+- a store-scoped raw offer response suitable for hashing.
 
 ## Why no synthetic dataset is committed
 
@@ -116,7 +124,7 @@ The required dataset is:
 
 ```text
 one retrieval
-+ explicit store context
++ explicit reproducible store context
 + offer payload
 ```
 
@@ -127,27 +135,24 @@ global offer
 + store observed elsewhere
 ```
 
-Therefore no fake `store_id` or inferred applicability is added to the captured product example.
+Therefore no fake `store_id`, inferred applicability, or synthetic store-scoped capture is added.
 
-## Next technical gate
+## Decision
 
-Use a real browser/network trace against the public ALDI site while changing the selected store, and record only the public request(s) whose parameters or state deterministically carry store identity into product/offer retrieval.
+**WATCH**
 
-The successful capture must preserve:
+ALDI remains one of the strongest source candidates in the discovery set because public product richness and real store-specific availability semantics are both established.
 
-- request URL;
-- request method;
-- relevant public query/cookie/context value;
+The blocker is narrow but fundamental: Grocery Deal Intelligence must be able to reproduce the store-context transport itself before treating an offer capture as store-scoped evidence.
+
+Promotion to adapter implementation requires one future trace that records:
+
 - selected store identity;
-- retrieval timestamp;
+- exact public state carrier (URL/query/cookie/request field or equivalent);
+- one request made under that explicit context;
 - raw response;
+- retrieval timestamp;
 - SHA-256;
-- at least one offer/article identifier.
+- at least one stable article/offer identifier.
 
-No authentication, anti-bot bypass, consent bypass, or hidden credential extraction is allowed.
-
-## Current recommendation
-
-**CONTINUE SPIKE — not ready for adapter implementation yet.**
-
-ALDI remains a strong candidate because the product data surface and store-specific availability semantics are both real. The remaining blocker is narrow and technical: pinning the deterministic store-context transport so a store-scoped raw response can be reproduced and hashed.
+Until then, global ALDI product/offers may be useful as global evidence, but must not be promoted to store-specific canonical locality claims.

@@ -113,12 +113,12 @@ def test_evaluate_fixture_can_admit_supported_critical_claims():
             "to": source["valid_to"],
         },
         "locality": {
-            "scope": "regional",
+            "scope": "store",
             "stores": copy.deepcopy(source["locality"]["stores"]),
         },
         "verification": {
             "locality_status": source["verification"]["locality"],
-            "evidence_status": "verified",
+            "evidence_status": "unmatched",
         },
         "provenance": {
             "source_type": source["provenance"]["source_type"],

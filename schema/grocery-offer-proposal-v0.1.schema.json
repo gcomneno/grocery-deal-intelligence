@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "grocery-offer-proposal-v0.1.schema.json",
+  "title": "Grocery Offer Proposal v0.1",
+  "description": "Partial, advisory grocery-offer claims. Absence of a field means no claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "retailer": {"type": "string", "minLength": 1},
+    "product_name": {"type": "string", "minLength": 1},
+    "price": {"type": "number", "minimum": 0},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "reference_price": {"type": ["number", "null"], "minimum": 0},
+    "packaging_text": {"type": ["string", "null"]},
+    "base_price_text": {"type": ["string", "null"]},
+    "promotion": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "requires_loyalty": {"type": "boolean"},
+        "discount_text": {"type": ["string", "null"]}
+      }
+    },
+    "validity": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "from": {"type": ["string", "null"]},
+        "to": {"type": ["string", "null"]}
+      }
+    },
+    "locality": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": ["national", "regional", "store", "unknown"]
+        },
+        "stores": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "locality_status": {
+          "type": "string",
+          "enum": ["verified", "unverified", "unknown"]
+        },
+        "evidence_status": {
+          "type": "string",
+          "enum": ["verified", "partial", "unmatched", "unverified"]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {"type": "string", "minLength": 1},
+        "source_url": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

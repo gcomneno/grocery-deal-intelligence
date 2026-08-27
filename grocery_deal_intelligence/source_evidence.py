@@ -10,6 +10,14 @@ CONTRADICTED = "contradicted"
 UNVERIFIABLE = "unverifiable"
 
 
+_LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS = {
+    "exact": "verified",
+    "partial": "partial",
+    "unmatched": "unmatched",
+    "unverified": "unverified",
+}
+
+
 def project_source_evidence(
     source_record: Mapping[str, Any],
     *,
@@ -103,15 +111,32 @@ def _project_lidl(source: dict[str, Any]) -> dict[str, Any]:
     if validity:
         evidence["validity"] = validity
 
+    source_verification = source.get("verification")
+    locality_verified = (
+        isinstance(source_verification, Mapping)
+        and source_verification.get("locality") == "verified"
+    )
+
     source_locality = source.get("locality")
     if isinstance(source_locality, Mapping) and "stores" in source_locality:
-        evidence["locality"] = {"stores": deepcopy(source_locality["stores"])}
+        locality: dict[str, Any] = {"stores": deepcopy(source_locality["stores"])}
+        stores = source_locality.get("stores")
+        if (
+            locality_verified
+            and isinstance(stores, list)
+            and bool(stores)
+            and all(isinstance(store, str) and bool(store) for store in stores)
+        ):
+            locality["scope"] = "store"
+        evidence["locality"] = locality
 
-    source_verification = source.get("verification")
     if isinstance(source_verification, Mapping):
         verification: dict[str, Any] = {}
         if "locality" in source_verification:
             verification["locality_status"] = deepcopy(source_verification["locality"])
+        flyer_match = source_verification.get("flyer_match")
+        if flyer_match in _LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS:
+            verification["evidence_status"] = _LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS[flyer_match]
         if "flyer_match" in source_verification:
             verification["flyer_match"] = deepcopy(source_verification["flyer_match"])
         if verification:

@@ -75,7 +75,7 @@ def test_all_fixed_real_fixtures_load_with_stable_identity():
     assert all(len(identity["file_sha256"]) == 64 for _, identity in loaded)
 
 
-def test_evaluate_fixture_preserves_source_and_accepts_valid_candidate():
+def test_evaluate_fixture_preserves_source_and_records_semantic_evidence():
     source, identity = load_fixture_record(FIXTURES[0])
     before = copy.deepcopy(source)
 
@@ -85,9 +85,18 @@ def test_evaluate_fixture_preserves_source_and_accepts_valid_candidate():
     assert result["validated"] is True
     assert result["canonical"] == valid_candidate()
     assert result["diagnostics"] == []
+    assert result["source_evidence"]["retailer"] == "esselunga"
+    assert result["source_evidence"]["product_name"] == source["title"]
+    assert result["source_evidence"]["price"] == source["promozioni_prezzoPromo"][0]
+    assert result["semantic_summary"] == {
+        "supported": 0,
+        "contradicted": 3,
+        "unverifiable": 12,
+    }
+    assert len(result["claim_verification"]) == 15
 
 
-def test_evaluate_fixture_rejects_and_diagnoses_invalid_candidate():
+def test_evaluate_fixture_rejects_structurally_invalid_candidate_but_still_classifies_claims():
     source, identity = load_fixture_record(FIXTURES[1])
     before = copy.deepcopy(source)
     candidate = valid_candidate()
@@ -106,23 +115,44 @@ def test_evaluate_fixture_rejects_and_diagnoses_invalid_candidate():
             "message": "expected object; got string",
         }
     ]
+    assert result["source_evidence"]["retailer"] == "esselunga"
+    assert result["claim_verification"]
+    assert sum(result["semantic_summary"].values()) == len(result["claim_verification"])
 
 
-def test_summary_is_deterministic_and_counts_diagnostic_categories():
+def test_summary_is_deterministic_and_counts_structural_and_semantic_results():
     results = [
-        {"validated": True, "diagnostics": []},
+        {
+            "validated": True,
+            "diagnostics": [],
+            "semantic_summary": {
+                "supported": 5,
+                "contradicted": 1,
+                "unverifiable": 2,
+            },
+        },
         {
             "validated": False,
             "diagnostics": [
                 {"category": "wrong_canonical_shape"},
                 {"category": "missing_required_field"},
             ],
+            "semantic_summary": {
+                "supported": 3,
+                "contradicted": 2,
+                "unverifiable": 4,
+            },
         },
         {
             "validated": False,
             "diagnostics": [
                 {"category": "wrong_canonical_shape"},
             ],
+            "semantic_summary": {
+                "supported": 2,
+                "contradicted": 0,
+                "unverifiable": 1,
+            },
         },
     ]
 
@@ -134,4 +164,8 @@ def test_summary_is_deterministic_and_counts_diagnostic_categories():
             "missing_required_field": 1,
             "wrong_canonical_shape": 2,
         },
+        "total_claims": 20,
+        "supported_claims": 10,
+        "contradicted_claims": 3,
+        "unverifiable_claims": 7,
     }

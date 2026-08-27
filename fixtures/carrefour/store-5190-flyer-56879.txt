@@ -1,0 +1,12 @@
+source_url: https://www.carrefour.it/volantino/supermercato-carrefour-express-milano-viale-abruzzi-54/5190/-volantino-supermercato-carrefour-express-milano-viale-abruzzi-54-5190-offerte-d-estate-carrefour-express-56879-carrefour-express/56879
+store_id: 5190
+flyer_id: 56879
+store_name: Carrefour Express
+store_address: Viale Abruzzi, 54
+store_locality: Milano
+campaign_title: Offerte d'estate
+valid_from: 2026-08-03
+valid_to: 2026-08-31
+offer: Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l | -30% | SPESAMICA PAYBACK | €1,57 | €1,09 | €1,09 al Lt
+offer: Passata di Pomodoro Terre d’Italia 520 g | -21% | SPESAMICA PAYBACK | €1,39 | €1,09 | €2,10 al Kg
+offer: Raffo Birra Raffo Originale Conf. 3 pz da 330 ml Cad. 990 ml | -25% | SPESAMICA PAYBACK | €3,47 | €2,49 | €2,52 al Lt

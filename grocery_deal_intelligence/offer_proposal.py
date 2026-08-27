@@ -90,9 +90,16 @@ class ProposeOfferCandidateCapability(ProposeCapability[Mapping[str, Any], dict[
             serialized_evidence = _serialize_mapping(source_evidence)
             user_prompt = (
                 "Propose candidate canonical grocery-offer data using the deterministic "
-                "source evidence as grounding. Do not contradict grounded fields. Use "
-                "the raw source only for additional fields not represented in the "
-                "evidence. Return candidate data only.\n\n"
+                "source evidence as grounding. Do not contradict grounded fields. "
+                "For optional fields or optional nested properties that are not present "
+                "in the deterministic evidence, omit them rather than inventing details. "
+                "For required fields not present in deterministic evidence, use a "
+                "schema-defined conservative uncertainty value such as unknown or "
+                "unverified when the schema provides one. Never invent extra metadata "
+                "merely to make the candidate look more complete. If a required field "
+                "has no schema-defined uncertainty representation, use the raw source "
+                "only when it directly supports a value; do not fabricate one. "
+                "Return candidate data only.\n\n"
                 f"DETERMINISTIC SOURCE EVIDENCE:\n{serialized_evidence}\n\n"
                 f"RAW SOURCE RECORD:\n{serialized_source}"
             )

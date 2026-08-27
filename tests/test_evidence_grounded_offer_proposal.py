@@ -64,6 +64,23 @@ def test_grounded_capability_keeps_raw_source_and_evidence_separate():
     assert backend.calls[0]["response_schema"] is not None
 
 
+def test_grounded_capability_instructs_omission_and_conservative_uncertainty():
+    backend = RecordingBackend(_candidate())
+    capability = ProposeOfferCandidateCapability(backend)
+
+    capability.execute_grounded(
+        {"title": "Example"},
+        source_evidence={"retailer": "lidl", "product_name": "Example"},
+    )
+
+    prompt = backend.calls[0]["user_prompt"]
+    assert "optional fields or optional nested properties" in prompt
+    assert "omit them rather than inventing details" in prompt
+    assert "schema-defined conservative uncertainty value" in prompt
+    assert "Never invent extra metadata" in prompt
+    assert "do not fabricate one" in prompt
+
+
 def test_legacy_capability_execution_remains_source_only():
     backend = RecordingBackend(_candidate())
     capability = ProposeOfferCandidateCapability(backend)
@@ -73,6 +90,7 @@ def test_legacy_capability_execution_remains_source_only():
     prompt = backend.calls[0]["user_prompt"]
     assert "RAW SOURCE RECORD:" in prompt
     assert "DETERMINISTIC SOURCE EVIDENCE:" not in prompt
+    assert "optional fields or optional nested properties" not in prompt
 
 
 def test_giadaware_adapter_passes_detached_grounding_to_capability():

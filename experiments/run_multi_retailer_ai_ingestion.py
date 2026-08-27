@@ -14,6 +14,14 @@ from grocery_deal_intelligence.diagnostics import diagnose_candidate_rejection
 from grocery_deal_intelligence.giadaware_ai_adapter import GiadaWareAIAdapter
 from grocery_deal_intelligence.ingestion import ingest_offer
 from grocery_deal_intelligence.offer_proposal import ProposeOfferCandidateCapability
+from grocery_deal_intelligence.source_evidence import (
+    CONTRADICTED,
+    SUPPORTED,
+    UNVERIFIABLE,
+    project_source_evidence,
+    summarize_claim_verification,
+    verify_candidate_claims,
+)
 
 
 RUN_ENV = "GROCERY_DEAL_INTELLIGENCE_RUN_MULTI_RETAILER_EXPERIMENT"
@@ -142,6 +150,12 @@ def evaluate_fixture(
         )
 
     diagnostics = [] if validated else diagnose_candidate_rejection(candidate)
+    source_evidence = project_source_evidence(
+        source_before,
+        retailer=source_identity["retailer"],
+    )
+    claim_verification = verify_candidate_claims(candidate, source_evidence)
+    semantic_summary = summarize_claim_verification(claim_verification)
 
     return {
         "source_identity": copy.deepcopy(source_identity),
@@ -150,11 +164,15 @@ def evaluate_fixture(
         "validated": validated,
         "canonical": canonical,
         "diagnostics": diagnostics,
+        "source_evidence": source_evidence,
+        "claim_verification": claim_verification,
+        "semantic_summary": semantic_summary,
     }
 
 
 def summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
     category_counts: Counter[str] = Counter()
+    semantic_counts: Counter[str] = Counter()
     accepted = 0
 
     for result in results:
@@ -162,12 +180,19 @@ def summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
             accepted += 1
         for diagnostic in result["diagnostics"]:
             category_counts[diagnostic["category"]] += 1
+        for status in (SUPPORTED, CONTRADICTED, UNVERIFIABLE):
+            semantic_counts[status] += result["semantic_summary"][status]
 
+    total_claims = sum(semantic_counts.values())
     return {
         "total_records": len(results),
         "accepted_records": accepted,
         "rejected_records": len(results) - accepted,
         "diagnostic_category_counts": dict(sorted(category_counts.items())),
+        "total_claims": total_claims,
+        "supported_claims": semantic_counts[SUPPORTED],
+        "contradicted_claims": semantic_counts[CONTRADICTED],
+        "unverifiable_claims": semantic_counts[UNVERIFIABLE],
     }
 
 
@@ -189,7 +214,7 @@ def run_experiment() -> dict[str, Any]:
 
     return {
         "experiment": {
-            "name": "multi-retailer-real-ai-ingestion",
+            "name": "multi-retailer-real-ai-ingestion-with-semantic-claims",
             "fixture_count": len(FIXTURES),
             "fixture_order": [
                 {

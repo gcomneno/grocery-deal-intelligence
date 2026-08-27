@@ -97,6 +97,27 @@ def test_valid_partial_proposal_can_be_not_projectable_without_fabrication():
     assert result["canonical"] is None
 
 
+def test_projectable_candidate_can_still_fail_canonical_validation(monkeypatch):
+    evidence = complete_evidence()
+    evidence["currency"] = "eur"
+    monkeypatch.setattr(
+        ingestion_module,
+        "project_source_evidence",
+        lambda source, *, retailer: copy.deepcopy(evidence),
+    )
+    adapter = FakeProposalAdapter({})
+
+    result = ingest_offer_proposal_path({}, ai=adapter, retailer="testmart")
+
+    assert result["projection"]["projectable"] is True
+    assert result["canonical_validation"]["valid"] is False
+    assert result["admission"]["eligible"] is False
+    assert {reason["code"] for reason in result["admission"]["reasons"]} == {
+        "structural_invalid"
+    }
+    assert result["canonical"] is None
+
+
 def test_full_success_keeps_all_authority_layers_visible(monkeypatch):
     evidence = complete_evidence()
     monkeypatch.setattr(

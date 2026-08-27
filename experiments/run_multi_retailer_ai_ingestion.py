@@ -18,18 +18,18 @@ from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
     UNVERIFIABLE,
-    project_source_evidence,
     summarize_claim_verification,
-    verify_candidate_claims,
 )
 
 
 RUN_ENV = "GROCERY_DEAL_INTELLIGENCE_RUN_MULTI_RETAILER_EXPERIMENT"
 BASE_URL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_BASE_URL"
 MODEL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_MODEL"
+TIMEOUT_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_TIMEOUT"
 
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
 DEFAULT_MODEL = "qwen2.5:1.5b-instruct"
+DEFAULT_TIMEOUT = 120.0
 
 FIXTURES = (
     {
@@ -129,7 +129,13 @@ def evaluate_fixture(
     adapter: GiadaWareAIAdapter,
 ) -> dict[str, Any]:
     source_before = copy.deepcopy(source)
-    result = ingest_offer(source, ai=adapter, validate=True)
+    result = ingest_offer(
+        source,
+        ai=adapter,
+        validate=True,
+        admission=True,
+        retailer=source_identity["retailer"],
+    )
 
     if source != source_before:
         raise AssertionError("multi-record experiment mutated a source record")
@@ -144,17 +150,17 @@ def evaluate_fixture(
 
     validated = bool(result["validated"])
     canonical = result["canonical"]
-    if validated != (canonical is not None):
-        raise AssertionError(
-            "deterministic gate invariant violated: validated must match canonical presence"
-        )
+    structural_validation = result["structural_validation"]
+    source_evidence = result["source_evidence"]
+    claim_verification = result["claim_verification"]
+    admission = result["admission"]
+
+    if validated != bool(structural_validation["valid"]):
+        raise AssertionError("validated must reflect structural_validation.valid")
+    if (canonical is not None) != bool(admission["eligible"]):
+        raise AssertionError("canonical presence must match admission eligibility")
 
     diagnostics = [] if validated else diagnose_candidate_rejection(candidate)
-    source_evidence = project_source_evidence(
-        source_before,
-        retailer=source_identity["retailer"],
-    )
-    claim_verification = verify_candidate_claims(candidate, source_evidence)
     semantic_summary = summarize_claim_verification(claim_verification)
 
     return {
@@ -162,33 +168,48 @@ def evaluate_fixture(
         "source_record": source_before,
         "candidate": candidate,
         "validated": validated,
+        "structural_validation": structural_validation,
         "canonical": canonical,
         "diagnostics": diagnostics,
         "source_evidence": source_evidence,
         "claim_verification": claim_verification,
         "semantic_summary": semantic_summary,
+        "admission": admission,
     }
 
 
 def summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
     category_counts: Counter[str] = Counter()
     semantic_counts: Counter[str] = Counter()
-    accepted = 0
+    admission_reason_counts: Counter[str] = Counter()
+    structurally_valid = 0
+    admission_eligible = 0
+    canonical_records = 0
 
     for result in results:
         if result["validated"]:
-            accepted += 1
+            structurally_valid += 1
+        if result["admission"]["eligible"]:
+            admission_eligible += 1
+        if result["canonical"] is not None:
+            canonical_records += 1
         for diagnostic in result["diagnostics"]:
             category_counts[diagnostic["category"]] += 1
         for status in (SUPPORTED, CONTRADICTED, UNVERIFIABLE):
             semantic_counts[status] += result["semantic_summary"][status]
+        for reason in result["admission"]["reasons"]:
+            admission_reason_counts[reason["code"]] += 1
 
     total_claims = sum(semantic_counts.values())
     return {
         "total_records": len(results),
-        "accepted_records": accepted,
-        "rejected_records": len(results) - accepted,
+        "structurally_valid_records": structurally_valid,
+        "structurally_invalid_records": len(results) - structurally_valid,
+        "admission_eligible_records": admission_eligible,
+        "admission_ineligible_records": len(results) - admission_eligible,
+        "canonical_records": canonical_records,
         "diagnostic_category_counts": dict(sorted(category_counts.items())),
+        "admission_reason_counts": dict(sorted(admission_reason_counts.items())),
         "total_claims": total_claims,
         "supported_claims": semantic_counts[SUPPORTED],
         "contradicted_claims": semantic_counts[CONTRADICTED],
@@ -202,8 +223,9 @@ def run_experiment() -> dict[str, Any]:
 
     base_url = os.environ.get(BASE_URL_ENV, DEFAULT_BASE_URL)
     model = os.environ.get(MODEL_ENV, DEFAULT_MODEL)
+    timeout = float(os.environ.get(TIMEOUT_ENV, DEFAULT_TIMEOUT))
 
-    backend = OllamaBackend(model=model, base_url=base_url, timeout=120.0)
+    backend = OllamaBackend(model=model, base_url=base_url, timeout=timeout)
     capability = ProposeOfferCandidateCapability(backend)
     adapter = GiadaWareAIAdapter(capability)
 
@@ -214,7 +236,7 @@ def run_experiment() -> dict[str, Any]:
 
     return {
         "experiment": {
-            "name": "multi-retailer-real-ai-ingestion-with-semantic-claims",
+            "name": "multi-retailer-real-ai-ingestion-with-canonical-admission",
             "fixture_count": len(FIXTURES),
             "fixture_order": [
                 {
@@ -231,6 +253,7 @@ def run_experiment() -> dict[str, Any]:
             "backend": "giadaware_ai.backends.ollama.OllamaBackend",
             "base_url": base_url,
             "model": model,
+            "timeout": timeout,
         },
     }
 

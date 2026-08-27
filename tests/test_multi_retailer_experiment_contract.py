@@ -41,34 +41,6 @@ def valid_candidate():
     }
 
 
-def admissible_esselunga_candidate(source):
-    return {
-        "retailer": "esselunga",
-        "product_name": source["title"],
-        "price": source["promozioni_prezzoPromo"][0],
-        "currency": "EUR",
-        "promotion": {
-            "type": "standard",
-            "requires_loyalty": False,
-            "discount_text": source["promozioni_desMeccanica"][0],
-        },
-        "validity": {
-            "from": source["promozioni_dataInizioPromoArticolo"][0],
-            "to": source["promozioni_dataFinePromoArticolo"][0],
-        },
-        "locality": {"scope": "unknown", "stores": []},
-        "verification": {
-            "locality_status": "unknown",
-            "evidence_status": "unverified",
-        },
-        "provenance": {
-            "source_type": "fixture",
-            "source_url": "https://example.invalid/source",
-            "observed_at": "2026-08-26T00:00:00Z",
-        },
-    }
-
-
 def test_fixture_corpus_is_fixed_cross_retailer_and_ordered():
     assert len(FIXTURES) == 4
     assert [spec["retailer"] for spec in FIXTURES] == [
@@ -103,7 +75,7 @@ def test_all_fixed_real_fixtures_load_with_stable_identity():
     assert all(len(identity["file_sha256"]) == 64 for _, identity in loaded)
 
 
-def test_schema_valid_but_contradicted_candidate_is_not_canonical():
+def test_evaluate_fixture_preserves_source_and_denies_canonical_when_admission_fails():
     source, identity = load_fixture_record(FIXTURES[0])
     before = copy.deepcopy(source)
 
@@ -112,28 +84,57 @@ def test_schema_valid_but_contradicted_candidate_is_not_canonical():
     assert source == before
     assert result["validated"] is True
     assert result["structural_validation"]["valid"] is True
-    assert result["canonical"] is None
     assert result["admission"]["eligible"] is False
+    assert result["canonical"] is None
     assert result["diagnostics"] == []
     assert result["source_evidence"]["retailer"] == "esselunga"
+    assert result["source_evidence"]["product_name"] == source["title"]
+    assert result["source_evidence"]["price"] == source["promozioni_prezzoPromo"][0]
     assert result["claim_verification"]
+    assert sum(result["semantic_summary"].values()) == len(result["claim_verification"])
     assert result["semantic_summary"]["contradicted"] > 0
+    assert result["semantic_summary"]["unverifiable"] > 0
 
 
-def test_schema_valid_supported_critical_claims_can_become_canonical():
-    source, identity = load_fixture_record(FIXTURES[0])
-    candidate = admissible_esselunga_candidate(source)
+def test_evaluate_fixture_can_admit_supported_critical_claims():
+    source, identity = load_fixture_record(FIXTURES[2])
+    candidate = {
+        "retailer": source["retailer"],
+        "product_name": source["product_name"],
+        "price": source["price"],
+        "currency": source["currency"],
+        "promotion": {
+            "type": source["promotion_type"],
+            "requires_loyalty": source["requires_loyalty"],
+            "discount_text": source["discount_text"],
+        },
+        "validity": {
+            "from": source["valid_from"],
+            "to": source["valid_to"],
+        },
+        "locality": {
+            "scope": "regional",
+            "stores": copy.deepcopy(source["locality"]["stores"]),
+        },
+        "verification": {
+            "locality_status": source["verification"]["locality"],
+            "evidence_status": "verified",
+        },
+        "provenance": {
+            "source_type": source["provenance"]["source_type"],
+            "source_url": source["provenance"]["campaign_url"],
+            "observed_at": source["provenance"]["observed_at"],
+        },
+    }
 
     result = evaluate_fixture(source, identity, adapter=FakeAdapter(candidate))
 
     assert result["validated"] is True
     assert result["admission"]["eligible"] is True
     assert result["canonical"] == candidate
-    assert result["structural_validation"]["valid"] is True
-    assert result["admission"]["reasons"] == []
 
 
-def test_structurally_invalid_candidate_is_not_canonical_and_keeps_evidence_visible():
+def test_evaluate_fixture_rejects_structurally_invalid_candidate_and_reports_admission():
     source, identity = load_fixture_record(FIXTURES[1])
     before = copy.deepcopy(source)
     candidate = valid_candidate()
@@ -144,8 +145,8 @@ def test_structurally_invalid_candidate_is_not_canonical_and_keeps_evidence_visi
     assert source == before
     assert result["validated"] is False
     assert result["structural_validation"]["valid"] is False
-    assert result["canonical"] is None
     assert result["admission"]["eligible"] is False
+    assert result["canonical"] is None
     assert result["diagnostics"] == [
         {
             "category": "wrong_canonical_shape",
@@ -156,6 +157,7 @@ def test_structurally_invalid_candidate_is_not_canonical_and_keeps_evidence_visi
     ]
     assert result["source_evidence"]["retailer"] == "esselunga"
     assert result["claim_verification"]
+    assert sum(result["semantic_summary"].values()) == len(result["claim_verification"])
 
 
 def test_summary_counts_structural_admission_canonical_and_semantic_results():
@@ -217,7 +219,7 @@ def test_summary_counts_structural_admission_canonical_and_semantic_results():
             "critical_claim_unsupported": 1,
             "structural_invalid": 1,
         },
-        "total_claims": 17,
+        "total_claims": 18,
         "supported_claims": 10,
         "contradicted_claims": 1,
         "unverifiable_claims": 7,

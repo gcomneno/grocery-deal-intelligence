@@ -30,6 +30,42 @@ Therefore the capability cannot generally satisfy both of these requirements at 
 
 Some uncertainty can be represented conservatively (`locality.scope = "unknown"`, empty stores, verification states such as `unknown`/`unverified`), but required provenance strings have no equivalent unknown/null representation.
 
+## Fixed-corpus classification
+
+The 29 post-grounding unverifiable claims split conservatively into two practical groups under the current schema.
+
+### Safely avoidable optional claims: 5
+
+These were extra model-produced details not required by Grocery Offer v0.1 and absent from deterministic source evidence:
+
+- Esselunga fixture 1: three additional provenance metadata properties beyond the required provenance core;
+- Esselunga fixture 2: one additional provenance verification metadata property;
+- Lidl fixture 1: `locality.region`.
+
+These five claims may be omitted without changing the canonical schema or weakening any downstream gate.
+
+### Required / contract-constrained claims: 24
+
+The remaining unverifiable claims are associated with fields or nested properties required for structural validity, including combinations of:
+
+- `currency` where deterministic evidence does not expose it;
+- required `promotion.type` and `promotion.requires_loyalty`;
+- required `locality.scope` and `locality.stores`;
+- required `verification.locality_status` and `verification.evidence_status`;
+- required provenance `source_type`, `source_url`, and `observed_at`.
+
+Some of these can use conservative schema-defined states such as `unknown` or `unverified`, but they remain unverifiable unless deterministic evidence supports those values. The required provenance core is stricter: it currently has no schema-defined unknown/null representation.
+
+Accordingly, the first realistic minimization target is approximately:
+
+```text
+unverifiable: 29 -> 24
+```
+
+not `29 -> 0`.
+
+The actual runtime delta must still be measured; this count is a contract-based upper bound for clearly removable optional claims on the observed corpus, not an encoded expected result.
+
 ## Decision
 
 Do not solve this by:
@@ -41,7 +77,7 @@ Do not solve this by:
 - silently changing the canonical schema;
 - adding retailer-specific repair after inference.
 
-Before changing runtime behavior, classify the 29 unverifiable claims into:
+Before changing runtime behavior, classify unverifiable claims into:
 
 ```text
 avoidable optional/specific claim
@@ -53,14 +89,16 @@ Only the first two categories are legitimate capability-minimization targets und
 
 ## Candidate capability rule
 
-For grounded proposals, the intended rule is:
+For grounded proposals, the rule is now:
 
 ```text
 known deterministic fact -> reproduce grounded evidence
 unknown optional fact -> omit when schema permits
 unknown required fact -> use only a schema-defined uncertainty value when one exists
-unknown required fact without uncertainty representation -> do not fabricate; surface the contract tension
+unknown required fact without uncertainty representation -> use raw source only when directly supported; never fabricate
 ```
+
+This rule applies only to grounded proposal prompting. Legacy source-only proposal behavior remains unchanged.
 
 ## Authority boundary
 
@@ -74,4 +112,4 @@ AI proposal
   -> canonical eligibility
 ```
 
-The fixed corpus must be rerun after any capability change. Success is measured by fewer unverifiable claims without increasing contradictions or reducing support for critical claims.
+The fixed corpus must be rerun after this capability change. Success is measured by fewer unverifiable claims without increasing contradictions or reducing support for critical claims.

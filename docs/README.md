@@ -18,3 +18,7 @@ for Grocery Deal Intelligence.
 - [Multi-retailer AI experiment](multi-retailer-ai-experiment.md)
 - [Candidate rejection diagnostics](candidate-rejection-diagnostics.md)
 - [Capability / canonical-schema contract audit](capability-schema-contract-audit.md)
+
+## Product comparison
+
+- [Evidence-grounded product comparison proposals](product-comparison-proposals.md)

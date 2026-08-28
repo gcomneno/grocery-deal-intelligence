@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "product-comparison-proposal-v0.1.schema.json",
+  "title": "Product Comparison Proposal v0.1",
+  "description": "Advisory relationship proposal between two already-admitted canonical grocery offers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["relationship", "claims"],
+  "properties": {
+    "relationship": {
+      "type": "string",
+      "enum": ["same_product", "comparable", "unknown"]
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "left_value", "right_value"],
+        "properties": {
+          "path": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "left_value": {},
+          "right_value": {}
+        }
+      }
+    }
+  }
+}

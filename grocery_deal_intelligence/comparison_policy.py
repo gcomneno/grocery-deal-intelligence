@@ -22,6 +22,7 @@ USER_CATEGORY = "user_category"
 USER_FAMILY = "user_family"
 USER_PRODUCT = "user_product"
 
+NO_AUTHORITY_RULES = "no_authority_rules"
 REQUIRED_FACT_UNAVAILABLE = "required_fact_unavailable"
 REQUIRED_FACT_MISMATCH = "required_fact_mismatch"
 EXCLUSION_FACT_UNAVAILABLE = "exclusion_fact_unavailable"
@@ -194,6 +195,7 @@ def evaluate_comparison_policy(
 
     reasons: list[dict[str, Any]] = []
     evaluated_rules: list[dict[str, Any]] = []
+    authority_rule_count = 0
 
     for rule_id in sorted(rules):
         raw_rule = rules[rule_id]
@@ -218,6 +220,10 @@ def evaluate_comparison_policy(
                 }
             )
             continue
+
+        if effect not in {"require", "exclude"}:
+            raise ValueError(f"unsupported policy effect: {effect!r}")
+        authority_rule_count += 1
 
         fact = verification_by_path.get(path)
         if fact is None or not _bilaterally_supported(fact):
@@ -271,32 +277,31 @@ def evaluate_comparison_policy(
             )
             continue
 
-        if effect == "exclude":
-            values = rule["values"]
-            excluded = left_value in values or right_value in values
-            if excluded:
-                reasons.append(
-                    {
-                        "code": EXCLUDED_VALUE,
-                        "rule_id": rule_id,
-                        "path": list(path),
-                        "left_value": left_value,
-                        "right_value": right_value,
-                    }
-                )
-            evaluated_rules.append(
+        values = rule["values"]
+        excluded = left_value in values or right_value in values
+        if excluded:
+            reasons.append(
                 {
+                    "code": EXCLUDED_VALUE,
                     "rule_id": rule_id,
-                    "effect": effect,
                     "path": list(path),
-                    "outcome": "excluded" if excluded else "satisfied",
+                    "left_value": left_value,
+                    "right_value": right_value,
                 }
             )
-            continue
+        evaluated_rules.append(
+            {
+                "rule_id": rule_id,
+                "effect": effect,
+                "path": list(path),
+                "outcome": "excluded" if excluded else "satisfied",
+            }
+        )
 
-        raise ValueError(f"unsupported policy effect: {effect!r}")
+    if authority_rule_count == 0:
+        reasons.append({"code": NO_AUTHORITY_RULES})
 
-    reasons.sort(key=lambda item: (item["rule_id"], item["code"]))
+    reasons.sort(key=lambda item: (item.get("rule_id", ""), item["code"]))
     eligible = not reasons
 
     return {

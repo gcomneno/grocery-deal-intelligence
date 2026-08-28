@@ -88,9 +88,6 @@ def _adapt_offer(
     }
 
     if len(offer.price_texts) > 1:
-        record["reference_price"] = _decimal_to_number(
-            parse_euro_price(offer.price_texts[0])
-        )
         record["base_price_text"] = offer.price_texts[0]
 
     if offer.promotion_text is not None:

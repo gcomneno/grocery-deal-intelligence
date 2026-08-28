@@ -38,6 +38,8 @@ def project_source_evidence(
         return _project_esselunga(source)
     if normalized_retailer == "despar":
         return _project_despar(source)
+    if normalized_retailer == "carrefour":
+        return _project_carrefour(source)
 
     return {"retailer": normalized_retailer}
 
@@ -241,6 +243,74 @@ def _project_despar(source: dict[str, Any]) -> dict[str, Any]:
             "source_url",
             "observed_at",
             "fixture_sha256",
+            "campaign_title",
+        ):
+            if key in source_provenance:
+                provenance[key] = deepcopy(source_provenance[key])
+        if provenance:
+            evidence["provenance"] = provenance
+
+    return evidence
+
+
+def _project_carrefour(source: dict[str, Any]) -> dict[str, Any]:
+    evidence: dict[str, Any] = {"retailer": "carrefour"}
+
+    for key in (
+        "product_name",
+        "price",
+        "currency",
+        "reference_price",
+        "packaging_text",
+        "base_price_text",
+    ):
+        _copy_if_present(source, evidence, key)
+
+    promotion: dict[str, Any] = {}
+    if "promotion_type" in source:
+        promotion["type"] = deepcopy(source["promotion_type"])
+    if "requires_loyalty" in source:
+        promotion["requires_loyalty"] = deepcopy(source["requires_loyalty"])
+    if "discount_text" in source:
+        promotion["discount_text"] = deepcopy(source["discount_text"])
+    if promotion:
+        evidence["promotion"] = promotion
+
+    validity: dict[str, Any] = {}
+    if "valid_from" in source:
+        validity["from"] = deepcopy(source["valid_from"])
+    if "valid_to" in source:
+        validity["to"] = deepcopy(source["valid_to"])
+    if validity:
+        evidence["validity"] = validity
+
+    source_locality = source.get("locality")
+    if isinstance(source_locality, Mapping):
+        locality: dict[str, Any] = {}
+        for key in ("scope", "stores", "store_name", "store_address", "store_locality"):
+            if key in source_locality:
+                locality[key] = deepcopy(source_locality[key])
+        if locality:
+            evidence["locality"] = locality
+
+    source_verification = source.get("verification")
+    if isinstance(source_verification, Mapping):
+        verification: dict[str, Any] = {}
+        for key in ("locality_status", "evidence_status"):
+            if key in source_verification:
+                verification[key] = deepcopy(source_verification[key])
+        if verification:
+            evidence["verification"] = verification
+
+    source_provenance = source.get("provenance")
+    if isinstance(source_provenance, Mapping):
+        provenance: dict[str, Any] = {}
+        for key in (
+            "source_type",
+            "source_url",
+            "observed_at",
+            "fixture_sha256",
+            "flyer_id",
             "campaign_title",
         ):
             if key in source_provenance:

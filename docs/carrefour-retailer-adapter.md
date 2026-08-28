@@ -25,15 +25,16 @@ The adapter verifies fixture identity before parsing and reuses `carrefour_fixtu
 The captured Carrefour fixture distinguishes three price roles in source order:
 
 ```text
-base price | current promotional price | unit/reference price
+base/original displayed price | current promotional price | unit price
 ```
 
 The adapter therefore maps:
 
 - product name;
 - current promotional price;
-- previous/base price as `base_price_text`;
-- unit/reference price as canonical `reference_price`;
+- previous/base price as raw `base_price_text`;
+- the same previous/base price, parsed numerically, as canonical `reference_price`;
+- unit price preserved only in the raw fixture/parser evidence;
 - EUR currency from explicit euro notation;
 - explicit discount text;
 - explicit `SPESAMICA PAYBACK` loyalty marker;
@@ -53,9 +54,11 @@ Absence of a loyalty marker is not converted to `requires_loyalty = false`.
 
 ## Price semantics
 
-Unlike the Despar fixture, Carrefour provides an explicit unit/reference-price row. Therefore `reference_price` is justified here.
+Carrefour explicitly distinguishes the displayed base/original price from the current promotional price and the unit price.
 
-The previous/base price remains text evidence (`base_price_text`) and is not conflated with the unit/reference price.
+Canonical `price` is the current promotional price. Canonical `reference_price` is the numeric form of the displayed base/original comparison price. `base_price_text` preserves that same source value as raw text.
+
+The separate unit-price row (for example `€2,10 al Kg` or `€2,52 al Lt`) is not a canonical `reference_price`. It remains available in the raw fixture/parser evidence until a deliberate retailer-neutral unit-price contract is introduced.
 
 ## Failure behavior
 

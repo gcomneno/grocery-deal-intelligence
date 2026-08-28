@@ -27,7 +27,8 @@
     },
     "price": {
       "type": "number",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Current offer or promotional price presented to the shopper."
     },
     "currency": {
       "type": "string",
@@ -38,7 +39,8 @@
         "number",
         "null"
       ],
-      "minimum": 0
+      "minimum": 0,
+      "description": "Ordinary or original numeric comparison price for the current offer price. A unit price such as EUR/kg or EUR/L is not a reference_price."
     },
     "packaging_text": {
       "type": [
@@ -50,7 +52,8 @@
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "description": "Raw displayed base or original price text preserved from source evidence without requiring generic numeric interpretation."
     },
     "promotion": {
       "type": "object",
@@ -71,7 +74,8 @@
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "description": "Discount claim exactly as presented by the source; it is not recomputed from price arithmetic."
         }
       }
     },

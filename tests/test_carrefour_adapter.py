@@ -28,16 +28,27 @@ def _records():
     )
 
 
-def test_maps_explicit_current_base_unit_and_loyalty_semantics():
-    record = _records()[0]
+def test_maps_explicit_current_base_and_loyalty_semantics():
+    records = _records()
 
+    assert [
+        (
+            record["price"],
+            record["reference_price"],
+            record["base_price_text"],
+            record["discount_text"],
+        )
+        for record in records
+    ] == [
+        (1.09, 1.57, "€1,57", "-30%"),
+        (1.09, 1.39, "€1,39", "-21%"),
+        (2.49, 3.47, "€3,47", "-25%"),
+    ]
+
+    record = records[0]
     assert record["retailer"] == "carrefour"
     assert record["product_name"] == "Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l"
-    assert record["price"] == 1.09
-    assert record["reference_price"] == 1.09
-    assert record["base_price_text"] == "€1,57"
     assert record["currency"] == "EUR"
-    assert record["discount_text"] == "-30%"
     assert record["promotion_type"] == "SPESAMICA PAYBACK"
     assert record["requires_loyalty"] is True
 
@@ -132,7 +143,7 @@ def test_fixture_to_evidence_to_admission_is_fully_deterministic():
         "discount_text": "-30%",
     }
     assert evidence["price"] == 1.09
-    assert evidence["reference_price"] == 1.09
+    assert evidence["reference_price"] == 1.57
     assert evidence["base_price_text"] == "€1,57"
     assert evidence["validity"] == {"from": "2026-08-03", "to": "2026-08-31"}
     assert evidence["locality"]["stores"] == ["5190"]

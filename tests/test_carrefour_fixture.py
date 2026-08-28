@@ -40,6 +40,12 @@ def test_parse_loyalty_discount_and_price_evidence():
     assert offer.loyalty_text == "SPESAMICA PAYBACK"
     assert offer.price_texts == ("€1,57", "€1,09", "€1,09 al Lt")
 
+    assert [offer.price_texts[2] for offer in parsed.offers] == [
+        "€1,09 al Lt",
+        "€2,10 al Kg",
+        "€2,52 al Lt",
+    ]
+
 
 def test_parse_is_deterministic_and_read_only():
     text = FIXTURE.read_text(encoding="utf-8")

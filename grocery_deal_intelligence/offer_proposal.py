@@ -35,6 +35,14 @@ locality
 verification
 provenance
 
+Price semantics:
+- price is the current offer or promotional price;
+- reference_price is an ordinary/original numeric comparison price, never a
+  unit price such as EUR/kg or EUR/L;
+- base_price_text may preserve raw displayed base/original price text;
+- promotion.discount_text is a source claim and must not be recomputed from
+  price arithmetic.
+
 Do not include authority fields such as canonical, validated, or valid.
 Deterministic application validation decides canonicality after this proposal.
 """.strip()

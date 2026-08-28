@@ -8,11 +8,11 @@
   "properties": {
     "retailer": {"type": "string", "minLength": 1},
     "product_name": {"type": "string", "minLength": 1},
-    "price": {"type": "number", "minimum": 0},
+    "price": {"type": "number", "minimum": 0, "description": "Current offer or promotional price presented to the shopper."},
     "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
-    "reference_price": {"type": ["number", "null"], "minimum": 0},
+    "reference_price": {"type": ["number", "null"], "minimum": 0, "description": "Ordinary or original numeric comparison price for the current offer price. A unit price such as EUR/kg or EUR/L is not a reference_price."},
     "packaging_text": {"type": ["string", "null"]},
-    "base_price_text": {"type": ["string", "null"]},
+    "base_price_text": {"type": ["string", "null"], "description": "Raw displayed base or original price text preserved from source evidence without requiring generic numeric interpretation."},
     "promotion": {
       "type": "object",
       "minProperties": 1,
@@ -20,7 +20,7 @@
       "properties": {
         "type": {"type": "string", "minLength": 1},
         "requires_loyalty": {"type": "boolean"},
-        "discount_text": {"type": ["string", "null"]}
+        "discount_text": {"type": ["string", "null"], "description": "Discount claim exactly as presented by the source; it is not recomputed from price arithmetic."}
       }
     },
     "validity": {

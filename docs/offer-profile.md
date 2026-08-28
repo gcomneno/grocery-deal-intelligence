@@ -43,6 +43,8 @@ deterministic presence checks defined by the canonical contract.
 
 Distribution dimensions count records according to their canonical values.
 
+`reference_price` means an ordinary/original numeric comparison price for the current offer price; unit prices are a distinct concept.
+
 For optional-value presence dimensions:
 
 - `reference_price` is `present` when `reference_price` is not `null`;

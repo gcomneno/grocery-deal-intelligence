@@ -99,6 +99,8 @@ It reports the canonical verification status.
 
 ## Optional-value semantics
 
+`reference_price` means an ordinary/original numeric comparison price for the current offer price; unit prices are a distinct concept.
+
 Reference-price availability is counted when:
 
 `reference_price` is not `null`

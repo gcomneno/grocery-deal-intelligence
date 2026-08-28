@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://giadaware.local/schema/comparison-policy-layer-v0.1.schema.json",
+  "title": "GDI Comparison Policy Layer v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "origin", "rules"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "origin": {
+      "enum": [
+        "builtin_global",
+        "builtin_category",
+        "user_category",
+        "user_family",
+        "user_product"
+      ]
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "effect": {
+            "enum": ["require", "ignore", "prefer", "exclude"]
+          },
+          "path": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "operator": {
+            "enum": ["equal", "observe", "value_in"]
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

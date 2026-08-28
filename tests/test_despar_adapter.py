@@ -53,12 +53,12 @@ def test_maps_store_scoped_offer_without_inventing_promotion_semantics():
     assert "discount_text" not in record
 
 
-def test_maps_explicit_previous_current_price_and_promotion_text_only():
+def test_maps_explicit_previous_current_price_without_reclassifying_unit_price():
     record = _records()[2]
 
     assert record["price"] == 7.59
-    assert record["reference_price"] == 9.49
     assert record["base_price_text"] == "9,49 €"
+    assert "reference_price" not in record
     assert record["discount_text"] == "Sconto extra App -20%"
     assert "promotion_type" not in record
     assert "requires_loyalty" not in record
@@ -115,7 +115,8 @@ def test_fixture_to_evidence_projection_is_supported_and_validation_fails_closed
     assert evidence["retailer"] == "despar"
     assert evidence["product_name"] == source_record["product_name"]
     assert evidence["price"] == 7.59
-    assert evidence["reference_price"] == 9.49
+    assert "reference_price" not in evidence
+    assert evidence["base_price_text"] == "9,49 €"
     assert evidence["promotion"] == {"discount_text": "Sconto extra App -20%"}
     assert evidence["validity"] == {
         "from": "2026-08-13",
@@ -130,7 +131,6 @@ def test_fixture_to_evidence_projection_is_supported_and_validation_fails_closed
         "product_name": evidence["product_name"],
         "price": evidence["price"],
         "currency": evidence["currency"],
-        "reference_price": evidence["reference_price"],
         "packaging_text": evidence["packaging_text"],
         "base_price_text": evidence["base_price_text"],
         "promotion": deepcopy(evidence["promotion"]),

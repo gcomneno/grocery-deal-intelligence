@@ -24,3 +24,6 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -q
+
+      - name: Run deterministic road test
+        run: python -m grocery_deal_intelligence.road_test

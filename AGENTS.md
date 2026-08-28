@@ -1,0 +1,195 @@
+# AGENTS.md
+
+## Purpose
+
+Grocery Deal Intelligence is a verification-first laboratory for collecting,
+normalizing, validating, admitting, and comparing grocery offers across retailers.
+
+Prefer explicit evidence, deterministic behavior, and fail-closed outcomes over
+apparent completeness.
+
+## Core authority model
+
+Canonical data is authorized only by deterministic application logic.
+
+AI output is data, never authority.
+
+Keep these layers distinct:
+
+    source record
+        -> source evidence
+        -> candidate / proposal
+        -> claim verification
+        -> structural validation
+        -> canonical admission
+        -> canonical | null
+
+No layer may silently collapse the authority of another.
+
+## Deterministic ingestion
+
+The first-class deterministic ingestion path is preferred whenever retailer
+source records already contain sufficient explicit evidence.
+
+Single-record ingestion owns per-record authority:
+
+    ingest_deterministic_source_record(...)
+
+Batch ingestion is orchestration only:
+
+    ingest_deterministic_source_records(...)
+
+The batch layer may aggregate observable outcomes, but it must never become a
+new authority.
+
+It must not:
+
+- repair one record using another;
+- borrow evidence across records;
+- synthesize missing facts;
+- convert aggregate confidence into per-record authority;
+- hide rejected or ineligible records to improve success counts.
+
+Rejected records remain observable with diagnostics and provenance.
+
+## Fail-closed policy
+
+When evidence is insufficient for canonical structure or admission, the correct
+result is rejection or `canonical = None`.
+
+Do not weaken canonical schema requirements, structural validation,
+source-evidence verification, or canonical admission rules merely to increase
+the number of admitted records.
+
+A lower canonical count is acceptable when it is more truthful.
+
+## Evidence and provenance
+
+Every canonical claim must remain traceable to deterministic source evidence.
+
+Preserve retailer identity, locality evidence, campaign identity where
+available, capture metadata, fixture identity, verification results, and
+rejection reasons.
+
+Do not invent missing facts.
+
+Do not combine independently observed facts into synthetic provenance unless
+the source itself establishes their relationship.
+
+## Retailer boundaries
+
+Retailer-specific logic belongs in retailer adapters and source-evidence
+projection boundaries.
+
+Canonical consumers must remain retailer-neutral.
+
+Do not add retailer-specific exceptions to generic canonical validation,
+admission, querying, filtering, aggregation, profiling, or batch orchestration.
+
+If a retailer cannot satisfy the canonical contract from available evidence,
+preserve the evidence and fail closed.
+
+## Source discovery
+
+The current investigated retailer source-discovery phase is complete.
+
+Do not resume general retailer hunting as incidental work.
+
+New source investigation requires an explicit scoped decision.
+
+## Fixtures and reproducibility
+
+Committed real-source fixtures are evidence artifacts.
+
+When a fixture has an expected SHA-256 identity, verify that identity before
+using it as trusted deterministic input.
+
+Do not rewrite fixtures to make parsers or admission succeed.
+
+## Deterministic road test
+
+The deterministic multi-retailer road test is a repository acceptance boundary:
+
+    python -m grocery_deal_intelligence.road_test
+
+It must exercise reusable core behavior rather than reimplement verification,
+validation, admission, or batch-summary semantics.
+
+Expected fail-closed retailer behavior is a successful outcome when it matches
+the evidence contract.
+
+## AI boundary
+
+AI-assisted ingestion is optional and advisory.
+
+The deterministic core must remain usable and testable without Ollama,
+GiadaWare AI runtime, network access, or a model installation.
+
+AI proposals remain subject to deterministic evidence verification, structural
+validation, projection where applicable, and canonical admission.
+
+Never add AI-generated authority or automatic AI repair of rejected canonical
+data.
+
+## Network boundary
+
+Deterministic interpretation of captured evidence must not require network
+access.
+
+Network acquisition is separate from deterministic ingestion and admission.
+
+## Change discipline
+
+Before starting repository work:
+
+1. read this `AGENTS.md`;
+2. inspect current branch, HEAD, and working tree;
+3. inspect relevant issue and PR state;
+4. identify the exact authority boundary affected.
+
+Keep changes narrowly scoped.
+
+Prefer:
+
+    one issue -> one branch -> one reviewed PR
+        -> verified merge -> branch cleanup
+
+## Verification discipline
+
+For behavioral changes, verify the relevant focused tests and full test suite.
+
+Run the deterministic road test when deterministic ingestion is affected.
+
+Preserve source immutability, deterministic ordering, and fail-closed behavior.
+
+Do not weaken meaningful contract tests merely to make CI pass.
+
+## Documentation discipline
+
+Documentation must describe current implemented architecture rather than an
+obsolete historical phase.
+
+Historical experiments may remain documented as evidence, but must not be
+presented as the current preferred path.
+
+## Historical experiments and stale branches
+
+Before continuing work from an old branch, classify it explicitly as active
+work, historical evidence, superseded work, or rejected evidence.
+
+Do not merge stale experimental work merely because its branch still exists.
+
+## Canonical design principle
+
+When completeness and verifiability conflict, choose verifiability.
+
+The repository should always make it possible to determine:
+
+- what the source actually proved;
+- what deterministic code derived;
+- what was rejected;
+- why it was rejected;
+- what was finally admitted as canonical.
+
+Those questions must remain answerable without trusting AI output, hidden state,
+or undocumented heuristics.

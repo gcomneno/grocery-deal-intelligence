@@ -2,18 +2,16 @@ from __future__ import annotations
 
 import argparse
 import json
-from collections import Counter
 from pathlib import Path
 from typing import Any, Callable
 
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
-from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
+from grocery_deal_intelligence.ingestion import ingest_deterministic_source_records
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
     UNVERIFIABLE,
-    summarize_claim_verification,
 )
 
 
@@ -73,49 +71,37 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
         observed_at=_OBSERVED_AT,
         expected_sha256=spec["sha256"],
     )
-
-    claim_totals = Counter({SUPPORTED: 0, CONTRADICTED: 0, UNVERIFIABLE: 0})
-    reason_totals: Counter[str] = Counter()
-    structurally_valid = 0
-    eligible = 0
-
-    for source_record in records:
-        ingestion = ingest_deterministic_source_record(
-            source_record,
-            retailer=spec["name"],
-        )
-        verification = ingestion["claim_verification"]
-        claim_totals.update(summarize_claim_verification(verification))
-
-        is_structurally_valid = ingestion["validated"] is True
-        structurally_valid += int(is_structurally_valid)
-
-        admission = ingestion["admission"]
-        eligible += int(admission["eligible"] is True)
-        reason_totals.update(reason["code"] for reason in admission["reasons"])
+    batch = ingest_deterministic_source_records(
+        records,
+        retailer=spec["name"],
+    )
+    summary = batch["summary"]
 
     invariant_results = {
         "fixture_read_only": text == original,
         "all_claims_supported": (
-            claim_totals[SUPPORTED] > 0
-            and claim_totals[CONTRADICTED] == 0
-            and claim_totals[UNVERIFIABLE] == 0
+            summary["claims"][SUPPORTED] > 0
+            and summary["claims"][CONTRADICTED] == 0
+            and summary["claims"][UNVERIFIABLE] == 0
         ),
+        "batch_preserves_all_records": len(batch["records"]) == len(records),
     }
 
     if spec["expectation"] == "eligible":
         invariant_results["expected_admission_behavior"] = (
             len(records) > 0
-            and structurally_valid == len(records)
-            and eligible == len(records)
-            and not reason_totals
+            and summary["structurally_valid"] == len(records)
+            and summary["admission_eligible"] == len(records)
+            and summary["canonical_records"] == len(records)
+            and not summary["rejection_reasons"]
         )
     elif spec["expectation"] == "fail_closed":
         invariant_results["expected_admission_behavior"] = (
             len(records) > 0
-            and structurally_valid == 0
-            and eligible == 0
-            and reason_totals["structural_invalid"] == len(records)
+            and summary["structurally_valid"] == 0
+            and summary["admission_eligible"] == 0
+            and summary["canonical_records"] == 0
+            and summary["rejection_reasons"].get("structural_invalid") == len(records)
         )
     else:
         raise ValueError(f"unknown road-test expectation: {spec['expectation']!r}")
@@ -123,15 +109,11 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
     return {
         "retailer": spec["name"],
         "fixture": str(fixture_path.relative_to(_REPO_ROOT)),
-        "offers_parsed": len(records),
-        "claims": {
-            SUPPORTED: claim_totals[SUPPORTED],
-            CONTRADICTED: claim_totals[CONTRADICTED],
-            UNVERIFIABLE: claim_totals[UNVERIFIABLE],
-        },
-        "structurally_valid": structurally_valid,
-        "admission_eligible": eligible,
-        "rejection_reasons": dict(sorted(reason_totals.items())),
+        "offers_parsed": summary["total_records"],
+        "claims": summary["claims"],
+        "structurally_valid": summary["structurally_valid"],
+        "admission_eligible": summary["admission_eligible"],
+        "rejection_reasons": summary["rejection_reasons"],
         "invariants": invariant_results,
         "pass": all(invariant_results.values()),
     }

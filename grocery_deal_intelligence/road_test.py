@@ -52,11 +52,16 @@ def run_road_test() -> dict[str, Any]:
         retailers.append(result)
         overall_pass = overall_pass and result["pass"]
 
+    unsupported_facts = sum(
+        retailer["claims"][CONTRADICTED] + retailer["claims"][UNVERIFIABLE]
+        for retailer in retailers
+    )
+
     return {
-        "pass": overall_pass,
+        "pass": overall_pass and unsupported_facts == 0,
         "network_required": False,
         "ai_required": False,
-        "unsupported_facts_invented": 0,
+        "unsupported_facts_invented": unsupported_facts,
         "retailers": retailers,
     }
 

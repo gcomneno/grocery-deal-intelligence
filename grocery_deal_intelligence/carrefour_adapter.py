@@ -58,8 +58,8 @@ def _adapt_offer(
         raise ValueError("Carrefour offer must contain price evidence")
 
     # The captured fixture preserves explicit source order:
-    # base price | current/promo price | unit/reference price.
-    # We only assign roles that are actually distinguishable from that evidence.
+    # base/original displayed price | current/promo price | unit price.
+    # Canonical reference_price is the normalized numeric form of the first value.
     if len(offer.price_texts) < 2:
         raise ValueError("Carrefour adapter requires explicit current price evidence")
 
@@ -95,10 +95,9 @@ def _adapt_offer(
         },
     }
 
-    if len(offer.price_texts) >= 3:
-        record["reference_price"] = _decimal_to_number(
-            _parse_euro_amount(offer.price_texts[2])
-        )
+    record["reference_price"] = _decimal_to_number(
+        _parse_euro_amount(base_price_text)
+    )
 
     if offer.discount_text is not None:
         record["discount_text"] = offer.discount_text

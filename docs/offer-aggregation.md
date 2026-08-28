@@ -46,6 +46,8 @@ Aggregation counts records for each distinct value of the selected dimension.
 
 For a direct canonical field, the group value is the canonical value itself.
 
+`reference_price` means an ordinary/original numeric comparison price for the current offer price; unit prices are a distinct concept.
+
 For optional-value presence dimensions:
 
 - `reference_price` is `present` when `reference_price` is not `null`;

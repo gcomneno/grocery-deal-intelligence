@@ -37,7 +37,7 @@ The adapter maps only source-supported facts:
 - caller-supplied observation timestamp;
 - verified fixture SHA-256 and campaign title.
 
-The previous/base price is deliberately preserved as `base_price_text`. It is **not** reclassified as canonical `reference_price`, because the captured fixture does not establish a unit/reference-price semantic.
+The previous/base price is deliberately preserved as `base_price_text`. It is **not** reclassified as canonical `reference_price`, because the captured fixture does not establish that text as an ordinary/original numeric comparison price.
 
 ## Deliberately not inferred
 
@@ -47,7 +47,7 @@ Therefore the adapter does not invent:
 
 - `promotion.type`;
 - `promotion.requires_loyalty`;
-- unit/reference price;
+- unsupported reference or unit prices;
 - missing prices;
 - missing identifiers;
 - locality outside the captured store context.

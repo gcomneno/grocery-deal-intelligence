@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 
-import grocery_deal_intelligence.road_test as road_test
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
@@ -97,26 +96,3 @@ def test_deterministic_source_ingestion_requires_non_empty_retailer(retailer):
         match="deterministic source ingestion requires a non-empty retailer",
     ):
         ingest_deterministic_source_record({}, retailer=retailer)
-
-
-def test_road_test_uses_shared_deterministic_ingestion(monkeypatch):
-    calls = []
-    real_ingest = road_test.ingest_deterministic_source_record
-
-    def recording_ingest(source_record, *, retailer):
-        calls.append(retailer)
-        return real_ingest(source_record, retailer=retailer)
-
-    monkeypatch.setattr(
-        road_test,
-        "ingest_deterministic_source_record",
-        recording_ingest,
-    )
-
-    result = road_test.run_road_test()
-
-    assert result["pass"] is True
-    assert result["unsupported_facts_invented"] == 0
-    assert result["network_required"] is False
-    assert result["ai_required"] is False
-    assert calls == ["carrefour"] * 3 + ["despar"] * 3

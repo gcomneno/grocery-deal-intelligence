@@ -1,10 +1,15 @@
+from collections import Counter
 from copy import deepcopy
 
 from grocery_deal_intelligence.admission import evaluate_canonical_admission
 from grocery_deal_intelligence.proposal_projection import project_proposal_to_canonical
 from grocery_deal_intelligence.proposal_validation import validate_proposal
 from grocery_deal_intelligence.source_evidence import (
+    CONTRADICTED,
+    SUPPORTED,
+    UNVERIFIABLE,
     project_source_evidence,
+    summarize_claim_verification,
     verify_candidate_claims,
 )
 from grocery_deal_intelligence.validation import validate_offers
@@ -66,6 +71,63 @@ def ingest_deterministic_source_record(source_record, *, retailer):
         "claim_verification": deepcopy(claim_verification),
         "admission": deepcopy(admission_decision),
         "canonical": deepcopy(candidate) if admission_decision["eligible"] else None,
+    }
+
+
+def ingest_deterministic_source_records(source_records, *, retailer):
+    """Ingest deterministic retailer source records without adding authority.
+
+    The batch layer preserves order and delegates every record to
+    ``ingest_deterministic_source_record``. It aggregates observable outcomes but
+    never repairs, completes, drops, or cross-pollinates record evidence.
+    """
+    if not isinstance(retailer, str) or not retailer.strip():
+        raise ValueError("deterministic source ingestion requires a non-empty retailer")
+
+    results = []
+    claim_totals = Counter({SUPPORTED: 0, CONTRADICTED: 0, UNVERIFIABLE: 0})
+    rejection_reasons = Counter()
+    structurally_valid = 0
+    admission_eligible = 0
+    canonical_records = 0
+
+    for source_record in source_records:
+        result = ingest_deterministic_source_record(
+            source_record,
+            retailer=retailer,
+        )
+        results.append(deepcopy(result))
+
+        structurally_valid += int(result["validated"] is True)
+        admission_eligible += int(result["admission"]["eligible"] is True)
+        canonical_records += int(result["canonical"] is not None)
+        claim_totals.update(
+            summarize_claim_verification(result["claim_verification"])
+        )
+        rejection_reasons.update(
+            reason["code"] for reason in result["admission"]["reasons"]
+        )
+
+    total_records = len(results)
+    return {
+        "retailer": retailer,
+        "records": results,
+        "summary": {
+            "total_records": total_records,
+            "structurally_valid": structurally_valid,
+            "structurally_invalid": total_records - structurally_valid,
+            "admission_eligible": admission_eligible,
+            "admission_ineligible": total_records - admission_eligible,
+            "canonical_records": canonical_records,
+            "claims": {
+                SUPPORTED: claim_totals[SUPPORTED],
+                CONTRADICTED: claim_totals[CONTRADICTED],
+                UNVERIFIABLE: claim_totals[UNVERIFIABLE],
+            },
+            "rejection_reasons": dict(sorted(rejection_reasons.items())),
+        },
+        "ai_used": False,
+        "network_required": False,
     }
 
 

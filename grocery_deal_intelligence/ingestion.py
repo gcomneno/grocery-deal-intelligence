@@ -10,6 +10,65 @@ from grocery_deal_intelligence.source_evidence import (
 from grocery_deal_intelligence.validation import validate_offers
 
 
+_DETERMINISTIC_CANDIDATE_FIELDS = (
+    "retailer",
+    "product_name",
+    "price",
+    "currency",
+    "reference_price",
+    "packaging_text",
+    "base_price_text",
+    "promotion",
+    "validity",
+    "locality",
+    "verification",
+    "provenance",
+)
+
+
+def _candidate_from_source_evidence(source_evidence):
+    candidate = {}
+    for key in _DETERMINISTIC_CANDIDATE_FIELDS:
+        if key in source_evidence:
+            candidate[key] = deepcopy(source_evidence[key])
+    return candidate
+
+
+def ingest_deterministic_source_record(source_record, *, retailer):
+    """Ingest one deterministic retailer source record through canonical admission.
+
+    This path is AI-free. It projects deterministic source evidence, constructs a
+    candidate only from evidence fields, verifies every candidate claim, runs
+    canonical structural validation, and applies canonical admission without
+    collapsing the intermediate authority layers.
+    """
+    if not isinstance(retailer, str) or not retailer.strip():
+        raise ValueError("deterministic source ingestion requires a non-empty retailer")
+
+    source = deepcopy(source_record)
+    source_evidence = project_source_evidence(source, retailer=retailer)
+    candidate = _candidate_from_source_evidence(source_evidence)
+
+    claim_verification = verify_candidate_claims(candidate, source_evidence)
+    structural_validation = validate_offers([candidate])
+    structurally_valid = bool(structural_validation["valid"])
+    admission_decision = evaluate_canonical_admission(
+        structurally_valid=structurally_valid,
+        claim_verification=claim_verification,
+    )
+
+    return {
+        "candidate": deepcopy(candidate),
+        "ai_used": False,
+        "validated": structurally_valid,
+        "structural_validation": deepcopy(structural_validation),
+        "source_evidence": deepcopy(source_evidence),
+        "claim_verification": deepcopy(claim_verification),
+        "admission": deepcopy(admission_decision),
+        "canonical": deepcopy(candidate) if admission_decision["eligible"] else None,
+    }
+
+
 def ingest_offer(
     source_record,
     *,

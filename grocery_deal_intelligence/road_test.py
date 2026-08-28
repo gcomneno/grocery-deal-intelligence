@@ -3,22 +3,18 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter
-from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable
 
-from grocery_deal_intelligence.admission import evaluate_canonical_admission
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
+from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
     UNVERIFIABLE,
-    project_source_evidence,
     summarize_claim_verification,
-    verify_candidate_claims,
 )
-from grocery_deal_intelligence.validation import validate_offers
 
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -84,19 +80,17 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
     eligible = 0
 
     for source_record in records:
-        evidence = project_source_evidence(source_record, retailer=spec["name"])
-        candidate = _candidate_from_evidence(evidence)
-        verification = verify_candidate_claims(candidate, evidence)
+        ingestion = ingest_deterministic_source_record(
+            source_record,
+            retailer=spec["name"],
+        )
+        verification = ingestion["claim_verification"]
         claim_totals.update(summarize_claim_verification(verification))
 
-        structural = validate_offers([candidate])
-        is_structurally_valid = structural["valid"] is True
+        is_structurally_valid = ingestion["validated"] is True
         structurally_valid += int(is_structurally_valid)
 
-        admission = evaluate_canonical_admission(
-            structurally_valid=is_structurally_valid,
-            claim_verification=verification,
-        )
+        admission = ingestion["admission"]
         eligible += int(admission["eligible"] is True)
         reason_totals.update(reason["code"] for reason in admission["reasons"])
 
@@ -141,27 +135,6 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
         "invariants": invariant_results,
         "pass": all(invariant_results.values()),
     }
-
-
-def _candidate_from_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
-    candidate: dict[str, Any] = {}
-    for key in (
-        "retailer",
-        "product_name",
-        "price",
-        "currency",
-        "reference_price",
-        "packaging_text",
-        "base_price_text",
-        "promotion",
-        "validity",
-        "locality",
-        "verification",
-        "provenance",
-    ):
-        if key in evidence:
-            candidate[key] = deepcopy(evidence[key])
-    return candidate
 
 
 def render_report(result: dict[str, Any]) -> str:

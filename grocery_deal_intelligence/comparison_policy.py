@@ -413,14 +413,18 @@ def _rule_path(rule_id: str, rule: Mapping[str, Any]) -> tuple[str, ...]:
     return tuple(raw_path)
 
 
+def _side_is_supported(side: Mapping[str, Any]) -> bool:
+    return (
+        side.get("status") == SUPPORTED
+        and "proposed_value" in side
+        and "evidence_value" in side
+        and side["proposed_value"] == side["evidence_value"]
+    )
+
+
 def _bilaterally_supported(item: Mapping[str, Any]) -> bool:
     left = item.get("left")
     right = item.get("right")
     if not isinstance(left, Mapping) or not isinstance(right, Mapping):
         return False
-    return (
-        left.get("status") == SUPPORTED
-        and right.get("status") == SUPPORTED
-        and "evidence_value" in left
-        and "evidence_value" in right
-    )
+    return _side_is_supported(left) and _side_is_supported(right)

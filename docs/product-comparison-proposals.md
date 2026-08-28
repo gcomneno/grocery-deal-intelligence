@@ -18,7 +18,9 @@ already-admitted canonical offer B
             ↓
  bilateral fact verification
             ↓
- relationship evidence policy
+ resolved comparison policy
+            ↓
+ relationship evaluation
             ↓
    comparison admission
             ↓
@@ -86,49 +88,65 @@ bilaterally supported fact
 relationship evidence
 ```
 
-The current v0.1 contract does not yet define a deterministic semantic policy
-that makes canonical fields sufficient to authorize `same_product` or
-`comparable`.
+The comparison-policy mechanism now exists and can deterministically decide
+which already-verified product facts matter for comparability. Built-in defaults
+are explicit, versioned, inspectable, and overridable rather than hidden
+semantic assumptions.
 
-Consequently, even a stronger proposal whose supplied facts are all
-bilaterally supported is currently admitted only as `unknown`, with an explicit
-`relationship_evidence_policy_unavailable` diagnostic.
+However, the current canonical grocery-offer schema still does not expose
+normalized product-family or quantity facts sufficient to make those policies
+operational over real canonical offers in the general case.
 
-This is intentional fail-closed behavior rather than an implementation gap
-being hidden as apparent certainty.
+Consequently, the existing v0.1 proposal/admission path remains fail-closed to
+`unknown` whenever the required verified product facts do not exist. This is
+intentional rather than an implementation gap hidden as apparent certainty.
 
-## Future policy boundary
+## Comparison policy boundary
 
-A later issue may introduce deterministic relationship-evidence rules once GDI
-has sufficiently explicit product evidence.
+Comparison policies are documented separately in
+[Overridable comparison policies](comparison-policies.md).
 
-Such evidence may eventually include independently verified product identity or
-comparison attributes, but those facts must not be invented merely to improve
-matching rates.
+They resolve in increasing specificity:
 
-A future relationship policy will be responsible for deciding whether verified
-facts are semantically sufficient for:
+```text
+built-in global default
+    -> built-in category default
+    -> user category override
+    -> user product-family override
+    -> user specific-product override
+```
 
-- `same_product`;
-- `comparable`.
+Policy rules operate only on verified facts. They cannot create missing facts or
+turn heuristic category assumptions into source evidence.
 
-That policy remains distinct from quantity normalization, economic comparison,
-ranking, and recommendation.
+This keeps three questions separate:
+
+1. What facts were actually verified?
+2. Which verified facts does the effective policy require, ignore, prefer, or
+   exclude?
+3. Does that explicit policy authorize comparability?
+
+`same_product` remains a stronger and separate relationship from `comparable`.
+The comparison-policy mechanism introduced for pragmatic comparability does not
+silently authorize product identity.
 
 ## AI boundary
 
 The core comparison path requires neither AI nor network access.
 
-A future GiadaWare AI capability may propose structured comparison data, but AI
-output remains proposal data.
+A future GiadaWare AI capability may propose structured comparison data,
+category assignments, or candidate policy templates, but AI output remains
+proposal data.
 
 AI may help answer:
 
-> Which relationship and facts should GDI inspect?
+> Which relationship, category, or facts should GDI inspect?
 
 AI may not answer authoritatively:
 
 > Are these products proven to be the same or comparable?
+
+Nor may AI silently choose or alter the effective user comparison policy.
 
 That authority remains deterministic and evidence-grounded inside GDI.
 
@@ -138,6 +156,8 @@ In particular:
 same_product != comparable != cheaper != recommended
 
 proposal verified != relationship verified
+
+heuristic default != evidence
 
 AI proposal != comparison authority
 ```
@@ -150,6 +170,7 @@ This layer does not implement:
 - fuzzy matching;
 - embeddings;
 - product catalogs;
+- normalized product-family extraction;
 - quantity or unit normalization;
 - unit-price calculation;
 - price normalization;

@@ -3,8 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from copy import deepcopy
 from decimal import Decimal, InvalidOperation
+from fractions import Fraction
 from typing import Any
 
+from .comparison import COMPARABLE
 from .source_evidence import SUPPORTED
 
 
@@ -16,6 +18,7 @@ CURRENCY_UNSUPPORTED = "currency_unsupported"
 QUANTITY_UNAVAILABLE = "normalized_quantity_unavailable"
 QUANTITY_AMBIGUOUS = "normalized_quantity_ambiguous"
 QUANTITY_CLAIM_MISMATCH = "normalized_quantity_claim_mismatch"
+COMPARISON_NOT_ADMITTED = "comparison_not_admitted"
 
 _RULES = {
     "weight_g": {
@@ -39,32 +42,34 @@ def normalize_economic_basis(
     offer: Mapping[str, Any],
     attributes: Mapping[str, Any],
     *,
-    comparable: bool,
+    comparison_decision: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Derive an exact comparable-price basis without granting comparability.
 
-    The caller must supply an already-admitted comparability decision. Quantity
-    authority is consumed only when the exact current normalized value remains
-    bound to a supported #136 claim. The function never reparses source text.
+    The caller supplies the already-admitted comparison-policy result rather than
+    a free boolean. Quantity authority is consumed only when the exact current
+    normalized value remains bound to a supported #136 claim. Source text is
+    never reparsed here.
     """
     if not isinstance(offer, Mapping):
         raise TypeError("offer must be a mapping")
     if not isinstance(attributes, Mapping):
         raise TypeError("attributes must be a mapping")
-    if not isinstance(comparable, bool):
-        raise TypeError("comparable must be a bool")
+    if not isinstance(comparison_decision, Mapping):
+        raise TypeError("comparison_decision must be a mapping")
 
     offer_copy = deepcopy(dict(offer))
     attributes_copy = deepcopy(dict(attributes))
+    decision_copy = deepcopy(dict(comparison_decision))
 
-    if not comparable:
-        return _unknown("comparison_not_admitted")
+    if not _comparison_is_admitted(decision_copy):
+        return _unknown(COMPARISON_NOT_ADMITTED)
 
     price = _decimal_input(offer_copy.get("price"))
     if price is None:
         code = PRICE_UNAVAILABLE if "price" not in offer_copy else PRICE_INVALID
         return _unknown(code)
-    if price < 0:
+    if not price.is_finite() or price < 0:
         return _unknown(PRICE_INVALID)
 
     currency = offer_copy.get("currency")
@@ -85,11 +90,15 @@ def normalize_economic_basis(
             continue
         quantity = _decimal_input(values.get(key))
         claim = supported_claims.get((key,))
-        if quantity is None or quantity <= 0 or claim is None:
+        if quantity is None or not quantity.is_finite() or quantity <= 0 or claim is None:
             mismatched_paths.append([key])
             continue
         claim_value = _decimal_input(claim.get("normalized_value"))
-        if claim_value is None or claim_value != quantity:
+        if (
+            claim_value is None
+            or not claim_value.is_finite()
+            or claim_value != quantity
+        ):
             mismatched_paths.append([key])
             continue
         candidates.append((key, quantity, claim))
@@ -103,7 +112,7 @@ def normalize_economic_basis(
 
     key, quantity, claim = candidates[0]
     rule = _RULES[key]
-    comparable_price = price * Decimal("1000") / quantity
+    exact_ratio = Fraction(price) * 1000 / Fraction(quantity)
 
     return {
         "version": "0.1",
@@ -127,9 +136,12 @@ def normalize_economic_basis(
                 "dimension": rule["dimension"],
             },
             "comparable_price": {
-                "value": _decimal_text(comparable_price),
                 "currency": "EUR",
                 "per_unit": rule["basis_unit"],
+                "exact_ratio": {
+                    "numerator": str(exact_ratio.numerator),
+                    "denominator": str(exact_ratio.denominator),
+                },
             },
             "derivation": {
                 "rule_id": rule["rule_id"],
@@ -138,6 +150,30 @@ def normalize_economic_basis(
         },
         "reasons": [],
     }
+
+
+def _comparison_is_admitted(decision: Mapping[str, Any]) -> bool:
+    if decision.get("relationship") != COMPARABLE:
+        return False
+    if decision.get("eligible") is not True:
+        return False
+    reasons = decision.get("reasons")
+    evaluated_rules = decision.get("evaluated_rules")
+    policy = decision.get("policy")
+    if reasons != [] or not isinstance(evaluated_rules, list) or not isinstance(policy, Mapping):
+        return False
+
+    authority_seen = False
+    for item in evaluated_rules:
+        if not isinstance(item, Mapping):
+            return False
+        effect = item.get("effect")
+        if effect not in {"require", "exclude"}:
+            continue
+        authority_seen = True
+        if item.get("outcome") != "satisfied":
+            return False
+    return authority_seen
 
 
 def _supported_claims_by_path(claims: list[Any]) -> dict[tuple[str, ...], dict[str, Any]]:
@@ -157,9 +193,11 @@ def _supported_claims_by_path(claims: list[Any]) -> dict[tuple[str, ...], dict[s
         if path in conflicted:
             continue
         candidate = deepcopy(dict(claim))
-        if path in supported and supported[path].get("normalized_value") != candidate.get(
-            "normalized_value"
-        ):
+        if "normalized_value" not in candidate:
+            supported.pop(path, None)
+            conflicted.add(path)
+            continue
+        if path in supported and supported[path]["normalized_value"] != candidate["normalized_value"]:
             supported.pop(path, None)
             conflicted.add(path)
             continue

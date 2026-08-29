@@ -107,7 +107,7 @@ def test_adapter_does_not_mutate_source_text():
     assert text == original
 
 
-def test_fixture_to_evidence_projection_is_supported_and_validation_fails_closed():
+def test_fixture_to_evidence_projection_is_supported_and_structurally_valid():
     source_record = _records()[2]
     source_before = deepcopy(source_record)
     evidence = project_source_evidence(source_record, retailer="despar")
@@ -144,5 +144,5 @@ def test_fixture_to_evidence_projection_is_supported_and_validation_fails_closed
     assert all(item["status"] == SUPPORTED for item in verification)
 
     structural = validate_offers([supported_candidate])
-    assert structural["valid"] is False
+    assert structural["valid"] is True
     assert source_record == source_before

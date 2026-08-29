@@ -31,7 +31,7 @@ _RETAILERS: tuple[dict[str, Any], ...] = (
         "fixture": _REPO_ROOT / "fixtures/despar/store-191-flyer-2026-08-13.txt",
         "sha256": "54607c3e32d3984d68b6889c522cd17486c31361a8e781f1447c5abe24edaf17",
         "adapter": adapt_despar_fixture_text,
-        "expectation": "fail_closed",
+        "expectation": "eligible",
     },
 )
 

@@ -9,6 +9,7 @@ from typing import Any, Callable
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
+from grocery_deal_intelligence.product_attributes import normalize_product_attributes
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
@@ -39,8 +40,7 @@ _SCENARIO: tuple[dict[str, Any], ...] = (
     },
 )
 
-_DOWNSTREAM_STAGES = (
-    "normalized_attributes",
+_AFTER_ATTRIBUTES = (
     "semantic_comparability",
     "economic_normalization",
     "price_comparison",
@@ -86,55 +86,87 @@ def run_business_road_test() -> dict[str, Any]:
         },
     ]
 
-    stopping_boundary = None
+    stopping_boundary: str
+    final = "unknown"
+
     if not source_pass:
         stopping_boundary = "source_evidence"
+        stages.extend(_not_reached(stage_id) for stage_id in (
+            "normalized_attributes",
+            *_AFTER_ATTRIBUTES,
+        ))
     elif not admission_pass:
         stopping_boundary = "canonical_admission"
-
-    if stopping_boundary is not None:
-        stages.extend(
-            {
-                "id": stage_id,
-                "reached": False,
-                "status": "not_reached",
-                "reason": "upstream_authority_unavailable",
-            }
-            for stage_id in _DOWNSTREAM_STAGES
-        )
-        final = "unknown"
+        stages.extend(_not_reached(stage_id) for stage_id in (
+            "normalized_attributes",
+            *_AFTER_ATTRIBUTES,
+        ))
     else:
-        # This initial scenario is intentionally bounded by current repository
-        # authority. Reaching beyond canonical admission would require composing
-        # additional verified inputs rather than fabricating them here.
-        stages.extend(
-            {
-                "id": stage_id,
-                "reached": False,
-                "status": "not_reached",
-                "reason": "scenario_not_yet_authorized_for_stage",
-            }
-            for stage_id in _DOWNSTREAM_STAGES
+        attributes_pass = all(
+            offer["normalized_attributes"]["status"] == "pass" for offer in offers
         )
-        stopping_boundary = "normalized_attributes"
-        final = "unknown"
+        stages.append(
+            {
+                "id": "normalized_attributes",
+                "reached": True,
+                "status": "pass" if attributes_pass else "fail_closed",
+                "sides": {
+                    offer["retailer"]: offer["normalized_attributes"]["status"]
+                    for offer in offers
+                },
+                "reasons": {
+                    offer["retailer"]: deepcopy(
+                        offer["normalized_attributes"]["reasons"]
+                    )
+                    for offer in offers
+                    if offer["normalized_attributes"]["reasons"]
+                },
+            }
+        )
+        if not attributes_pass:
+            stopping_boundary = "normalized_attributes"
+            stages.extend(_not_reached(stage_id) for stage_id in _AFTER_ATTRIBUTES)
+        else:
+            stopping_boundary = "semantic_comparability"
+            stages.extend(
+                {
+                    "id": stage_id,
+                    "reached": False,
+                    "status": "not_reached",
+                    "reason": "scenario_not_yet_authorized_for_stage",
+                }
+                for stage_id in _AFTER_ATTRIBUTES
+            )
 
-    expected_stop = stopping_boundary == "canonical_admission"
-    expected_despar_rejection = any(
-        reason.get("code") == "structural_invalid"
+    carrefour_attributes = next(
+        offer["normalized_attributes"]
+        for offer in offers
+        if offer["retailer"] == "carrefour"
+    )
+    despar_attributes = next(
+        offer["normalized_attributes"]
         for offer in offers
         if offer["retailer"] == "despar"
-        for reason in offer["canonical_admission"]["reasons"]
     )
-    no_rejected_candidate_leak = all(
-        stage["reached"] is False for stage in stages[2:]
+    expected_quantity_stop = (
+        stopping_boundary == "normalized_attributes"
+        and carrefour_attributes["status"] == "fail_closed"
+        and any(
+            reason.get("code") == "quantity_evidence_unavailable"
+            for reason in carrefour_attributes["reasons"]
+        )
+        and despar_attributes["status"] == "pass"
+        and despar_attributes["values"].get("volume_ml") == 500
+    )
+    downstream_not_reached = all(
+        stage["reached"] is False for stage in stages if stage["id"] in _AFTER_ATTRIBUTES
     )
 
     return {
         "pass": source_pass
-        and expected_stop
-        and expected_despar_rejection
-        and no_rejected_candidate_leak,
+        and admission_pass
+        and expected_quantity_stop
+        and downstream_not_reached,
         "question": "Can GDI compare Raffo Carrefour with Pedavena Despar?",
         "final": final,
         "authorized_stopping_boundary": stopping_boundary,
@@ -142,6 +174,15 @@ def run_business_road_test() -> dict[str, Any]:
         "ai_required": False,
         "offers": offers,
         "stages": stages,
+    }
+
+
+def _not_reached(stage_id: str) -> dict[str, Any]:
+    return {
+        "id": stage_id,
+        "reached": False,
+        "status": "not_reached",
+        "reason": "upstream_authority_unavailable",
     }
 
 
@@ -176,7 +217,24 @@ def _run_offer(spec: dict[str, Any]) -> dict[str, Any]:
         and claim_counts[UNVERIFIABLE] == 0
         else "fail_closed"
     )
-    admission_status = "pass" if ingestion["canonical"] is not None else "fail_closed"
+    canonical = ingestion["canonical"]
+    admission_status = "pass" if canonical is not None else "fail_closed"
+
+    if canonical is None:
+        normalized_attributes = {
+            "reached": False,
+            "status": "not_reached",
+            "values": {},
+            "reasons": [],
+        }
+    else:
+        normalized = normalize_product_attributes(canonical)
+        normalized_attributes = {
+            "reached": True,
+            "status": "pass" if not normalized["reasons"] else "fail_closed",
+            "values": deepcopy(normalized["values"]),
+            "reasons": deepcopy(normalized["reasons"]),
+        }
 
     return {
         "retailer": spec["retailer"],
@@ -195,8 +253,9 @@ def _run_offer(spec: dict[str, Any]) -> dict[str, Any]:
             "status": admission_status,
             "eligible": ingestion["admission"]["eligible"],
             "reasons": deepcopy(ingestion["admission"]["reasons"]),
-            "canonical_present": ingestion["canonical"] is not None,
+            "canonical_present": canonical is not None,
         },
+        "normalized_attributes": normalized_attributes,
     }
 
 

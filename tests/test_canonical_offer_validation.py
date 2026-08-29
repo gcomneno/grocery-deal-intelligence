@@ -57,6 +57,62 @@ def test_valid_dataset_is_reported_as_valid():
     }
 
 
+def test_offer_without_promotion_is_valid_and_asserts_no_loyalty_default():
+    record = make_record()
+    del record["promotion"]
+
+    result = validate_offers([record])
+
+    assert result["valid"] is True
+    assert "promotion" not in record
+    assert "requires_loyalty" not in record
+
+
+@pytest.mark.parametrize(
+    "promotion",
+    [
+        {"discount_text": "-20%"},
+        {"type": "app offer"},
+        {"requires_loyalty": True},
+        {"requires_loyalty": False},
+    ],
+)
+def test_independent_non_empty_promotion_claims_are_valid(promotion):
+    record = make_record()
+    record["promotion"] = promotion
+
+    result = validate_offers([record])
+
+    assert result["valid"] is True
+
+
+def test_empty_promotion_object_is_invalid():
+    record = make_record()
+    record["promotion"] = {}
+
+    result = validate_offers([record])
+
+    assert result["valid"] is False
+    assert any(error["path"] == ["promotion"] for error in result["errors"])
+
+
+@pytest.mark.parametrize(
+    "promotion",
+    [
+        {"type": ""},
+        {"requires_loyalty": "false"},
+        {"discount_text": 20},
+    ],
+)
+def test_invalid_promotion_leaf_values_remain_rejected(promotion):
+    record = make_record()
+    record["promotion"] = promotion
+
+    result = validate_offers([record])
+
+    assert result["valid"] is False
+
+
 def test_empty_dataset_is_valid():
     result = validate_offers([])
 

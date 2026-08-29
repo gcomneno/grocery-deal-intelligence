@@ -41,6 +41,43 @@ structural contract.
 
 No additional semantic rules are introduced.
 
+## Promotion claim semantics
+
+`promotion` is an optional canonical claim group.
+
+Its absence means only:
+
+> no canonical promotion claim is asserted by this record
+
+It does not mean that the source proves there is no promotion, and it does not
+authorize a default such as `requires_loyalty = false`.
+
+When `promotion` is present it must be a non-empty object. Its supported leaf
+claims are independently optional:
+
+- `type`;
+- `requires_loyalty`;
+- `discount_text`.
+
+Structural validation checks only whether the asserted promotion shape conforms
+to the schema. It does not create missing promotion leaves or decide whether a
+claim has source authority. That evidence authority belongs to the preceding
+source-evidence and claim-verification layers.
+
+Therefore these are structurally distinct and valid shapes when their claims
+are independently evidence-backed:
+
+```text
+promotion omitted
+promotion = {discount_text: ...}
+promotion = {type: ...}
+promotion = {requires_loyalty: true}
+promotion = {type: ..., requires_loyalty: true, discount_text: ...}
+```
+
+An empty `promotion = {}` remains structurally invalid because it asserts a
+claim group without asserting any promotion claim.
+
 ## Result
 
 Validation produces a deterministic structured result containing:
@@ -98,7 +135,9 @@ The validation layer must not:
 - coerce types;
 - remove unknown properties;
 - rewrite invalid values;
-- infer missing information.
+- infer missing information;
+- synthesize promotion objects;
+- infer loyalty state from absent evidence.
 
 An invalid record remains unchanged.
 
@@ -122,14 +161,12 @@ Schema conformity must not be confused with real-world correctness.
 
 ## Architectural boundary
 
-Retailer adapters produce canonical data.
-
-The validation layer verifies canonical data.
+Retailer adapters and source-evidence projection establish candidate facts.
+The validation layer verifies canonical structure after claim verification.
 
 The validation layer must remain independent from:
 
-- Lidl adapter implementation;
-- Esselunga adapter implementation;
+- retailer-specific adapter implementation;
 - retailer-specific acquisition endpoints;
 - retailer-specific raw evidence;
 - campaign/store resolution logic;

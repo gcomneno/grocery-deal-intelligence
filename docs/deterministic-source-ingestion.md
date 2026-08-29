@@ -24,7 +24,7 @@ evaluate_canonical_admission()
 canonical or null
 ```
 
-The road test now verifies this core path instead of defining a second implementation of it.
+The road test verifies this core path instead of defining a second implementation of it.
 
 ## Contract
 
@@ -73,7 +73,7 @@ The deterministic candidate is copied only from the same evidence-projection fie
 - reference price when explicitly supported;
 - packaging text;
 - base-price text;
-- promotion evidence;
+- promotion claims when explicitly supported;
 - validity;
 - locality;
 - verification metadata;
@@ -81,13 +81,15 @@ The deterministic candidate is copied only from the same evidence-projection fie
 
 No missing canonical fact is synthesized to make structural validation pass.
 
+For promotion specifically, omission means only that no promotion claim is asserted. If a promotion object is present, every leaf that appears remains subject to the same source-evidence verification as every other canonical claim. No loyalty value or promotion type is defaulted.
+
 ## Real-fixture behavior
 
-The committed Carrefour and Despar fixtures intentionally exercise different outcomes through the same function.
+The committed Carrefour and Despar fixtures now both demonstrate successful deterministic admission through the same authority path, with different promotion evidence shapes.
 
 ### Carrefour
 
-The captured Carrefour fixture supplies enough evidence for its three records to remain:
+The captured Carrefour fixture supplies explicit promotion and loyalty evidence for its three records. They remain:
 
 ```text
 source-supported
@@ -98,16 +100,22 @@ canonical present
 
 ### Despar
 
-The captured Despar fixture supplies source-supported claims but does not prove all canonical promotion semantics required by the schema. Its three records therefore remain:
+The captured Despar fixture supplies enough evidence for all three records to be structurally complete without inventing missing promotion semantics:
+
+- Riso: promotion omitted;
+- Pedavena: promotion omitted;
+- Olio: only the supported `promotion.discount_text` claim is present.
+
+All three remain:
 
 ```text
 source-supported
-structurally invalid
-admission ineligible
-canonical null
+structurally valid
+admission eligible
+canonical present
 ```
 
-This is expected fail-closed behavior, not an ingestion failure.
+This does not turn absence of promotion evidence into evidence of no promotion. It only prevents unrelated missing promotion dimensions from blocking an otherwise evidence-complete shopper offer.
 
 ## Architectural invariant
 
@@ -123,13 +131,13 @@ Neither the road test nor any future caller should independently reconstruct or 
 
 ## Non-goals
 
-This change introduces no:
+This path introduces no:
 
-- schema modification;
 - admission-policy modification;
-- source-evidence projection change;
-- retailer-adapter semantic change;
+- retailer-specific source-evidence exception;
 - network fetching;
 - AI behavior;
 - source repair;
-- synthetic fact completion.
+- synthetic fact completion;
+- inferred `requires_loyalty = false`;
+- promotion taxonomy invented from retailer wording.

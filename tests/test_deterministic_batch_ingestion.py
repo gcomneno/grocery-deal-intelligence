@@ -32,13 +32,8 @@ def _despar_records():
     )
 
 
-def test_carrefour_batch_is_fully_admitted():
-    result = ingestion.ingest_deterministic_source_records(
-        _carrefour_records(),
-        retailer="carrefour",
-    )
+def _assert_fully_admitted(result):
     summary = result["summary"]
-
     assert summary["total_records"] == 3
     assert summary["structurally_valid"] == 3
     assert summary["structurally_invalid"] == 0
@@ -50,39 +45,33 @@ def test_carrefour_batch_is_fully_admitted():
     assert summary["claims"][CONTRADICTED] == 0
     assert summary["claims"][UNVERIFIABLE] == 0
     assert all(record["canonical"] is not None for record in result["records"])
+
+
+def test_carrefour_batch_is_fully_admitted():
+    result = ingestion.ingest_deterministic_source_records(
+        _carrefour_records(), retailer="carrefour"
+    )
+    _assert_fully_admitted(result)
     assert result["ai_used"] is False
     assert result["network_required"] is False
 
 
-def test_despar_batch_fails_closed_without_dropping_records():
+def test_despar_batch_is_fully_admitted_without_inventing_promotion_claims():
     result = ingestion.ingest_deterministic_source_records(
-        _despar_records(),
-        retailer="despar",
+        _despar_records(), retailer="despar"
     )
-    summary = result["summary"]
-
-    assert summary["total_records"] == 3
-    assert summary["structurally_valid"] == 0
-    assert summary["structurally_invalid"] == 3
-    assert summary["admission_eligible"] == 0
-    assert summary["admission_ineligible"] == 3
-    assert summary["canonical_records"] == 0
-    assert summary["rejection_reasons"] == {"structural_invalid": 3}
-    assert summary["claims"][SUPPORTED] > 0
-    assert summary["claims"][CONTRADICTED] == 0
-    assert summary["claims"][UNVERIFIABLE] == 0
-    assert len(result["records"]) == 3
-    assert all(record["canonical"] is None for record in result["records"])
+    _assert_fully_admitted(result)
+    canonical = [record["canonical"] for record in result["records"]]
+    assert "promotion" not in canonical[0]
+    assert "promotion" not in canonical[1]
+    assert canonical[2]["promotion"] == {"discount_text": "Sconto extra App -20%"}
 
 
 def test_batch_preserves_input_order_and_does_not_mutate_records():
     records = _carrefour_records()
     before = deepcopy(records)
 
-    result = ingestion.ingest_deterministic_source_records(
-        records,
-        retailer="carrefour",
-    )
+    result = ingestion.ingest_deterministic_source_records(records, retailer="carrefour")
 
     assert records == before
     assert [record["candidate"]["product_name"] for record in result["records"]] == [
@@ -108,16 +97,9 @@ def test_batch_delegates_each_record_to_single_record_ingestion(monkeypatch):
         calls.append((source_record["product_name"], retailer))
         return real_single(source_record, retailer=retailer)
 
-    monkeypatch.setattr(
-        ingestion,
-        "ingest_deterministic_source_record",
-        recording_single,
-    )
+    monkeypatch.setattr(ingestion, "ingest_deterministic_source_record", recording_single)
 
-    result = ingestion.ingest_deterministic_source_records(
-        records,
-        retailer="carrefour",
-    )
+    result = ingestion.ingest_deterministic_source_records(records, retailer="carrefour")
 
     assert result["summary"]["total_records"] == 3
     assert calls == [(record["product_name"], "carrefour") for record in records]
@@ -132,11 +114,7 @@ def test_road_test_uses_shared_batch_ingestion(monkeypatch):
         calls.append((retailer, len(records)))
         return real_batch(records, retailer=retailer)
 
-    monkeypatch.setattr(
-        road_test,
-        "ingest_deterministic_source_records",
-        recording_batch,
-    )
+    monkeypatch.setattr(road_test, "ingest_deterministic_source_records", recording_batch)
 
     result = road_test.run_road_test()
 

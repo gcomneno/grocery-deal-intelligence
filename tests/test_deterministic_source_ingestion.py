@@ -40,10 +40,7 @@ def test_carrefour_real_records_are_admitted_deterministically():
 
     assert len(records) == 3
     for source_record in records:
-        result = ingest_deterministic_source_record(
-            source_record,
-            retailer="carrefour",
-        )
+        result = ingest_deterministic_source_record(source_record, retailer="carrefour")
         summary = summarize_claim_verification(result["claim_verification"])
 
         assert result["ai_used"] is False
@@ -54,36 +51,40 @@ def test_carrefour_real_records_are_admitted_deterministically():
         assert summary[UNVERIFIABLE] == 0
 
 
-def test_despar_real_records_fail_closed_deterministically():
+def test_despar_real_records_are_admitted_without_synthetic_promotion_claims():
     records = _despar_records()
 
     assert len(records) == 3
-    for source_record in records:
-        result = ingest_deterministic_source_record(
-            source_record,
-            retailer="despar",
-        )
-        summary = summarize_claim_verification(result["claim_verification"])
+    results = [
+        ingest_deterministic_source_record(source_record, retailer="despar")
+        for source_record in records
+    ]
 
+    for result in results:
+        summary = summarize_claim_verification(result["claim_verification"])
         assert result["ai_used"] is False
-        assert result["validated"] is False
-        assert result["admission"]["eligible"] is False
-        assert result["canonical"] is None
-        assert [reason["code"] for reason in result["admission"]["reasons"]] == [
-            "structural_invalid"
-        ]
+        assert result["validated"] is True
+        assert result["admission"]["eligible"] is True
+        assert result["canonical"] == result["candidate"]
         assert summary[CONTRADICTED] == 0
         assert summary[UNVERIFIABLE] == 0
+
+    assert "promotion" not in results[0]["canonical"]
+    assert "promotion" not in results[1]["canonical"]
+    assert results[2]["canonical"]["promotion"] == {
+        "discount_text": "Sconto extra App -20%"
+    }
+    assert all(
+        "requires_loyalty" not in result["canonical"].get("promotion", {})
+        for result in results
+    )
 
 
 def test_deterministic_source_ingestion_does_not_mutate_caller_input():
     source_record = _carrefour_records()[0]
     before = deepcopy(source_record)
 
-    result = ingest_deterministic_source_record(
-        source_record,
-        retailer="carrefour",
-    )
+    result = ingest_deterministic_source_record(source_record, retailer="carrefour")
 
     assert source_record == before
     assert result["candidate"] is not source_record

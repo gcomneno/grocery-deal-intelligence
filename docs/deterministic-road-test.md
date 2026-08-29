@@ -43,7 +43,7 @@ fixtures/carrefour/store-5190-flyer-56879.txt
 SHA-256: 25f18f28c52ae114e68bb18f93ed78d777390b0d2ebf1a070e45d99a4b52d571
 ```
 
-The captured Carrefour rows contain enough explicit promotion and loyalty semantics to produce source-supported canonical candidates that are structurally valid and admission-eligible.
+The captured Carrefour rows contain explicit promotion and loyalty claims that remain source-supported, structurally valid, and admission-eligible.
 
 ### Despar
 
@@ -52,9 +52,15 @@ fixtures/despar/store-191-flyer-2026-08-13.txt
 SHA-256: 54607c3e32d3984d68b6889c522cd17486c31361a8e781f1447c5abe24edaf17
 ```
 
-The Despar rows remain fully source-supported at the claim level, but the captured evidence does not provide all canonical promotion fields required by Grocery Offer v0.1. Their structural rejection is therefore expected fail-closed behavior.
+The Despar rows contain source-supported shopper-offer facts but different amounts of promotion evidence. Grocery Offer v0.1 no longer requires a promotion claim when the source does not prove one, and it no longer requires unrelated promotion leaves when only one promotion claim is evidenced.
 
-The road test must not invent `promotion.type` or `promotion.requires_loyalty` merely to make Despar pass.
+Therefore:
+
+- Riso and Pedavena are admitted with no canonical `promotion` field;
+- Olio is admitted with only `promotion.discount_text = "Sconto extra App -20%"`;
+- no `promotion.type` or `promotion.requires_loyalty` value is synthesized.
+
+All three Despar records are now structurally valid and admission-eligible from their existing evidence.
 
 ## PASS semantics
 
@@ -63,12 +69,13 @@ A road-test `PASS` means all of the following remain true for the committed fixt
 - fixture identity is verified through the real adapters;
 - no candidate claim is contradicted or unverifiable against projected source evidence;
 - Carrefour rows remain structurally valid and admission-eligible;
-- Despar rows remain structurally rejected rather than repaired with unsupported facts;
+- Despar rows remain structurally valid and admission-eligible without synthetic promotion claims;
+- omitted promotion means no claim, never evidence of no promotion;
 - fixture text is not mutated;
 - no network access is required;
 - no AI capability is required.
 
-A Despar `0/N eligible` result is not itself a road-test failure. It is the expected consequence of the current source evidence boundary.
+Fail-closed semantics are preserved because admission still requires every asserted canonical leaf to be source-supported and structurally valid. The corrected schema removes an obsolete completeness requirement; it does not relax claim verification.
 
 ## CI smoke gate
 
@@ -82,4 +89,4 @@ This makes the real-fixture deterministic path a smoke gate in addition to the f
 
 ## Non-goals
 
-The road test does not fetch live retailer data, weaken the schema or admission policy, use AI, repair incomplete evidence, infer locality, or treat a rejected offer as an execution failure when rejection is the expected deterministic outcome.
+The road test does not fetch live retailer data, invent promotion or loyalty facts, weaken admission policy, use AI, repair evidence, infer locality, or add retailer-specific schema exceptions.

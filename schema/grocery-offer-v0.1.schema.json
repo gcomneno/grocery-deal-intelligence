@@ -10,7 +10,6 @@
     "product_name",
     "price",
     "currency",
-    "promotion",
     "validity",
     "locality",
     "verification",
@@ -57,11 +56,9 @@
     },
     "promotion": {
       "type": "object",
+      "minProperties": 1,
       "additionalProperties": false,
-      "required": [
-        "type",
-        "requires_loyalty"
-      ],
+      "description": "Optional evidence-backed promotion claims. Absence means no canonical promotion claim is asserted, not that no promotion exists.",
       "properties": {
         "type": {
           "type": "string",

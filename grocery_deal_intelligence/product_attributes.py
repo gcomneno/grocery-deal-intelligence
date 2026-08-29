@@ -51,6 +51,9 @@ _COMPOSITE_RE = re.compile(
     re.IGNORECASE,
 )
 _SIMPLE_RE = re.compile(rf"(?<!\w){_NUMBER}\s*{_UNIT}(?!\w)", re.IGNORECASE)
+_UNSUPPORTED_UNIT_RE = re.compile(
+    r"(?<!\w)\d+(?:[\.,]\d+)?\s*(?:mg|cl|dl)(?!\w)", re.IGNORECASE
+)
 _TOKEN_RE = re.compile(r"[a-z0-9]+", re.IGNORECASE)
 
 
@@ -113,12 +116,13 @@ def comparison_verification_from_attributes(
     """Project normalized attribute values into comparison-policy facts.
 
     This function grants no new authority. A side is marked supported only when
-    that exact normalized path already has a supported claim in its own result.
+    that exact normalized path and value already have a supported claim in its
+    own result.
     """
     left_copy = _validated_attribute_result(left)
     right_copy = _validated_attribute_result(right)
-    left_claims = _supported_claim_paths(left_copy)
-    right_claims = _supported_claim_paths(right_copy)
+    left_claims = _supported_claim_values(left_copy)
+    right_claims = _supported_claim_values(right_copy)
 
     results: list[dict[str, Any]] = []
     seen: set[tuple[str, ...]] = set()
@@ -234,10 +238,16 @@ def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
             parsed["raw_value"] = raw
             observations.append(parsed)
 
+    if unsupported_seen:
+        return {
+            "supported": False,
+            "reason": {"code": QUANTITY_UNSUPPORTED},
+        }
+
     if not observations:
         return {
             "supported": False,
-            "reason": {"code": QUANTITY_UNSUPPORTED if unsupported_seen else QUANTITY_UNAVAILABLE},
+            "reason": {"code": QUANTITY_UNAVAILABLE},
         }
 
     signatures = {_quantity_signature(item) for item in observations}
@@ -272,11 +282,23 @@ def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _parse_quantity_text(text: str) -> tuple[dict[str, Any] | None, bool]:
+    if _UNSUPPORTED_UNIT_RE.search(text):
+        return None, True
+
     composite_matches = list(_COMPOSITE_RE.finditer(text))
+    simple_matches = list(_SIMPLE_RE.finditer(text))
+
     if len(composite_matches) > 1:
         return None, False
     if composite_matches:
         match = composite_matches[0]
+        composite_span = match.span()
+        if any(
+            not (composite_span[0] <= simple.start() and simple.end() <= composite_span[1])
+            for simple in simple_matches
+        ):
+            return None, False
+
         count = int(match.group("count"))
         if count <= 0:
             return None, False
@@ -297,13 +319,11 @@ def _parse_quantity_text(text: str) -> tuple[dict[str, Any] | None, bool]:
             values["volume_ml"] = _json_number(total)
         return {"values": values, "normalization": "explicit_composite_quantity"}, False
 
-    matches = list(_SIMPLE_RE.finditer(text))
-    if not matches:
-        unsupported = bool(re.search(r"\d\s*(?:mg|cl|dl)\b", text, re.IGNORECASE))
-        return None, unsupported
+    if not simple_matches:
+        return None, False
 
     normalized_matches: list[tuple[str, Decimal, str]] = []
-    for match in matches:
+    for match in simple_matches:
         normalized = _normalize_measure(match.group("value"), match.group("unit"))
         if normalized is None:
             return None, True
@@ -367,7 +387,14 @@ def _nested_measure_signature(value: Any):
 
 
 def _quantity_claim_values(values: Mapping[str, Any]):
-    for key in ("quantity", "weight_g", "volume_ml", "pack_count", "unit_quantity", "total_quantity"):
+    for key in (
+        "quantity",
+        "weight_g",
+        "volume_ml",
+        "pack_count",
+        "unit_quantity",
+        "total_quantity",
+    ):
         if key in values:
             yield (key,), values[key]
 
@@ -383,25 +410,48 @@ def _validated_attribute_result(value: Mapping[str, Any]) -> dict[str, Any]:
     return result
 
 
-def _supported_claim_paths(result: Mapping[str, Any]) -> set[tuple[str, ...]]:
-    supported: set[tuple[str, ...]] = set()
+def _supported_claim_values(result: Mapping[str, Any]) -> dict[tuple[str, ...], Any]:
+    supported: dict[tuple[str, ...], Any] = {}
+    conflicted: set[tuple[str, ...]] = set()
+
     for claim in result["claims"]:
         if not isinstance(claim, Mapping) or claim.get("status") != SUPPORTED:
             continue
         raw_path = claim.get("path")
-        if isinstance(raw_path, list) and raw_path and all(
-            isinstance(part, str) and part for part in raw_path
+        if not (
+            isinstance(raw_path, list)
+            and raw_path
+            and all(isinstance(part, str) and part for part in raw_path)
         ):
-            supported.add(tuple(raw_path))
+            continue
+
+        path = tuple(raw_path)
+        normalized_value = claim.get("normalized_value", _MISSING)
+        if normalized_value is _MISSING:
+            conflicted.add(path)
+            supported.pop(path, None)
+            continue
+        if path in conflicted:
+            continue
+        if path in supported and supported[path] != normalized_value:
+            conflicted.add(path)
+            supported.pop(path, None)
+            continue
+        supported[path] = deepcopy(normalized_value)
+
     return supported
 
 
 def _comparison_side(
     path: tuple[str, ...],
     value: Any,
-    supported_paths: set[tuple[str, ...]],
+    supported_claims: Mapping[tuple[str, ...], Any],
 ) -> dict[str, Any]:
-    if path not in supported_paths or value is _MISSING:
+    if (
+        value is _MISSING
+        or path not in supported_claims
+        or supported_claims[path] != value
+    ):
         return {"status": UNVERIFIABLE}
     return {
         "status": SUPPORTED,

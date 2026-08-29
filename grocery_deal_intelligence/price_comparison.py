@@ -18,6 +18,22 @@ BASIS_INCOMPATIBLE = "economic_basis_incompatible"
 RATIO_INVALID = "exact_ratio_invalid"
 
 _SUPPORTED_BASES = {("EUR", "kg"), ("EUR", "l")}
+_RULES = {
+    "kg": {
+        "dimension": "mass",
+        "quantity_unit": "g",
+        "attribute_path": ["weight_g"],
+        "rule_id": "builtin:eur-per-kg:v0.1",
+        "formula": "price_eur * 1000 / weight_g",
+    },
+    "l": {
+        "dimension": "volume",
+        "quantity_unit": "ml",
+        "attribute_path": ["volume_ml"],
+        "rule_id": "builtin:eur-per-l:v0.1",
+        "formula": "price_eur * 1000 / volume_ml",
+    },
+}
 
 
 def compare_normalized_prices(
@@ -27,8 +43,9 @@ def compare_normalized_prices(
     """Compare two already-supported economic-normalization results exactly.
 
     This function grants no semantic-comparability authority and performs no
-    economic normalization. It consumes only supported comparable-price bases
-    and orders their exact rational values without display rounding.
+    economic normalization. It consumes only structurally valid supported
+    comparable-price bases and orders their exact rational values without
+    display rounding.
     """
     if not isinstance(left, Mapping):
         raise TypeError("left must be a mapping")
@@ -48,8 +65,9 @@ def compare_normalized_prices(
             right_error=right_error,
         )
 
-    assert left_value is not None
-    assert right_value is not None
+    if left_value is None or right_value is None:
+        return _unknown(NORMALIZATION_INVALID)
+
     left_currency, left_unit, left_ratio = left_value
     right_currency, right_unit, right_ratio = right_value
 
@@ -92,16 +110,29 @@ def _extract_supported_price(
 ) -> tuple[tuple[str, str, Fraction] | None, str | None]:
     if normalization.get("status") != SUPPORTED_RESULT:
         return None, NORMALIZATION_NOT_SUPPORTED
-    if normalization.get("reasons") != []:
+    if normalization.get("version") != "0.1" or normalization.get("reasons") != []:
         return None, NORMALIZATION_INVALID
 
     result = normalization.get("result")
     if not isinstance(result, Mapping):
         return None, NORMALIZATION_INVALID
 
+    current_price = result.get("current_price")
+    quantity = result.get("quantity")
     basis = result.get("basis")
     comparable_price = result.get("comparable_price")
-    if not isinstance(basis, Mapping) or not isinstance(comparable_price, Mapping):
+    derivation = result.get("derivation")
+    if not all(
+        isinstance(value, Mapping)
+        for value in (current_price, quantity, basis, comparable_price, derivation)
+    ):
+        return None, NORMALIZATION_INVALID
+
+    if (
+        current_price.get("currency") != "EUR"
+        or current_price.get("source_path") != ["price"]
+        or not isinstance(current_price.get("value"), str)
+    ):
         return None, NORMALIZATION_INVALID
 
     currency = comparable_price.get("currency")
@@ -109,10 +140,27 @@ def _extract_supported_price(
     if (currency, per_unit) not in _SUPPORTED_BASES:
         return None, NORMALIZATION_INVALID
 
-    if basis.get("quantity") != "1" or basis.get("unit") != per_unit:
+    rule = _RULES[per_unit]
+    if (
+        basis.get("quantity") != "1"
+        or basis.get("unit") != per_unit
+        or basis.get("dimension") != rule["dimension"]
+    ):
         return None, NORMALIZATION_INVALID
-    expected_dimension = "mass" if per_unit == "kg" else "volume"
-    if basis.get("dimension") != expected_dimension:
+
+    if (
+        quantity.get("unit") != rule["quantity_unit"]
+        or quantity.get("dimension") != rule["dimension"]
+        or quantity.get("attribute_path") != rule["attribute_path"]
+        or not isinstance(quantity.get("value"), str)
+        or not isinstance(quantity.get("claim"), Mapping)
+    ):
+        return None, NORMALIZATION_INVALID
+
+    if (
+        derivation.get("rule_id") != rule["rule_id"]
+        or derivation.get("formula") != rule["formula"]
+    ):
         return None, NORMALIZATION_INVALID
 
     ratio = _parse_ratio(comparable_price.get("exact_ratio"))

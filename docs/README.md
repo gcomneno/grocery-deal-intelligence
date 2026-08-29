@@ -3,6 +3,10 @@
 This directory contains the architectural and methodological documentation
 for Grocery Deal Intelligence.
 
+## Business analysis and authority
+
+- [Business analysis, deterministic boundaries, and AI authority](business-analysis-and-ai-authority.md)
+
 ## Deterministic ingestion
 
 - [Deterministic source ingestion](deterministic-source-ingestion.md)

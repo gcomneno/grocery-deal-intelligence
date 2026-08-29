@@ -125,20 +125,28 @@ configuration or user intent.
 AI must not silently select the effective policy or authorize `same_product` or
 `comparable`.
 
-## Deliberate limitation
+## Product-attribute boundary
 
-This issue establishes the policy mechanism, not product-fact extraction.
+The canonical grocery-offer schema itself still does not expose normalized
+`product_family` or `weight_g` fields. GDI now provides a separate downstream
+[evidence-grounded normalized product-attribute boundary](normalized-product-attributes.md)
+that can derive those comparison-ready facts from already-admitted offers while
+preserving evidence, provenance, deterministic normalization, and fail-closed
+semantics.
 
-The current canonical grocery-offer schema does not yet expose normalized
-`product_family` or `weight_g` fields. Therefore the built-in chocolate example
-is a policy contract waiting for independently verified structured product
-facts; it does not pretend that those facts already exist in canonical offers.
+The comparison-policy evaluator consumes only supported normalized claims from
+that boundary. It does not inherit parsing or semantic-classification authority.
 
-Later work may add a separate verified product-attribute boundary. Once such
-facts exist, the comparison-policy evaluator can consume them without changing
-its authority semantics.
+This preserves the separation:
 
-Likewise, comparison policy remains separate from:
+```text
+canonical offer
+    -> verified normalized product attributes
+    -> comparison policy
+    -> comparable | unknown
+```
+
+Comparison policy remains separate from:
 
 - same-product identity policy;
 - quantity/unit normalization;

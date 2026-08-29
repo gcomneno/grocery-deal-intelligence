@@ -38,18 +38,18 @@ def compare_normalized_prices(
     left_copy = deepcopy(dict(left))
     right_copy = deepcopy(dict(right))
 
-    left_value = _extract_supported_price(left_copy)
-    right_value = _extract_supported_price(right_copy)
+    left_value, left_error = _extract_supported_price(left_copy)
+    right_value, right_error = _extract_supported_price(right_copy)
 
-    if left_value is None or right_value is None:
-        reason = (
-            NORMALIZATION_NOT_SUPPORTED
-            if left_copy.get("status") != SUPPORTED_RESULT
-            or right_copy.get("status") != SUPPORTED_RESULT
-            else NORMALIZATION_INVALID
+    if left_error is not None or right_error is not None:
+        return _unknown(
+            _combined_error(left_error, right_error),
+            left_error=left_error,
+            right_error=right_error,
         )
-        return _unknown(reason)
 
+    assert left_value is not None
+    assert right_value is not None
     left_currency, left_unit, left_ratio = left_value
     right_currency, right_unit, right_ratio = right_value
 
@@ -89,37 +89,46 @@ def compare_normalized_prices(
 
 def _extract_supported_price(
     normalization: Mapping[str, Any],
-) -> tuple[str, str, Fraction] | None:
+) -> tuple[tuple[str, str, Fraction] | None, str | None]:
     if normalization.get("status") != SUPPORTED_RESULT:
-        return None
+        return None, NORMALIZATION_NOT_SUPPORTED
     if normalization.get("reasons") != []:
-        return None
+        return None, NORMALIZATION_INVALID
 
     result = normalization.get("result")
     if not isinstance(result, Mapping):
-        return None
+        return None, NORMALIZATION_INVALID
 
     basis = result.get("basis")
     comparable_price = result.get("comparable_price")
     if not isinstance(basis, Mapping) or not isinstance(comparable_price, Mapping):
-        return None
+        return None, NORMALIZATION_INVALID
 
     currency = comparable_price.get("currency")
     per_unit = comparable_price.get("per_unit")
     if (currency, per_unit) not in _SUPPORTED_BASES:
-        return None
+        return None, NORMALIZATION_INVALID
 
     if basis.get("quantity") != "1" or basis.get("unit") != per_unit:
-        return None
+        return None, NORMALIZATION_INVALID
     expected_dimension = "mass" if per_unit == "kg" else "volume"
     if basis.get("dimension") != expected_dimension:
-        return None
+        return None, NORMALIZATION_INVALID
 
     ratio = _parse_ratio(comparable_price.get("exact_ratio"))
     if ratio is None:
-        return None
+        return None, RATIO_INVALID
 
-    return currency, per_unit, ratio
+    return (currency, per_unit, ratio), None
+
+
+def _combined_error(left_error: str | None, right_error: str | None) -> str:
+    errors = {error for error in (left_error, right_error) if error is not None}
+    if NORMALIZATION_NOT_SUPPORTED in errors:
+        return NORMALIZATION_NOT_SUPPORTED
+    if RATIO_INVALID in errors:
+        return RATIO_INVALID
+    return NORMALIZATION_INVALID
 
 
 def _parse_ratio(candidate: Any) -> Fraction | None:
@@ -164,7 +173,9 @@ def _ratio_dict(value: Fraction) -> dict[str, str]:
 def _unknown(code: str, **details: Any) -> dict[str, Any]:
     reason = {"code": code}
     for key in sorted(details):
-        reason[key] = deepcopy(details[key])
+        value = details[key]
+        if value is not None:
+            reason[key] = deepcopy(value)
     return {
         "version": "0.1",
         "status": UNKNOWN_RESULT,

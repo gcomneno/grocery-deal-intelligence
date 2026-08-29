@@ -15,7 +15,6 @@ from grocery_deal_intelligence.price_comparison import (
 
 
 def economic_result(numerator, denominator, *, unit="kg", status="supported"):
-    dimension = "mass" if unit == "kg" else "volume"
     if status != "supported":
         return {
             "version": "0.1",
@@ -23,10 +22,36 @@ def economic_result(numerator, denominator, *, unit="kg", status="supported"):
             "result": None,
             "reasons": [{"code": "fixture_unknown"}],
         }
+
+    if unit == "kg":
+        dimension = "mass"
+        quantity_unit = "g"
+        quantity_path = ["weight_g"]
+        rule_id = "builtin:eur-per-kg:v0.1"
+        formula = "price_eur * 1000 / weight_g"
+    else:
+        dimension = "volume"
+        quantity_unit = "ml"
+        quantity_path = ["volume_ml"]
+        rule_id = "builtin:eur-per-l:v0.1"
+        formula = "price_eur * 1000 / volume_ml"
+
     return {
         "version": "0.1",
         "status": "supported",
         "result": {
+            "current_price": {
+                "value": "1",
+                "currency": "EUR",
+                "source_path": ["price"],
+            },
+            "quantity": {
+                "value": "100",
+                "unit": quantity_unit,
+                "dimension": dimension,
+                "attribute_path": quantity_path,
+                "claim": {"status": "supported"},
+            },
             "basis": {
                 "quantity": "1",
                 "unit": unit,
@@ -39,6 +64,10 @@ def economic_result(numerator, denominator, *, unit="kg", status="supported"):
                     "numerator": str(numerator),
                     "denominator": str(denominator),
                 },
+            },
+            "derivation": {
+                "rule_id": rule_id,
+                "formula": formula,
             },
         },
         "reasons": [],
@@ -144,6 +173,36 @@ def test_malformed_or_invalid_ratio_fails_closed(numerator, denominator):
 def test_contradictory_basis_structure_fails_closed():
     left = economic_result(1, 1)
     left["result"]["basis"]["dimension"] = "volume"
+
+    result = compare_normalized_prices(left, economic_result(1, 1))
+
+    assert result["status"] == "unknown"
+    assert result["reasons"][0]["code"] == NORMALIZATION_INVALID
+
+
+def test_wrong_normalization_version_fails_closed():
+    left = economic_result(1, 1)
+    left["version"] = "9.9"
+
+    result = compare_normalized_prices(left, economic_result(1, 1))
+
+    assert result["status"] == "unknown"
+    assert result["reasons"][0]["code"] == NORMALIZATION_INVALID
+
+
+def test_wrong_derivation_rule_fails_closed():
+    left = economic_result(1, 1)
+    left["result"]["derivation"]["rule_id"] = "builtin:eur-per-l:v0.1"
+
+    result = compare_normalized_prices(left, economic_result(1, 1))
+
+    assert result["status"] == "unknown"
+    assert result["reasons"][0]["code"] == NORMALIZATION_INVALID
+
+
+def test_quantity_dimension_mismatch_fails_closed():
+    left = economic_result(1, 1)
+    left["result"]["quantity"]["unit"] = "ml"
 
     result = compare_normalized_prices(left, economic_result(1, 1))
 

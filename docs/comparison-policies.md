@@ -1,9 +1,10 @@
 # Overridable comparison policies
 
 GDI comparison policies express which already-verified product facts matter for
-comparability.
+semantic comparability.
 
-They are not source evidence, semantic truth, or AI authority.
+They are not source evidence, semantic truth, economic normalization, or AI
+authority.
 
 The policy hierarchy is:
 
@@ -40,15 +41,33 @@ Its default rules are:
 
 ```text
 same product family  -> require equal
-same weight          -> require equal
+same weight          -> ignore
 brand                -> ignore
 cocoa percentage     -> ignore
 sugar percentage     -> ignore
 ```
 
-This means two verified dark-chocolate bars with the same verified weight may
-be considered comparable even when their brand, cocoa percentage, or sugar
-percentage differ.
+This means two verified dark-chocolate bars may be considered semantically
+comparable even when their package weights differ. Weight remains observable,
+but exact package-size equality is not comparison authority.
+
+For example, a 100 g bar and a 150 g bar can both be semantically comparable as
+`dark_chocolate`. Their different quantities are handled downstream by the
+economic-normalization boundary, which can derive a common `EUR/kg` basis when
+each offer has sufficient verified quantity evidence.
+
+This separation is intentional:
+
+```text
+semantic comparability
+!= package-size equality
+!= economic-basis compatibility
+!= cheaper decision
+```
+
+A missing or different weight therefore does not by itself block semantic
+comparability. It may still prevent downstream economic normalization if no
+verified quantity basis can be established.
 
 The policy does not itself extract or verify `product_family`, `weight_g`,
 `brand`, `cocoa_percentage`, or `sugar_percentage`. Those facts must already
@@ -60,7 +79,7 @@ evaluation.
 Each rule has a stable rule identifier and an `effect`:
 
 - `require`: the bilateral verified values must exist and be equal;
-- `ignore`: the fact is explicitly irrelevant to comparability;
+- `ignore`: the fact is explicitly irrelevant to semantic comparability;
 - `prefer`: the fact may matter later for ranking/recommendation, but cannot
   authorize comparability;
 - `exclude`: an explicitly configured verified value makes the candidate
@@ -79,10 +98,10 @@ Resolved policies expose:
 - effective rules;
 - field-level provenance for inherited and overridden rule fields.
 
-For example, a user product override may disable the built-in `same_weight`
-rule while preserving its built-in path/operator. The effective result records
-that the rule meaning came from the built-in category while the `enabled`
-field came from the user product override.
+For example, the built-in chocolate policy ignores exact weight equality, while
+a user override may deliberately change `same_weight` back to `require/equal`
+for a stricter personal comparison rule. The effective result records which
+layer supplied each rule field.
 
 This makes silent policy drift observable.
 
@@ -96,7 +115,9 @@ already-admitted canonical offers
     -> bilateral verified facts
     -> resolved comparison policy
     -> deterministic policy evaluation
-    -> comparable | unknown
+    -> semantically comparable | unknown
+    -> economic normalization
+    -> common economic basis | unknown
 ```
 
 Policy evaluation consumes verified facts. It must never:
@@ -107,7 +128,8 @@ Policy evaluation consumes verified facts. It must never:
 - mutate canonical offers;
 - rerun or weaken canonical admission;
 - make retailer-specific exceptions in generic comparison logic;
-- use AI confidence as comparison authority.
+- use AI confidence as comparison authority;
+- claim economic compatibility merely because semantic comparability succeeded.
 
 Missing required verified facts fail closed to `unknown`.
 
@@ -125,10 +147,10 @@ configuration or user intent.
 AI must not silently select the effective policy or authorize `same_product` or
 `comparable`.
 
-## Product-attribute boundary
+## Product-attribute and economic boundaries
 
 The canonical grocery-offer schema itself still does not expose normalized
-`product_family` or `weight_g` fields. GDI now provides a separate downstream
+`product_family` or `weight_g` fields. GDI provides a separate downstream
 [evidence-grounded normalized product-attribute boundary](normalized-product-attributes.md)
 that can derive those comparison-ready facts from already-admitted offers while
 preserving evidence, provenance, deterministic normalization, and fail-closed
@@ -137,13 +159,21 @@ semantics.
 The comparison-policy evaluator consumes only supported normalized claims from
 that boundary. It does not inherit parsing or semantic-classification authority.
 
+After semantic comparability is admitted, the
+[economic-normalization boundary](economic-normalization.md) independently
+requires verified quantity evidence and derives a common basis such as `EUR/kg`
+or `EUR/l`. Therefore semantic comparability may succeed while economic
+normalization still fails closed.
+
 This preserves the separation:
 
 ```text
 canonical offer
     -> verified normalized product attributes
     -> comparison policy
-    -> comparable | unknown
+    -> semantically comparable | unknown
+    -> economic normalization
+    -> common economic basis | unknown
 ```
 
 Comparison policy remains separate from:
@@ -160,7 +190,9 @@ In short:
 ```text
 heuristic default != evidence
 
-verified fact + explicit policy -> deterministic comparability decision
+verified fact + explicit policy -> deterministic semantic-comparability decision
+
+package-size equality != semantic-comparability authority
 
 prefer != comparison authority
 

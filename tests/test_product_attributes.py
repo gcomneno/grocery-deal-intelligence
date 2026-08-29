@@ -265,6 +265,96 @@ def test_product_family_requires_matching_curated_evidence():
     assert any(item["code"] == FAMILY_EVIDENCE_MISMATCH for item in result["reasons"])
 
 
+def test_dark_chocolate_family_accepts_supported_real_bar_examples():
+    examples = (
+        "Vanini fondente 95% 90 g",
+        "Vanini fondente 91% 90 g",
+        "Vanini fondente assoluto 100% 90 g",
+        "Otto Chocolates Cioccolato Fondente Senza Zucchero 60% 100 g",
+        "Otto Chocolates Cioccolato Fondente 60% Senza Zucchero Nocciole Intere 100 g",
+    )
+
+    for product_name in examples:
+        result = normalize_product_attributes(
+            {"product_name": product_name},
+            product_family_candidate=family(),
+        )
+
+        assert result["values"]["product_family"] == "dark_chocolate"
+        assert not any(
+            item["code"] == FAMILY_EVIDENCE_MISMATCH
+            for item in result["reasons"]
+        )
+
+
+def test_dark_chocolate_family_rejects_explicit_conflicting_product_forms():
+    examples = (
+        "Bahlsen Waffeletten Fondente 100 g",
+        "Alfajor ricoperto di cioccolato fondente 150 g",
+        "Misura Fibrextra Biscotti integrali Cioccolato Fondente 260 g",
+        "Misura Fibrextra 6 Cornetti integrali Cioccolato Fondente 308 g",
+        "Oro Saiwa Grano Fondente - frollini integrali con gocce di cioccolato fondente - 300g",
+        "Perfect Bio Granola Cacao Fondente e Cocco 250 g",
+        "FITNESS Cioccolato Fondente Cereali Integrali con Fiocchi al Cioccolato 325g",
+        "Nature Valley Crunchy Fiocchi d'Avena con Cioccolato Fondente 5 x 42 g",
+        "NUII Mini Adventure Caramello Salato e Noci Macadamia e Cioccolato Fondente e Mirtilli 6 Gelati 253g",
+        "Fiorentini gli Originali Mini Choco Mais Cioccolato Fondente 60 g",
+        "Fiorentini i Croccanti Quadrotti di Riso Cioccolato Fondente 80 g",
+        "tulipano gocce di cioccolato fondente 250 g",
+    )
+
+    for product_name in examples:
+        result = normalize_product_attributes(
+            {"product_name": product_name},
+            product_family_candidate=family(),
+        )
+
+        assert "product_family" not in result["values"]
+        assert any(
+            item["code"] == FAMILY_EVIDENCE_MISMATCH
+            for item in result["reasons"]
+        )
+
+
+def test_dark_chocolate_conflicting_form_rule_is_retailer_neutral():
+    product_name = "Bahlsen Waffeletten Fondente 100 g"
+
+    left = normalize_product_attributes(
+        {
+            "retailer": "esselunga",
+            "product_name": product_name,
+        },
+        product_family_candidate=family(),
+    )
+    right = normalize_product_attributes(
+        {
+            "retailer": "any-other-retailer",
+            "product_name": product_name,
+        },
+        product_family_candidate=family(),
+    )
+
+    assert left == right
+    assert "product_family" not in left["values"]
+    assert any(
+        item["code"] == FAMILY_EVIDENCE_MISMATCH
+        for item in left["reasons"]
+    )
+
+
+def test_dark_chocolate_conflict_requires_explicit_observed_phrase():
+    result = normalize_product_attributes(
+        {
+            "product_name": (
+                "Cioccolato fondente con riso soffiato 100 g"
+            )
+        },
+        product_family_candidate=family(),
+    )
+
+    assert result["values"]["product_family"] == "dark_chocolate"
+
+
 def test_ai_like_candidate_cannot_bypass_family_verification():
     candidate = {
         "value": "dark_chocolate",

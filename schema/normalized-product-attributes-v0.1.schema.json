@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://giadaware.local/schema/normalized-product-attributes-v0.1.schema.json",
+  "title": "GDI Normalized Product Attributes v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "values", "claims", "reasons"],
+  "properties": {
+    "version": {"const": "0.1"},
+    "values": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "product_family": {"type": "string", "minLength": 1},
+        "quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit", "dimension"],
+          "properties": {
+            "value": {"type": "number", "exclusiveMinimum": 0},
+            "unit": {"enum": ["g", "ml"]},
+            "dimension": {"enum": ["mass", "volume"]}
+          }
+        },
+        "weight_g": {"type": "number", "exclusiveMinimum": 0},
+        "volume_ml": {"type": "number", "exclusiveMinimum": 0},
+        "pack_count": {"type": "integer", "minimum": 1},
+        "unit_quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit", "dimension"],
+          "properties": {
+            "value": {"type": "number", "exclusiveMinimum": 0},
+            "unit": {"enum": ["g", "ml"]},
+            "dimension": {"enum": ["mass", "volume"]}
+          }
+        },
+        "total_quantity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit", "dimension"],
+          "properties": {
+            "value": {"type": "number", "exclusiveMinimum": 0},
+            "unit": {"enum": ["g", "ml"]},
+            "dimension": {"enum": ["mass", "volume"]}
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "status", "evidence_path", "raw_value"],
+        "properties": {
+          "path": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "status": {"enum": ["supported"]},
+          "evidence_path": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "raw_value": {},
+          "normalized_value": {},
+          "normalization": {"type": "string", "minLength": 1},
+          "policy_id": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["code"],
+        "properties": {
+          "code": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

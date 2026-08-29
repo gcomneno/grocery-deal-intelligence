@@ -52,6 +52,33 @@ def _despar_batch():
     )
 
 
+def _rejected_despar_batch():
+    """Build a valid result-set fixture for rejection mechanics only.
+
+    Real Despar records are canonical after #148. Result-set rejection behavior
+    remains independently testable by transforming an already-authorized batch
+    snapshot into internally consistent ineligible outcomes; no ingestion
+    authority is exercised by IngestionResultSet itself.
+    """
+    batch = _despar_batch()
+    for outcome in batch["records"]:
+        outcome["validated"] = False
+        outcome["structural_validation"]["valid"] = False
+        outcome["admission"] = {
+            "eligible": False,
+            "reasons": [{"code": "structural_invalid"}],
+        }
+        outcome["canonical"] = None
+
+    batch["summary"]["structurally_valid"] = 0
+    batch["summary"]["structurally_invalid"] = 3
+    batch["summary"]["admission_eligible"] = 0
+    batch["summary"]["admission_ineligible"] = 3
+    batch["summary"]["canonical_records"] = 0
+    batch["summary"]["rejection_reasons"] = {"structural_invalid": 3}
+    return batch
+
+
 def test_carrefour_result_set_exposes_admitted_canonical_subset():
     result_set = IngestionResultSet(_carrefour_batch())
 
@@ -64,22 +91,29 @@ def test_carrefour_result_set_exposes_admitted_canonical_subset():
     assert result_set.network_required is False
 
 
-def test_despar_result_set_exposes_fail_closed_rejections():
+def test_real_despar_result_set_exposes_admitted_canonical_subset():
     result_set = IngestionResultSet(_despar_batch())
 
     assert result_set.retailer == "despar"
     assert len(result_set.outcomes) == 3
+    assert len(result_set.admitted) == 3
+    assert len(result_set.canonical_records) == 3
+    assert len(result_set.rejected) == 0
+    assert result_set.summary["rejection_reasons"] == {}
+
+
+def test_result_set_exposes_fail_closed_rejections_from_snapshot():
+    result_set = IngestionResultSet(_rejected_despar_batch())
+
     assert len(result_set.admitted) == 0
     assert len(result_set.canonical_records) == 0
     assert len(result_set.rejected) == 3
-    assert result_set.summary["rejection_reasons"] == {
-        "structural_invalid": 3
-    }
+    assert result_set.summary["rejection_reasons"] == {"structural_invalid": 3}
 
 
 def test_admitted_and_rejected_entries_preserve_original_indexes():
     admitted = IngestionResultSet(_carrefour_batch()).admitted
-    rejected = IngestionResultSet(_despar_batch()).rejected
+    rejected = IngestionResultSet(_rejected_despar_batch()).rejected
 
     assert [entry.record_index for entry in admitted] == [0, 1, 2]
     assert [entry.record_index for entry in rejected] == [0, 1, 2]
@@ -106,7 +140,7 @@ def test_result_set_preserves_deterministic_ordering():
 
 
 def test_rejected_entries_keep_diagnostics_and_evidence_visible():
-    result_set = IngestionResultSet(_despar_batch())
+    result_set = IngestionResultSet(_rejected_despar_batch())
     rejected = result_set.rejected[0].outcome
 
     assert rejected["canonical"] is None
@@ -187,7 +221,7 @@ def test_canonical_mapping_cannot_be_mutated_through_outcome_alias():
 
 
 def test_nested_diagnostics_are_not_recursively_frozen():
-    result_set = IngestionResultSet(_despar_batch())
+    result_set = IngestionResultSet(_rejected_despar_batch())
 
     result_set.rejected[0].outcome["source_evidence"]["test_marker"] = True
 
@@ -330,7 +364,7 @@ def test_eligible_outcome_without_canonical_mapping_fails_explicitly():
 
 
 def test_ineligible_outcome_with_canonical_mapping_fails_explicitly():
-    batch = _despar_batch()
+    batch = _rejected_despar_batch()
     batch["records"][0]["canonical"] = {
         "retailer": "despar",
         "product_name": "synthetic",

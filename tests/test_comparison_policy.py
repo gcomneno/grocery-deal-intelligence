@@ -7,7 +7,6 @@ from grocery_deal_intelligence.comparison_policy import (
     EXCLUDED_VALUE,
     NO_AUTHORITY_RULES,
     REQUIRED_FACT_MISMATCH,
-    REQUIRED_FACT_UNAVAILABLE,
     USER_CATEGORY,
     USER_FAMILY,
     USER_PRODUCT,
@@ -64,7 +63,8 @@ def test_chocolate_builtin_is_pragmatic_and_inspectable():
         "builtin_category",
     ]
     assert policy["rules"]["same_product_family"]["effect"] == "require"
-    assert policy["rules"]["same_weight"]["effect"] == "require"
+    assert policy["rules"]["same_weight"]["effect"] == "ignore"
+    assert policy["rules"]["same_weight"]["operator"] == "observe"
     assert policy["rules"]["brand"]["effect"] == "ignore"
     assert policy["rules"]["cocoa_percentage"]["effect"] == "ignore"
     assert policy["rules"]["sugar_percentage"]["effect"] == "ignore"
@@ -99,18 +99,19 @@ def test_specific_layers_override_only_supplied_rule_fields_with_provenance():
     )
 
     rule = policy["rules"]["same_weight"]
-    assert rule["effect"] == "require"
+    assert rule["effect"] == "ignore"
+    assert rule["operator"] == "observe"
     assert rule["path"] == ["weight_g"]
     assert rule["enabled"] is False
     assert rule["provenance"]["effect"]["origin"] == "builtin_category"
     assert rule["provenance"]["enabled"]["origin"] == USER_PRODUCT
 
 
-def test_dark_chocolate_same_family_same_weight_is_comparable_even_when_ignored_attributes_differ():
+def test_dark_chocolate_cross_size_is_semantically_comparable():
     policy = resolve_comparison_policy(category="chocolate_bar")
     facts = [
         verification(["product_family"], "dark_chocolate", "dark_chocolate"),
-        verification(["weight_g"], 100, 100),
+        verification(["weight_g"], 100, 150),
         verification(["brand"], "Novi", "Lindt"),
         verification(["cocoa_percentage"], 70, 85),
         verification(["sugar_percentage"], 28, 12),
@@ -121,9 +122,31 @@ def test_dark_chocolate_same_family_same_weight_is_comparable_even_when_ignored_
     assert result["relationship"] == COMPARABLE
     assert result["eligible"] is True
     assert result["reasons"] == []
+    same_weight = next(
+        item for item in result["evaluated_rules"] if item["rule_id"] == "same_weight"
+    )
+    assert same_weight == {
+        "rule_id": "same_weight",
+        "effect": "ignore",
+        "path": ["weight_g"],
+        "outcome": "non_authoritative",
+    }
 
 
-def test_missing_required_weight_fails_closed():
+def test_equal_weight_bars_remain_comparable():
+    policy = resolve_comparison_policy(category="chocolate_bar")
+    facts = [
+        verification(["product_family"], "dark_chocolate", "dark_chocolate"),
+        verification(["weight_g"], 100, 100),
+    ]
+
+    result = evaluate_comparison_policy(facts, policy)
+
+    assert result["relationship"] == COMPARABLE
+    assert result["eligible"] is True
+
+
+def test_missing_weight_does_not_block_semantic_comparability():
     policy = resolve_comparison_policy(category="chocolate_bar")
     facts = [
         verification(["product_family"], "dark_chocolate", "dark_chocolate"),
@@ -131,22 +154,19 @@ def test_missing_required_weight_fails_closed():
 
     result = evaluate_comparison_policy(facts, policy)
 
-    assert result["relationship"] == UNKNOWN
-    assert result["eligible"] is False
-    assert result["reasons"] == [
-        {
-            "code": REQUIRED_FACT_UNAVAILABLE,
-            "rule_id": "same_weight",
-            "path": ["weight_g"],
-        }
-    ]
+    assert result["relationship"] == COMPARABLE
+    assert result["eligible"] is True
+    same_weight = next(
+        item for item in result["evaluated_rules"] if item["rule_id"] == "same_weight"
+    )
+    assert same_weight["outcome"] == "non_authoritative"
 
 
-def test_different_required_weight_fails_closed():
+def test_different_product_family_still_fails_closed():
     policy = resolve_comparison_policy(category="chocolate_bar")
     facts = [
-        verification(["product_family"], "dark_chocolate", "dark_chocolate"),
-        verification(["weight_g"], 100, 200),
+        verification(["product_family"], "dark_chocolate", "milk_chocolate"),
+        verification(["weight_g"], 100, 150),
     ]
 
     result = evaluate_comparison_policy(facts, policy)
@@ -156,10 +176,10 @@ def test_different_required_weight_fails_closed():
     assert result["reasons"] == [
         {
             "code": REQUIRED_FACT_MISMATCH,
-            "rule_id": "same_weight",
-            "path": ["weight_g"],
-            "left_value": 100,
-            "right_value": 200,
+            "rule_id": "same_product_family",
+            "path": ["product_family"],
+            "left_value": "dark_chocolate",
+            "right_value": "milk_chocolate",
         }
     ]
 
@@ -199,11 +219,16 @@ def test_empty_global_default_does_not_authorize_comparability():
     assert result["reasons"] == [{"code": NO_AUTHORITY_RULES}]
 
 
-def test_user_override_can_disable_builtin_weight_requirement_without_editing_builtin():
+def test_user_override_can_restore_strict_same_weight_requirement():
     override = layer(
-        layer_id="user:category:chocolate-weight-agnostic",
+        layer_id="user:category:chocolate-strict-weight",
         origin=USER_CATEGORY,
-        rules={"same_weight": {"enabled": False}},
+        rules={
+            "same_weight": {
+                "effect": "require",
+                "operator": "equal",
+            }
+        },
     )
     policy = resolve_comparison_policy(
         category="chocolate_bar",
@@ -211,15 +236,20 @@ def test_user_override_can_disable_builtin_weight_requirement_without_editing_bu
     )
 
     result = evaluate_comparison_policy(
-        [verification(["product_family"], "dark_chocolate", "dark_chocolate")],
+        [
+            verification(["product_family"], "dark_chocolate", "dark_chocolate"),
+            verification(["weight_g"], 100, 150),
+        ],
         policy,
     )
 
-    assert result["relationship"] == COMPARABLE
-    assert result["eligible"] is True
-    assert policy["rules"]["same_weight"]["enabled"] is False
-    assert policy["rules"]["same_weight"]["provenance"]["enabled"] == {
-        "policy_id": "user:category:chocolate-weight-agnostic",
+    assert result["relationship"] == UNKNOWN
+    assert result["eligible"] is False
+    assert result["reasons"][0]["code"] == REQUIRED_FACT_MISMATCH
+    assert policy["rules"]["same_weight"]["effect"] == "require"
+    assert policy["rules"]["same_weight"]["operator"] == "equal"
+    assert policy["rules"]["same_weight"]["provenance"]["effect"] == {
+        "policy_id": "user:category:chocolate-strict-weight",
         "policy_version": "0.1",
         "origin": USER_CATEGORY,
     }

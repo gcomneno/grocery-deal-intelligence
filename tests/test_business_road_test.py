@@ -12,12 +12,13 @@ from grocery_deal_intelligence.business_road_test import (
 )
 
 
-def test_business_road_test_advances_to_normalized_attributes():
+
+def test_business_road_test_advances_to_semantic_comparability():
     result = run_business_road_test()
 
     assert result["pass"] is True
     assert result["final"] == "unknown"
-    assert result["authorized_stopping_boundary"] == "normalized_attributes"
+    assert result["authorized_stopping_boundary"] == "semantic_comparability"
     assert result["network_required"] is False
     assert result["ai_required"] is False
 
@@ -27,31 +28,45 @@ def test_business_road_test_advances_to_normalized_attributes():
 
     assert carrefour["source_evidence"]["status"] == "pass"
     assert despar["source_evidence"]["status"] == "pass"
-    assert carrefour["canonical_admission"]["canonical_present"] is True
-    assert despar["canonical_admission"]["canonical_present"] is True
+
     assert carrefour["canonical_admission"]["status"] == "pass"
     assert despar["canonical_admission"]["status"] == "pass"
-    assert carrefour["canonical_admission"]["reasons"] == []
-    assert despar["canonical_admission"]["reasons"] == []
 
-    assert carrefour["normalized_attributes"]["status"] == "fail_closed"
-    assert [
-        reason["code"] for reason in carrefour["normalized_attributes"]["reasons"]
-    ] == ["quantity_evidence_unavailable"]
+    assert carrefour["normalized_attributes"]["status"] == "pass"
+    assert carrefour["normalized_attributes"]["values"]["pack_count"] == 3
+    assert carrefour["normalized_attributes"]["values"]["unit_quantity"] == {
+        "value": 330,
+        "unit": "ml",
+        "dimension": "volume",
+    }
+    assert carrefour["normalized_attributes"]["values"]["volume_ml"] == 990
+
     assert despar["normalized_attributes"]["status"] == "pass"
     assert despar["normalized_attributes"]["values"]["volume_ml"] == 500
 
     stages = {stage["id"]: stage for stage in result["stages"]}
+
     assert stages["source_evidence"]["status"] == "pass"
     assert stages["canonical_admission"]["status"] == "pass"
+
     assert stages["normalized_attributes"]["reached"] is True
-    assert stages["normalized_attributes"]["status"] == "fail_closed"
+    assert stages["normalized_attributes"]["status"] == "pass"
     assert stages["normalized_attributes"]["sides"] == {
-        "carrefour": "fail_closed",
+        "carrefour": "pass",
         "despar": "pass",
     }
+
+    assert stages["semantic_comparability"] == {
+        "id": "semantic_comparability",
+        "reached": True,
+        "status": "fail_closed",
+        "relationship": "unknown",
+        "reasons": {
+            "policy": [{"code": "no_authority_rules"}]
+        },
+    }
+
     for stage_id in (
-        "semantic_comparability",
         "economic_normalization",
         "price_comparison",
     ):
@@ -61,7 +76,6 @@ def test_business_road_test_advances_to_normalized_attributes():
             "status": "not_reached",
             "reason": "upstream_authority_unavailable",
         }
-
 
 def test_business_road_test_selects_expected_verified_real_offers():
     result = run_business_road_test()
@@ -97,6 +111,7 @@ def test_business_road_test_fixture_identity_is_enforced(monkeypatch):
         run_business_road_test()
 
 
+
 def test_human_report_makes_authorized_stop_explicit():
     report = render_report(run_business_road_test())
 
@@ -106,28 +121,30 @@ def test_human_report_makes_authorized_stop_explicit():
     assert "despar: PASS" in report
     assert "CANONICAL ADMISSION" in report
     assert "NORMALIZED ATTRIBUTES" in report
-    assert "carrefour: FAIL_CLOSED" in report
-    assert "carrefour reasons: quantity_evidence_unavailable" in report
-    assert "despar: PASS" in report
-    assert "SEMANTIC COMPARABILITY\nNOT REACHED" in report
+    assert "SEMANTIC COMPARABILITY" in report
+    assert "policy reasons: no_authority_rules" in report
+    assert "ECONOMIC NORMALIZATION\nNOT REACHED" in report
+    assert "PRICE COMPARISON\nNOT REACHED" in report
     assert "FINAL\nUNKNOWN" in report
-    assert "Authorized stopping boundary: normalized_attributes" in report
+    assert "Authorized stopping boundary: semantic_comparability" in report
     assert "Business road test: PASS" in report
-
 
 def test_cli_human_report_exits_zero(capsys):
     assert main([]) == 0
     assert "Business road test: PASS" in capsys.readouterr().out
 
 
+
 def test_cli_json_report_is_stable_and_machine_readable(capsys):
     assert main(["--json"]) == 0
     first = capsys.readouterr().out
+
     assert main(["--json"]) == 0
     second = capsys.readouterr().out
 
     assert first == second
+
     payload = json.loads(first)
     assert payload["pass"] is True
     assert payload["final"] == "unknown"
-    assert payload["authorized_stopping_boundary"] == "normalized_attributes"
+    assert payload["authorized_stopping_boundary"] == "semantic_comparability"

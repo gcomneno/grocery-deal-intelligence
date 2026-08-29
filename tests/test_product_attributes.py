@@ -77,6 +77,156 @@ def test_composite_pack_preserves_unit_and_total_quantity():
     assert result["values"]["weight_g"] == 200
 
 
+def test_word_composite_pack_derives_exact_total():
+    result = normalize_product_attributes(
+        {"packaging_text": "3 pz da 330 ml"}
+    )
+
+    assert result["values"]["pack_count"] == 3
+    assert result["values"]["unit_quantity"] == {
+        "value": 330,
+        "unit": "ml",
+        "dimension": "volume",
+    }
+    assert result["values"]["total_quantity"] == {
+        "value": 990,
+        "unit": "ml",
+        "dimension": "volume",
+    }
+    assert result["values"]["quantity"] == {
+        "value": 990,
+        "unit": "ml",
+        "dimension": "volume",
+    }
+    assert result["values"]["volume_ml"] == 990
+    assert result["reasons"] == []
+
+    claims = {
+        tuple(item["path"]): item
+        for item in result["claims"]
+    }
+    assert claims[("pack_count",)]["normalization"] == (
+        "explicit_composite_relation"
+    )
+    assert claims[("unit_quantity",)]["normalization"] == (
+        "explicit_composite_relation"
+    )
+    assert claims[("total_quantity",)]["normalization"] == (
+        "exact_composite_arithmetic"
+    )
+    assert claims[("volume_ml",)]["normalization"] == (
+        "exact_composite_arithmetic"
+    )
+
+
+def test_word_composite_pack_accepts_compatible_explicit_total():
+    raw = "Conf. 3 pz da 330 ml Cad. 990 ml"
+    result = normalize_product_attributes(
+        {"product_name": raw}
+    )
+
+    assert result["values"]["pack_count"] == 3
+    assert result["values"]["unit_quantity"]["value"] == 330
+    assert result["values"]["total_quantity"]["value"] == 990
+    assert result["values"]["volume_ml"] == 990
+    assert result["reasons"] == []
+
+    claims = {
+        tuple(item["path"]): item
+        for item in result["claims"]
+    }
+    assert claims[("pack_count",)]["raw_value"] == raw
+    assert claims[("pack_count",)]["evidence_path"] == [
+        "product_name"
+    ]
+    assert claims[("total_quantity",)]["normalization"] == (
+        "exact_composite_arithmetic_corroborated"
+    )
+    assert claims[("quantity",)]["normalization"] == (
+        "exact_composite_arithmetic_corroborated"
+    )
+
+
+def test_word_composite_pack_conflicting_total_fails_closed():
+    result = normalize_product_attributes(
+        {
+            "product_name": (
+                "Birra Conf. 3 pz da 330 ml totale 1 l"
+            )
+        }
+    )
+
+    assert result["values"] == {}
+    assert result["claims"] == []
+    assert result["reasons"] == [
+        {"code": QUANTITY_AMBIGUOUS}
+    ]
+
+
+def test_multiple_simple_quantities_without_relation_fail_closed():
+    result = normalize_product_attributes(
+        {"product_name": "Birra 330 ml confezione 990 ml"}
+    )
+
+    assert result["values"] == {}
+    assert result["claims"] == []
+    assert result["reasons"] == [
+        {"code": QUANTITY_AMBIGUOUS}
+    ]
+
+
+def test_word_composite_quantity_is_retailer_neutral():
+    raw = "Conf. 3 pezzi da 330 ml 990 ml"
+
+    carrefour = normalize_product_attributes(
+        {
+            "retailer": "carrefour",
+            "product_name": raw,
+        }
+    )
+    other = normalize_product_attributes(
+        {
+            "retailer": "any-other-retailer",
+            "product_name": raw,
+        }
+    )
+
+    assert carrefour == other
+    assert carrefour["values"]["volume_ml"] == 990
+
+
+def test_real_raffo_quantity_normalizes_from_generic_relation():
+    result = normalize_product_attributes(
+        {
+            "product_name": (
+                "Raffo Birra Raffo Originale "
+                "Conf. 3 pz da 330 ml Cad. 990 ml"
+            )
+        }
+    )
+
+    assert result["values"] == {
+        "pack_count": 3,
+        "quantity": {
+            "value": 990,
+            "unit": "ml",
+            "dimension": "volume",
+        },
+        "total_quantity": {
+            "value": 990,
+            "unit": "ml",
+            "dimension": "volume",
+        },
+        "unit_quantity": {
+            "value": 330,
+            "unit": "ml",
+            "dimension": "volume",
+        },
+        "volume_ml": 990,
+    }
+    assert result["reasons"] == []
+
+
 def test_volume_never_becomes_weight():
     result = normalize_product_attributes({"packaging_text": "1 l"})
 

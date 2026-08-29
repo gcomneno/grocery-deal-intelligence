@@ -25,3 +25,4 @@ for Grocery Deal Intelligence.
 - [Overridable comparison policies](comparison-policies.md)
 - [Evidence-grounded normalized product attributes](normalized-product-attributes.md)
 - [Evidence-grounded economic normalization](economic-normalization.md)
+- [Deterministic exact price comparison](price-comparison.md)

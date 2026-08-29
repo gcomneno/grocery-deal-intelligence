@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation for #102.
+Implementation for #102, aligned with the canonical promotion-claim contract from #148.
 
 ## Boundary
 
@@ -39,9 +39,9 @@ The adapter maps only source-supported facts:
 
 The previous/base price is deliberately preserved as `base_price_text`. It is **not** reclassified as canonical `reference_price`, because the captured fixture does not establish that text as an ordinary/original numeric comparison price.
 
-## Deliberately not inferred
+## Promotion claims remain evidence-only
 
-The captured fixture does not prove all canonical promotion semantics. In particular, absence of a loyalty marker is not proof of `requires_loyalty = false`, and `Sconto extra App -20%` does not by itself justify treating app usage as a canonical loyalty-card requirement.
+The captured fixture does not prove universal promotion semantics. In particular, absence of a loyalty marker is not proof of `requires_loyalty = false`, and `Sconto extra App -20%` does not by itself justify a stronger canonical promotion taxonomy.
 
 Therefore the adapter does not invent:
 
@@ -52,7 +52,21 @@ Therefore the adapter does not invent:
 - missing identifiers;
 - locality outside the captured store context.
 
-A candidate built only from current Despar evidence can therefore be fully supported by deterministic claim verification while still failing canonical structural validation because required promotion semantics are absent. That failure is intentional and preserves the authority boundary.
+Under Grocery Offer v0.1, `promotion` is an optional claim group. Its absence means only that no canonical promotion claim is asserted. It does not mean that the offer is known to be non-promotional.
+
+For the committed fixture this means:
+
+- Riso Carnaroli Scotti: canonical promotion omitted;
+- Birra Speciale Pedavena: canonical promotion omitted;
+- Olio Extra Vergine: canonical promotion contains only the supported `discount_text` claim.
+
+A non-empty promotion object may contain independently supported `type`, `requires_loyalty`, and/or `discount_text` claims. No missing leaf is defaulted.
+
+## Admission consequence
+
+The three committed Despar records now satisfy canonical structural completeness using only their existing supported evidence. Their admission does not come from adapter repair or schema defaults; it comes from removing the obsolete requirement that every canonical shopper offer assert promotion and loyalty facts.
+
+Claim verification remains unchanged. Every canonical leaf that is present must still match projected source evidence exactly.
 
 ## Failure behavior
 
@@ -61,4 +75,4 @@ A candidate built only from current Despar evidence can therefore be fully suppo
 - missing observation timestamp: reject;
 - unsupported canonical facts: omit rather than complete.
 
-No AI, network dependency, production scraper, schema weakening, admission-policy weakening or inferred locality is introduced by this adapter.
+No AI, network dependency, production scraper, inferred loyalty status, source repair, or retailer-specific canonical exception is introduced by this adapter.

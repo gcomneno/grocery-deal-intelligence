@@ -19,9 +19,9 @@
           "enabled": true
         },
         "same_weight": {
-          "effect": "require",
+          "effect": "ignore",
           "path": ["weight_g"],
-          "operator": "equal",
+          "operator": "observe",
           "enabled": true
         },
         "brand": {

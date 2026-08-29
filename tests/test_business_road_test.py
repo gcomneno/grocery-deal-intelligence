@@ -12,12 +12,12 @@ from grocery_deal_intelligence.business_road_test import (
 )
 
 
-def test_business_road_test_stops_at_despar_canonical_admission():
+def test_business_road_test_advances_to_normalized_attributes():
     result = run_business_road_test()
 
     assert result["pass"] is True
     assert result["final"] == "unknown"
-    assert result["authorized_stopping_boundary"] == "canonical_admission"
+    assert result["authorized_stopping_boundary"] == "normalized_attributes"
     assert result["network_required"] is False
     assert result["ai_required"] is False
 
@@ -28,18 +28,29 @@ def test_business_road_test_stops_at_despar_canonical_admission():
     assert carrefour["source_evidence"]["status"] == "pass"
     assert despar["source_evidence"]["status"] == "pass"
     assert carrefour["canonical_admission"]["canonical_present"] is True
+    assert despar["canonical_admission"]["canonical_present"] is True
     assert carrefour["canonical_admission"]["status"] == "pass"
-    assert despar["canonical_admission"]["canonical_present"] is False
-    assert despar["canonical_admission"]["status"] == "fail_closed"
-    assert [reason["code"] for reason in despar["canonical_admission"]["reasons"]] == [
-        "structural_invalid"
-    ]
+    assert despar["canonical_admission"]["status"] == "pass"
+    assert carrefour["canonical_admission"]["reasons"] == []
+    assert despar["canonical_admission"]["reasons"] == []
+
+    assert carrefour["normalized_attributes"]["status"] == "fail_closed"
+    assert [
+        reason["code"] for reason in carrefour["normalized_attributes"]["reasons"]
+    ] == ["quantity_evidence_unavailable"]
+    assert despar["normalized_attributes"]["status"] == "pass"
+    assert despar["normalized_attributes"]["values"]["volume_ml"] == 500
 
     stages = {stage["id"]: stage for stage in result["stages"]}
-    assert stages["source_evidence"]["reached"] is True
-    assert stages["canonical_admission"]["status"] == "fail_closed"
+    assert stages["source_evidence"]["status"] == "pass"
+    assert stages["canonical_admission"]["status"] == "pass"
+    assert stages["normalized_attributes"]["reached"] is True
+    assert stages["normalized_attributes"]["status"] == "fail_closed"
+    assert stages["normalized_attributes"]["sides"] == {
+        "carrefour": "fail_closed",
+        "despar": "pass",
+    }
     for stage_id in (
-        "normalized_attributes",
         "semantic_comparability",
         "economic_normalization",
         "price_comparison",
@@ -94,11 +105,13 @@ def test_human_report_makes_authorized_stop_explicit():
     assert "carrefour: PASS" in report
     assert "despar: PASS" in report
     assert "CANONICAL ADMISSION" in report
-    assert "despar: FAIL_CLOSED" in report
-    assert "despar reasons: structural_invalid" in report
-    assert "NORMALIZED ATTRIBUTES\nNOT REACHED" in report
+    assert "NORMALIZED ATTRIBUTES" in report
+    assert "carrefour: FAIL_CLOSED" in report
+    assert "carrefour reasons: quantity_evidence_unavailable" in report
+    assert "despar: PASS" in report
+    assert "SEMANTIC COMPARABILITY\nNOT REACHED" in report
     assert "FINAL\nUNKNOWN" in report
-    assert "Authorized stopping boundary: canonical_admission" in report
+    assert "Authorized stopping boundary: normalized_attributes" in report
     assert "Business road test: PASS" in report
 
 
@@ -117,4 +130,4 @@ def test_cli_json_report_is_stable_and_machine_readable(capsys):
     payload = json.loads(first)
     assert payload["pass"] is True
     assert payload["final"] == "unknown"
-    assert payload["authorized_stopping_boundary"] == "canonical_admission"
+    assert payload["authorized_stopping_boundary"] == "normalized_attributes"

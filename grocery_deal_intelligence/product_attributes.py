@@ -17,23 +17,40 @@ QUANTITY_UNAVAILABLE = "quantity_evidence_unavailable"
 QUANTITY_AMBIGUOUS = "quantity_evidence_ambiguous"
 QUANTITY_UNSUPPORTED = "quantity_unit_unsupported"
 
-_FAMILY_POLICY_ID = "builtin:product-family-lexical-evidence:v0.1"
-_FAMILY_POLICIES: dict[str, dict[str, tuple[str, ...]]] = {
+_FAMILY_POLICY_ID = "builtin:product-family-lexical-evidence:v0.2"
+_FAMILY_POLICIES: dict[str, dict[str, object]] = {
     "dark_chocolate": {
         "required": ("fondente",),
         "forbidden": ("bianco",),
+        "conflicting_phrases": (
+            ("waffeletten",),
+            ("alfajor",),
+            ("biscotti",),
+            ("cornetti",),
+            ("frollini",),
+            ("gelati",),
+            ("granola",),
+            ("gocce", "di", "cioccolato", "fondente"),
+            ("cereali", "integrali", "con", "fiocchi"),
+            ("fiocchi", "d", "avena"),
+            ("mini", "choco", "mais"),
+            ("quadrotti", "di", "riso"),
+        ),
     },
     "milk_chocolate": {
         "required": ("cioccolato", "latte"),
         "forbidden": ("fondente", "bianco"),
+        "conflicting_phrases": (),
     },
     "passata": {
         "required": ("passata",),
         "forbidden": (),
+        "conflicting_phrases": (),
     },
     "whole_milk": {
         "required": ("latte", "intero"),
         "forbidden": (),
+        "conflicting_phrases": (),
     },
 }
 
@@ -199,10 +216,22 @@ def _verify_product_family(
             "reason": {"code": UNSUPPORTED_FAMILY, "product_family": value},
         }
 
-    tokens = set(_TOKEN_RE.findall(observed.casefold()))
+    ordered_tokens = tuple(_TOKEN_RE.findall(observed.casefold()))
+    tokens = set(ordered_tokens)
     required = set(policy["required"])
     forbidden = set(policy["forbidden"])
-    if not required.issubset(tokens) or forbidden.intersection(tokens):
+    conflicting_phrases = tuple(policy["conflicting_phrases"])
+
+    has_conflicting_form = any(
+        _contains_token_phrase(ordered_tokens, phrase)
+        for phrase in conflicting_phrases
+    )
+
+    if (
+        not required.issubset(tokens)
+        or forbidden.intersection(tokens)
+        or has_conflicting_form
+    ):
         return {
             "supported": False,
             "reason": {
@@ -226,6 +255,21 @@ def _verify_product_family(
         },
         "reason": None,
     }
+
+
+def _contains_token_phrase(
+    tokens: tuple[str, ...],
+    phrase: tuple[str, ...],
+) -> bool:
+    """Return whether one explicit normalized token phrase occurs contiguously."""
+    if not phrase or len(phrase) > len(tokens):
+        return False
+
+    width = len(phrase)
+    return any(
+        tokens[index : index + width] == phrase
+        for index in range(len(tokens) - width + 1)
+    )
 
 
 def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:

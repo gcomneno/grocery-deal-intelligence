@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://giadaware.local/schema/economic-normalization-v0.1.schema.json",
+  "title": "GDI Economic Normalization v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "status", "result", "reasons"],
+  "properties": {
+    "version": {"const": "0.1"},
+    "status": {"enum": ["supported", "unknown"]},
+    "result": {"type": ["object", "null"]},
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["code"],
+        "properties": {"code": {"type": "string", "minLength": 1}}
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "status": {"const": "unknown"},
+        "result": {"type": "null"},
+        "reasons": {"minItems": 1}
+      }
+    },
+    {
+      "properties": {
+        "status": {"const": "supported"},
+        "reasons": {"maxItems": 0},
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["current_price", "quantity", "basis", "comparable_price", "derivation"],
+          "properties": {
+            "current_price": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value", "currency", "source_path"],
+              "properties": {
+                "value": {"type": "string", "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"},
+                "currency": {"const": "EUR"},
+                "source_path": {"const": ["price"]}
+              }
+            },
+            "quantity": {"type": "object"},
+            "basis": {"type": "object"},
+            "comparable_price": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["currency", "per_unit", "exact_ratio"],
+              "properties": {
+                "currency": {"const": "EUR"},
+                "per_unit": {"enum": ["kg", "l"]},
+                "exact_ratio": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["numerator", "denominator"],
+                  "properties": {
+                    "numerator": {"type": "string", "pattern": "^(0|[1-9][0-9]*)$"},
+                    "denominator": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+                  }
+                }
+              }
+            },
+            "derivation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["rule_id", "formula"],
+              "properties": {
+                "rule_id": {"enum": ["builtin:eur-per-kg:v0.1", "builtin:eur-per-l:v0.1"]},
+                "formula": {"enum": ["price_eur * 1000 / weight_g", "price_eur * 1000 / volume_ml"]}
+              }
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "quantity": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["value", "unit", "dimension", "attribute_path", "claim"],
+                  "properties": {
+                    "value": {"type": "string", "pattern": "^[1-9][0-9]*(\\.[0-9]+)?$"},
+                    "unit": {"const": "g"},
+                    "dimension": {"const": "mass"},
+                    "attribute_path": {"const": ["weight_g"]},
+                    "claim": {"type": "object"}
+                  }
+                },
+                "basis": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["quantity", "unit", "dimension"],
+                  "properties": {
+                    "quantity": {"const": "1"},
+                    "unit": {"const": "kg"},
+                    "dimension": {"const": "mass"}
+                  }
+                },
+                "comparable_price": {
+                  "properties": {"per_unit": {"const": "kg"}}
+                },
+                "derivation": {
+                  "properties": {
+                    "rule_id": {"const": "builtin:eur-per-kg:v0.1"},
+                    "formula": {"const": "price_eur * 1000 / weight_g"}
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "quantity": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["value", "unit", "dimension", "attribute_path", "claim"],
+                  "properties": {
+                    "value": {"type": "string", "pattern": "^[1-9][0-9]*(\\.[0-9]+)?$"},
+                    "unit": {"const": "ml"},
+                    "dimension": {"const": "volume"},
+                    "attribute_path": {"const": ["volume_ml"]},
+                    "claim": {"type": "object"}
+                  }
+                },
+                "basis": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["quantity", "unit", "dimension"],
+                  "properties": {
+                    "quantity": {"const": "1"},
+                    "unit": {"const": "l"},
+                    "dimension": {"const": "volume"}
+                  }
+                },
+                "comparable_price": {
+                  "properties": {"per_unit": {"const": "l"}}
+                },
+                "derivation": {
+                  "properties": {
+                    "rule_id": {"const": "builtin:eur-per-l:v0.1"},
+                    "formula": {"const": "price_eur * 1000 / volume_ml"}
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

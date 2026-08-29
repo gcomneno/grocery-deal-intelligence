@@ -28,21 +28,21 @@ def test_road_test_preserves_expected_real_fixture_behavior():
     assert despar["offers_parsed"] == 3
     assert despar["claims"]["contradicted"] == 0
     assert despar["claims"]["unverifiable"] == 0
-    assert despar["structurally_valid"] == 0
-    assert despar["admission_eligible"] == 0
-    assert despar["rejection_reasons"] == {"structural_invalid": 3}
+    assert despar["structurally_valid"] == 3
+    assert despar["admission_eligible"] == 3
+    assert despar["rejection_reasons"] == {}
     assert despar["pass"] is True
 
 
-def test_report_makes_expected_rejection_explicit():
+def test_report_makes_evidence_backed_admission_explicit():
     report = render_report(run_road_test())
 
     assert "=== GDI DETERMINISTIC ROAD TEST ===" in report
     assert "CARREFOUR" in report
     assert "canonical admission: 3/3 eligible" in report
     assert "DESPAR" in report
-    assert "canonical admission: 0/3 eligible" in report
-    assert "structural_invalid=3" in report
+    assert report.count("canonical admission: 3/3 eligible") == 2
+    assert "rejection reasons:    none" in report
     assert "pipeline behaves fail-closed: PASS" in report
     assert "unsupported facts invented:   0" in report
     assert "network required:              NO" in report

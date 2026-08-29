@@ -50,6 +50,11 @@ _COMPOSITE_RE = re.compile(
     rf"(?<!\w)(?P<count>\d+)\s*[x×]\s*{_NUMBER}\s*{_UNIT}(?!\w)",
     re.IGNORECASE,
 )
+_WORD_COMPOSITE_RE = re.compile(
+    rf"(?<!\w)(?P<count>\d+)\s*(?:pz\.?|pezzi)\s+da\s+"
+    rf"{_NUMBER}\s*{_UNIT}(?!\w)",
+    re.IGNORECASE,
+)
 _SIMPLE_RE = re.compile(rf"(?<!\w){_NUMBER}\s*{_UNIT}(?!\w)", re.IGNORECASE)
 _UNSUPPORTED_UNIT_RE = re.compile(
     r"(?<!\w)\d+(?:[\.,]\d+)?\s*(?:mg|cl|dl)(?!\w)", re.IGNORECASE
@@ -225,23 +230,32 @@ def _verify_product_family(
 
 def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
     observations: list[dict[str, Any]] = []
-    unsupported_seen = False
+    parse_reasons: list[str] = []
 
     for path in _ALLOWED_EVIDENCE_PATHS:
         raw = _get_path(offer, path)
         if not isinstance(raw, str) or not raw.strip():
             continue
-        parsed, unsupported = _parse_quantity_text(raw)
-        unsupported_seen = unsupported_seen or unsupported
+
+        parsed, parse_reason = _parse_quantity_text(raw)
+        if parse_reason is not None:
+            parse_reasons.append(parse_reason)
+
         if parsed is not None:
             parsed["evidence_path"] = list(path)
             parsed["raw_value"] = raw
             observations.append(parsed)
 
-    if unsupported_seen:
+    if QUANTITY_UNSUPPORTED in parse_reasons:
         return {
             "supported": False,
             "reason": {"code": QUANTITY_UNSUPPORTED},
+        }
+
+    if QUANTITY_AMBIGUOUS in parse_reasons:
+        return {
+            "supported": False,
+            "reason": {"code": QUANTITY_AMBIGUOUS},
         }
 
     if not observations:
@@ -257,7 +271,10 @@ def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
             "reason": {
                 "code": QUANTITY_AMBIGUOUS,
                 "observations": [
-                    {"evidence_path": item["evidence_path"], "raw_value": item["raw_value"]}
+                    {
+                        "evidence_path": item["evidence_path"],
+                        "raw_value": item["raw_value"],
+                    }
                     for item in observations
                 ],
             },
@@ -265,8 +282,11 @@ def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
 
     selected = observations[0]
     values = deepcopy(selected["values"])
+    claim_normalizations = selected.get("claim_normalizations", {})
     claims: list[dict[str, Any]] = []
+
     for path, normalized_value in _quantity_claim_values(values):
+        key = path[0]
         claims.append(
             {
                 "path": list(path),
@@ -274,72 +294,166 @@ def _derive_quantity(offer: Mapping[str, Any]) -> dict[str, Any]:
                 "evidence_path": deepcopy(selected["evidence_path"]),
                 "raw_value": selected["raw_value"],
                 "normalized_value": deepcopy(normalized_value),
-                "normalization": selected["normalization"],
+                "normalization": claim_normalizations.get(
+                    key,
+                    selected["normalization"],
+                ),
             }
         )
 
-    return {"supported": True, "values": values, "claims": claims, "reason": None}
+    return {
+        "supported": True,
+        "values": values,
+        "claims": claims,
+        "reason": None,
+    }
 
 
-def _parse_quantity_text(text: str) -> tuple[dict[str, Any] | None, bool]:
+def _parse_quantity_text(
+    text: str,
+) -> tuple[dict[str, Any] | None, str | None]:
     if _UNSUPPORTED_UNIT_RE.search(text):
-        return None, True
+        return None, QUANTITY_UNSUPPORTED
 
-    composite_matches = list(_COMPOSITE_RE.finditer(text))
+    composite_matches = sorted(
+        [
+            *_COMPOSITE_RE.finditer(text),
+            *_WORD_COMPOSITE_RE.finditer(text),
+        ],
+        key=lambda match: match.span(),
+    )
     simple_matches = list(_SIMPLE_RE.finditer(text))
 
     if len(composite_matches) > 1:
-        return None, False
+        return None, QUANTITY_AMBIGUOUS
+
     if composite_matches:
         match = composite_matches[0]
         composite_span = match.span()
-        if any(
-            not (composite_span[0] <= simple.start() and simple.end() <= composite_span[1])
-            for simple in simple_matches
-        ):
-            return None, False
 
         count = int(match.group("count"))
         if count <= 0:
-            return None, False
-        normalized = _normalize_measure(match.group("value"), match.group("unit"))
+            return None, QUANTITY_AMBIGUOUS
+
+        normalized = _normalize_measure(
+            match.group("value"),
+            match.group("unit"),
+        )
         if normalized is None:
-            return None, True
+            return None, QUANTITY_UNSUPPORTED
+
         dimension, unit_value, base_unit = normalized
         total = unit_value * count
+
+        extra_simple_matches = [
+            simple
+            for simple in simple_matches
+            if not (
+                composite_span[0] <= simple.start()
+                and simple.end() <= composite_span[1]
+            )
+        ]
+
+        for simple in extra_simple_matches:
+            extra = _normalize_measure(
+                simple.group("value"),
+                simple.group("unit"),
+            )
+            if extra is None:
+                return None, QUANTITY_UNSUPPORTED
+
+            extra_dimension, extra_value, extra_unit = extra
+            if (
+                extra_dimension != dimension
+                or extra_value != total
+                or extra_unit != base_unit
+            ):
+                return None, QUANTITY_AMBIGUOUS
+
         values = {
             "pack_count": count,
-            "unit_quantity": _measure_value(unit_value, base_unit, dimension),
-            "total_quantity": _measure_value(total, base_unit, dimension),
-            "quantity": _measure_value(total, base_unit, dimension),
+            "unit_quantity": _measure_value(
+                unit_value,
+                base_unit,
+                dimension,
+            ),
+            "total_quantity": _measure_value(
+                total,
+                base_unit,
+                dimension,
+            ),
+            "quantity": _measure_value(
+                total,
+                base_unit,
+                dimension,
+            ),
         }
+
         if dimension == "mass":
             values["weight_g"] = _json_number(total)
+            scalar_key = "weight_g"
         else:
             values["volume_ml"] = _json_number(total)
-        return {"values": values, "normalization": "explicit_composite_quantity"}, False
+            scalar_key = "volume_ml"
+
+        derived_normalization = "exact_composite_arithmetic"
+        if extra_simple_matches:
+            derived_normalization = (
+                "exact_composite_arithmetic_corroborated"
+            )
+
+        claim_normalizations = {
+            "pack_count": "explicit_composite_relation",
+            "unit_quantity": "explicit_composite_relation",
+            "total_quantity": derived_normalization,
+            "quantity": derived_normalization,
+            scalar_key: derived_normalization,
+        }
+
+        return {
+            "values": values,
+            "normalization": "explicit_composite_quantity",
+            "claim_normalizations": claim_normalizations,
+        }, None
 
     if not simple_matches:
-        return None, False
+        return None, None
 
     normalized_matches: list[tuple[str, Decimal, str]] = []
     for match in simple_matches:
-        normalized = _normalize_measure(match.group("value"), match.group("unit"))
+        normalized = _normalize_measure(
+            match.group("value"),
+            match.group("unit"),
+        )
         if normalized is None:
-            return None, True
+            return None, QUANTITY_UNSUPPORTED
         normalized_matches.append(normalized)
 
-    signatures = {(dimension, value, unit) for dimension, value, unit in normalized_matches}
+    signatures = {
+        (dimension, value, unit)
+        for dimension, value, unit in normalized_matches
+    }
     if len(signatures) != 1:
-        return None, False
+        return None, QUANTITY_AMBIGUOUS
 
     dimension, value, unit = normalized_matches[0]
-    values = {"quantity": _measure_value(value, unit, dimension)}
+    values = {
+        "quantity": _measure_value(
+            value,
+            unit,
+            dimension,
+        )
+    }
+
     if dimension == "mass":
         values["weight_g"] = _json_number(value)
     else:
         values["volume_ml"] = _json_number(value)
-    return {"values": values, "normalization": "deterministic_unit_conversion"}, False
+
+    return {
+        "values": values,
+        "normalization": "deterministic_unit_conversion",
+    }, None
 
 
 def _normalize_measure(raw_value: str, raw_unit: str):

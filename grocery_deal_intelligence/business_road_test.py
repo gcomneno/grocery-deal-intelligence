@@ -8,8 +8,16 @@ from typing import Any, Callable
 
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
+from grocery_deal_intelligence.comparison_policy import (
+    NO_AUTHORITY_RULES,
+    evaluate_comparison_policy,
+    resolve_comparison_policy,
+)
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
-from grocery_deal_intelligence.product_attributes import normalize_product_attributes
+from grocery_deal_intelligence.product_attributes import (
+    comparison_verification_from_attributes,
+    normalize_product_attributes,
+)
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
@@ -127,16 +135,62 @@ def run_business_road_test() -> dict[str, Any]:
             stopping_boundary = "normalized_attributes"
             stages.extend(_not_reached(stage_id) for stage_id in _AFTER_ATTRIBUTES)
         else:
-            stopping_boundary = "semantic_comparability"
-            stages.extend(
+            left_attributes = offers[0]["normalized_attributes"]
+            right_attributes = offers[1]["normalized_attributes"]
+
+            semantic_verification = comparison_verification_from_attributes(
                 {
-                    "id": stage_id,
-                    "reached": False,
-                    "status": "not_reached",
-                    "reason": "scenario_not_yet_authorized_for_stage",
-                }
-                for stage_id in _AFTER_ATTRIBUTES
+                    "values": left_attributes["values"],
+                    "claims": left_attributes["claims"],
+                },
+                {
+                    "values": right_attributes["values"],
+                    "claims": right_attributes["claims"],
+                },
+                paths=(("product_family",), ("volume_ml",)),
             )
+            semantic_policy = resolve_comparison_policy()
+            semantic_result = evaluate_comparison_policy(
+                semantic_verification,
+                semantic_policy,
+            )
+
+            semantic_pass = semantic_result["eligible"] is True
+            stages.append(
+                {
+                    "id": "semantic_comparability",
+                    "reached": True,
+                    "status": "pass" if semantic_pass else "fail_closed",
+                    "relationship": semantic_result["relationship"],
+                    "reasons": {
+                        "policy": deepcopy(semantic_result["reasons"])
+                    },
+                }
+            )
+
+            if semantic_pass:
+                stopping_boundary = "economic_normalization"
+                stages.extend(
+                    {
+                        "id": stage_id,
+                        "reached": False,
+                        "status": "not_reached",
+                        "reason": "scenario_not_yet_authorized_for_stage",
+                    }
+                    for stage_id in (
+                        "economic_normalization",
+                        "price_comparison",
+                    )
+                )
+            else:
+                stopping_boundary = "semantic_comparability"
+                stages.extend(
+                    _not_reached(stage_id)
+                    for stage_id in (
+                        "economic_normalization",
+                        "price_comparison",
+                    )
+                )
 
     carrefour_attributes = next(
         offer["normalized_attributes"]
@@ -148,24 +202,39 @@ def run_business_road_test() -> dict[str, Any]:
         for offer in offers
         if offer["retailer"] == "despar"
     )
-    expected_quantity_stop = (
-        stopping_boundary == "normalized_attributes"
-        and carrefour_attributes["status"] == "fail_closed"
-        and any(
-            reason.get("code") == "quantity_evidence_unavailable"
-            for reason in carrefour_attributes["reasons"]
-        )
+    semantic_stage = next(
+        stage
+        for stage in stages
+        if stage["id"] == "semantic_comparability"
+    )
+
+    expected_semantic_stop = (
+        stopping_boundary == "semantic_comparability"
+        and carrefour_attributes["status"] == "pass"
+        and carrefour_attributes["values"].get("volume_ml") == 990
         and despar_attributes["status"] == "pass"
         and despar_attributes["values"].get("volume_ml") == 500
+        and semantic_stage["reached"] is True
+        and semantic_stage["status"] == "fail_closed"
+        and semantic_stage["relationship"] == "unknown"
+        and semantic_stage["reasons"] == {
+            "policy": [{"code": NO_AUTHORITY_RULES}]
+        }
     )
+
     downstream_not_reached = all(
-        stage["reached"] is False for stage in stages if stage["id"] in _AFTER_ATTRIBUTES
+        stage["reached"] is False
+        for stage in stages
+        if stage["id"] in (
+            "economic_normalization",
+            "price_comparison",
+        )
     )
 
     return {
         "pass": source_pass
         and admission_pass
-        and expected_quantity_stop
+        and expected_semantic_stop
         and downstream_not_reached,
         "question": "Can GDI compare Raffo Carrefour with Pedavena Despar?",
         "final": final,
@@ -225,6 +294,7 @@ def _run_offer(spec: dict[str, Any]) -> dict[str, Any]:
             "reached": False,
             "status": "not_reached",
             "values": {},
+            "claims": [],
             "reasons": [],
         }
     else:
@@ -233,6 +303,7 @@ def _run_offer(spec: dict[str, Any]) -> dict[str, Any]:
             "reached": True,
             "status": "pass" if not normalized["reasons"] else "fail_closed",
             "values": deepcopy(normalized["values"]),
+            "claims": deepcopy(normalized["claims"]),
             "reasons": deepcopy(normalized["reasons"]),
         }
 

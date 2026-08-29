@@ -1,0 +1,48 @@
+{
+  "version": "0.1",
+  "global": {
+    "id": "builtin:global:v0.1",
+    "version": "0.1",
+    "origin": "builtin_global",
+    "rules": {}
+  },
+  "categories": {
+    "chocolate_bar": {
+      "id": "builtin:category:chocolate_bar:v0.1",
+      "version": "0.1",
+      "origin": "builtin_category",
+      "rules": {
+        "same_product_family": {
+          "effect": "require",
+          "path": ["product_family"],
+          "operator": "equal",
+          "enabled": true
+        },
+        "same_weight": {
+          "effect": "require",
+          "path": ["weight_g"],
+          "operator": "equal",
+          "enabled": true
+        },
+        "brand": {
+          "effect": "ignore",
+          "path": ["brand"],
+          "operator": "observe",
+          "enabled": true
+        },
+        "cocoa_percentage": {
+          "effect": "ignore",
+          "path": ["cocoa_percentage"],
+          "operator": "observe",
+          "enabled": true
+        },
+        "sugar_percentage": {
+          "effect": "ignore",
+          "path": ["sugar_percentage"],
+          "operator": "observe",
+          "enabled": true
+        }
+      }
+    }
+  }
+}

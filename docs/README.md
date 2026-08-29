@@ -22,3 +22,4 @@ for Grocery Deal Intelligence.
 ## Product comparison
 
 - [Evidence-grounded product comparison proposals](product-comparison-proposals.md)
+- [Overridable comparison policies](comparison-policies.md)

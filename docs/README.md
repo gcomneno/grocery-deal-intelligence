@@ -6,6 +6,7 @@ for Grocery Deal Intelligence.
 ## Business analysis and authority
 
 - [Business analysis, deterministic boundaries, and AI authority](business-analysis-and-ai-authority.md)
+- [Fail-closed business road test](business-road-test.md)
 
 ## Deterministic ingestion
 

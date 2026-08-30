@@ -2,11 +2,21 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
-from datetime import date, datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from datetime import date, datetime
 
 from .product_attributes import normalize_product_attributes
 from .source_evidence import SUPPORTED
+from .validity import (
+    VALIDITY_NOT_CURRENT,
+    coerce_as_of_date,
+    validity_status,
+)
+from .validity import (
+    VALIDITY_UNAVAILABLE as SHARED_VALIDITY_UNAVAILABLE,
+)
 
 AVAILABLE = "available"
 UNKNOWN = "unknown"
@@ -45,7 +55,7 @@ def resolve_shopping_item_availability(
     if not isinstance(product_family, str) or not product_family.strip():
         raise ValueError("product_family must be a non-empty string")
 
-    resolved_date = _coerce_date(as_of)
+    resolved_date = coerce_as_of_date(as_of)
     requested_stores = _normalize_requested_stores(stores)
 
     eligible: list[dict[str, Any]] = []
@@ -152,59 +162,20 @@ def resolve_shopping_item_availability(
 
 
 def _coerce_date(value: str | date | datetime) -> date:
-    if isinstance(value, datetime):
-        return value.date()
-
-    if isinstance(value, date):
-        return value
-
-    if not isinstance(value, str) or not value.strip():
-        raise ValueError("as_of must be an ISO date or datetime")
-
-    observed = value.strip()
-
-    try:
-        return date.fromisoformat(observed)
-    except ValueError:
-        pass
-
-    try:
-        return datetime.fromisoformat(observed).date()
-    except ValueError as exc:
-        raise ValueError("as_of must be an ISO date or datetime") from exc
-
-
-def _parse_validity_date(value: Any) -> date | None:
-    if not isinstance(value, str) or not value.strip():
-        return None
-
-    observed = value.strip()
-
-    try:
-        return date.fromisoformat(observed)
-    except ValueError:
-        pass
-
-    try:
-        return datetime.fromisoformat(observed).date()
-    except ValueError:
-        return None
+    """Compatibility wrapper for existing canonical consumers."""
+    return coerce_as_of_date(value)
 
 
 def _validity_rejection_code(
     validity: Any,
     as_of: date,
 ) -> str | None:
-    if not isinstance(validity, Mapping):
+    status = validity_status(validity, as_of)
+
+    if status == SHARED_VALIDITY_UNAVAILABLE:
         return VALIDITY_UNAVAILABLE
 
-    valid_from = _parse_validity_date(validity.get("from"))
-    valid_to = _parse_validity_date(validity.get("to"))
-
-    if valid_from is None or valid_to is None:
-        return VALIDITY_UNAVAILABLE
-
-    if not valid_from <= as_of <= valid_to:
+    if status == VALIDITY_NOT_CURRENT:
         return NOT_CURRENT
 
     return None

@@ -477,7 +477,7 @@ ADMITTED CANONICAL       REJECTED OUTCOMES
          CANONICAL CORPUS ASSEMBLER
                   |
                   v
-          IMMUTABLE CORPUS SNAPSHOT
+          TOP-LEVEL READ-ONLY CORPUS SNAPSHOT
                   |
                   v
           FIRST-CLASS CONSUMERS
@@ -516,15 +516,42 @@ Registry membership is never proof of canonical retailer availability.
 
 ### Corpus assembler
 
-The corpus assembler is the missing component.
+The corpus assembler is implemented in
+`grocery_deal_intelligence/corpus.py`.
 
-It consumes deterministic ingestion results, selects only already-admitted
-canonical records, preserves rejected outcomes, and exposes a deterministic
-corpus to canonical consumers.
+Its first-class API is:
+
+```python
+snapshot = assemble_corpus(result_sets)
+```
+
+`CorpusSnapshot` exposes:
+
+- `canonical_records`;
+- `rejected`;
+- `result_set_retailers`;
+- aggregate `summary`;
+- `ai_used`;
+- `network_required`.
+
+It consumes existing `IngestionResultSet` values, selects only canonical records
+already exposed by those result sets, preserves rejected outcomes, and exposes a
+deterministic corpus to canonical consumers.
+
+`result_set_retailers` is orchestration observability only. It preserves the
+exact retailer identity and order of input result sets, including duplicates.
+
+Canonical retailer availability remains derived from:
+
+```python
+list_available_retailers(snapshot.canonical_records)
+```
+
+The assembler performs no new canonical authority work.
 
 ## Corpus assembler contract
 
-The preferred input is the full deterministic batch result rather than a bare
+The preferred input is an existing `IngestionResultSet` rather than a bare
 list of canonical records.
 
 Reason:
@@ -543,12 +570,11 @@ GDI already exposes `IngestionResultSet` in
 `grocery_deal_intelligence/ingestion_result_set.py` as a deterministic
 projection boundary for one batch result.
 
-The missing abstraction is therefore not another batch-result projection type.
-It is the multi-retailer assembly layer above existing deterministic batch
-results.
+The implemented abstraction is therefore not another batch-result projection
+type. It is the multi-retailer assembly layer above existing deterministic
+batch results.
 
-The assembler therefore should consume deterministic ingestion result sets and
-must:
+The assembler consumes deterministic ingestion result sets and must:
 
 1. never acquire network data;
 2. never invoke AI;
@@ -588,7 +614,7 @@ evidence, borrowing facts from another record, or invoking AI repair.
 
 ## Corpus snapshot metadata
 
-A future immutable corpus snapshot may contain non-authoritative operational
+A future persisted corpus snapshot may contain non-authoritative operational
 metadata such as:
 
 - `assembled_at`;
@@ -640,17 +666,25 @@ This architecture must not introduce:
 - relaxed canonical validation;
 - market-completeness claims.
 
-## Immediate next implementation
+## Implemented corpus assembly
 
-The first implementation issue after this audit should be:
+The first multi-retailer corpus assembly boundary is implemented over existing
+deterministic `IngestionResultSet` values.
 
-> Implement canonical corpus assembler over deterministic batch result sets,
-> initially using Carrefour and Despar only.
+The initial acceptance path assembles:
 
-This is intentionally not an attempt to increase retailer count immediately.
+```text
+Carrefour: 3 admitted canonical records
+Despar:    3 admitted canonical records
+Total:     6 admitted canonical records
+```
 
-It establishes the correct architectural seam through which Lidl can be added
-next without bypassing evidence or canonical admission.
+This implementation intentionally does not increase retailer count or introduce
+new authority.
+
+The next retailer-integration step is to bridge Lidl source-shaped captured
+records through the same deterministic ingestion and corpus assembly path,
+without treating its legacy retailer-neutral export as canonical authority.
 
 ## Durable principle
 

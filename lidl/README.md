@@ -131,7 +131,22 @@ one product name currently has two distinct valid offers.
 
 ## Status
 
-Experimental.
+The acquisition and dataset-building tooling remains experimental.
 
-Not production code.
+One exact committed source-shaped dataset is now also a pinned deterministic
+repository acceptance fixture:
+
+`lidl/data/output/lidl-lucca-current.json`
+
+Pinned full-file SHA-256:
+
+`a74d6ffa880b46513f90cbe22b1dccd3a99a21ed80f84680808ea4cb363500df`
+
+That fixture is admitted through the first-class deterministic evidence,
+verification, structural-validation, canonical-admission, `IngestionResultSet`,
+and corpus-assembly path.
+
+This does not promote the historical retailer-neutral export to canonical
+authority and does not make Lidl acquisition/build tooling production-ready.
+
 Not a public data redistribution service.

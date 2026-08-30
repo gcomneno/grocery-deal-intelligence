@@ -9,8 +9,11 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
+from grocery_deal_intelligence.corpus import assemble_corpus
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_records
+from grocery_deal_intelligence.ingestion_result_set import IngestionResultSet
+from grocery_deal_intelligence.retailers import list_available_retailers
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
     SUPPORTED,
@@ -41,12 +44,23 @@ _RETAILERS: tuple[dict[str, Any], ...] = (
 def run_road_test() -> dict[str, Any]:
     """Run the committed real-fixture deterministic road test."""
     retailers: list[dict[str, Any]] = []
+    result_sets: list[IngestionResultSet] = []
     overall_pass = True
 
     for spec in _RETAILERS:
         result = _run_retailer(spec)
+        result_sets.append(result.pop("_result_set"))
         retailers.append(result)
         overall_pass = overall_pass and result["pass"]
+
+    corpus = assemble_corpus(result_sets)
+    represented_retailers = list_available_retailers(corpus.canonical_records)
+    corpus_invariants = {
+        "expected_canonical_records": corpus.summary["canonical_records"] == 6,
+        "represented_retailers": represented_retailers == ["carrefour", "despar"],
+        "no_ai_used": corpus.ai_used is False,
+        "no_network_required": corpus.network_required is False,
+    }
 
     unsupported_facts = sum(
         retailer["claims"][CONTRADICTED] + retailer["claims"][UNVERIFIABLE]
@@ -54,11 +68,20 @@ def run_road_test() -> dict[str, Any]:
     )
 
     return {
-        "pass": overall_pass and unsupported_facts == 0,
+        "pass": (
+            overall_pass and all(corpus_invariants.values()) and unsupported_facts == 0
+        ),
         "network_required": False,
         "ai_required": False,
         "unsupported_facts_invented": unsupported_facts,
         "retailers": retailers,
+        "corpus": {
+            "canonical_records": corpus.summary["canonical_records"],
+            "represented_retailers": represented_retailers,
+            "ai_used": corpus.ai_used,
+            "network_required": corpus.network_required,
+            "invariants": corpus_invariants,
+        },
     }
 
 
@@ -118,6 +141,7 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
         "rejection_reasons": summary["rejection_reasons"],
         "invariants": invariant_results,
         "pass": all(invariant_results.values()),
+        "_result_set": IngestionResultSet(batch),
     }
 
 
@@ -143,6 +167,14 @@ def render_report(result: dict[str, Any]) -> str:
 
     lines.extend(
         [
+            "CORPUS",
+            f"canonical records:           {result['corpus']['canonical_records']}",
+            "represented retailers:       "
+            + ", ".join(result["corpus"]["represented_retailers"]),
+            f"AI used:                     {'YES' if result['corpus']['ai_used'] else 'NO'}",
+            "network required by corpus:  "
+            + ("YES" if result["corpus"]["network_required"] else "NO"),
+            "",
             "RESULT",
             f"pipeline behaves fail-closed: {'PASS' if result['pass'] else 'FAIL'}",
             f"unsupported facts invented:   {result['unsupported_facts_invented']}",

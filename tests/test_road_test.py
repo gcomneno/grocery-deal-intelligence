@@ -12,6 +12,14 @@ def test_road_test_preserves_expected_real_fixture_behavior():
     assert result["network_required"] is False
     assert result["ai_required"] is False
     assert result["unsupported_facts_invented"] == 0
+    assert result["corpus"]["canonical_records"] == 6
+    assert result["corpus"]["represented_retailers"] == [
+        "carrefour",
+        "despar",
+    ]
+    assert result["corpus"]["ai_used"] is False
+    assert result["corpus"]["network_required"] is False
+    assert all(result["corpus"]["invariants"].values())
 
     by_retailer = {item["retailer"]: item for item in result["retailers"]}
 
@@ -43,6 +51,11 @@ def test_report_makes_evidence_backed_admission_explicit():
     assert "DESPAR" in report
     assert report.count("canonical admission: 3/3 eligible") == 2
     assert "rejection reasons:    none" in report
+    assert "CORPUS" in report
+    assert "canonical records:           6" in report
+    assert "represented retailers:       carrefour, despar" in report
+    assert "AI used:                     NO" in report
+    assert "network required by corpus:  NO" in report
     assert "pipeline behaves fail-closed: PASS" in report
     assert "unsupported facts invented:   0" in report
     assert "network required:              NO" in report
@@ -59,6 +72,11 @@ def test_cli_json_report_is_machine_readable(capsys):
     assert main(["--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["pass"] is True
+    assert payload["corpus"]["canonical_records"] == 6
+    assert payload["corpus"]["represented_retailers"] == [
+        "carrefour",
+        "despar",
+    ]
     assert {item["retailer"] for item in payload["retailers"]} == {
         "carrefour",
         "despar",

@@ -4,8 +4,8 @@ from types import MappingProxyType
 
 import pytest
 
-import grocery_deal_intelligence.ingestion as ingestion
 import grocery_deal_intelligence.ingestion_result_set as result_set_module
+from grocery_deal_intelligence import ingestion
 from grocery_deal_intelligence.aggregation import aggregate_offers
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
@@ -14,7 +14,6 @@ from grocery_deal_intelligence.ingestion_result_set import IngestionResultSet
 from grocery_deal_intelligence.profiling import profile_offers
 from grocery_deal_intelligence.query import search_offers
 from grocery_deal_intelligence.summary import summarize_offers
-
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _OBSERVED_AT = "2026-08-27T00:00:00Z"
@@ -124,18 +123,10 @@ def test_result_set_preserves_deterministic_ordering():
     result_set = IngestionResultSet(batch)
 
     assert [
-        outcome["candidate"]["product_name"]
-        for outcome in result_set.outcomes
-    ] == [
-        outcome["candidate"]["product_name"]
-        for outcome in batch["records"]
-    ]
-    assert [
-        record["product_name"]
-        for record in result_set.canonical_records
-    ] == [
-        outcome["canonical"]["product_name"]
-        for outcome in result_set.outcomes
+        outcome["candidate"]["product_name"] for outcome in result_set.outcomes
+    ] == [outcome["candidate"]["product_name"] for outcome in batch["records"]]
+    assert [record["product_name"] for record in result_set.canonical_records] == [
+        outcome["canonical"]["product_name"] for outcome in result_set.outcomes
     ]
 
 
@@ -144,9 +135,7 @@ def test_rejected_entries_keep_diagnostics_and_evidence_visible():
     rejected = result_set.rejected[0].outcome
 
     assert rejected["canonical"] is None
-    assert rejected["admission"]["reasons"] == [
-        {"code": "structural_invalid"}
-    ]
+    assert rejected["admission"]["reasons"] == [{"code": "structural_invalid"}]
     assert rejected["structural_validation"]["valid"] is False
     assert rejected["claim_verification"]
     assert rejected["source_evidence"]["retailer"] == "despar"
@@ -275,12 +264,8 @@ def test_canonical_records_are_already_admitted_values_from_snapshot():
     batch = _carrefour_batch()
     result_set = IngestionResultSet(batch)
 
-    assert [
-        dict(record)
-        for record in result_set.canonical_records
-    ] == [
-        outcome["canonical"]
-        for outcome in deepcopy(batch)["records"]
+    assert [dict(record) for record in result_set.canonical_records] == [
+        outcome["canonical"] for outcome in deepcopy(batch)["records"]
     ]
 
 

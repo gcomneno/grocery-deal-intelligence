@@ -1,7 +1,6 @@
 import copy
 
 import pytest
-
 from giadaware_ai.extension import CapabilityFamily, ProposeCapability
 
 from grocery_deal_intelligence.proposal_adapter import GiadaWareAIProposalAdapter
@@ -43,7 +42,10 @@ def test_capability_uses_proposal_v01_response_schema():
     capability.execute(make_source())
 
     assert backend.calls[0]["response_schema"] == _load_proposal_schema()
-    assert backend.calls[0]["response_schema"]["$id"] == "grocery-offer-proposal-v0.1.schema.json"
+    assert (
+        backend.calls[0]["response_schema"]["$id"]
+        == "grocery-offer-proposal-v0.1.schema.json"
+    )
 
 
 def test_partial_proposal_is_returned_detached():
@@ -65,7 +67,7 @@ def test_empty_proposal_is_valid_output():
 def test_invalid_proposal_shape_is_rejected_deterministically():
     capability = ProposeOfferProposalCapability(FakeBackend({"validity": {}}))
 
-    with pytest.raises(ValueError, match="invalid Proposal v0.1 output"):
+    with pytest.raises(ValueError, match=r"invalid Proposal v0\.1 output"):
         capability.execute(make_source())
 
 
@@ -88,7 +90,9 @@ def test_grounded_capability_preserves_input_and_includes_evidence():
 
 def test_adapter_returns_detached_partial_proposal():
     proposal = {"price": 1.49}
-    adapter = GiadaWareAIProposalAdapter(ProposeOfferProposalCapability(FakeBackend(proposal)))
+    adapter = GiadaWareAIProposalAdapter(
+        ProposeOfferProposalCapability(FakeBackend(proposal))
+    )
 
     result = adapter.propose(make_source())
     result["price"] = 99

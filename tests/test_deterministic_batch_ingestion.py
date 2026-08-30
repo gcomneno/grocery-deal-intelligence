@@ -3,12 +3,14 @@ from pathlib import Path
 
 import pytest
 
-import grocery_deal_intelligence.ingestion as ingestion
-import grocery_deal_intelligence.road_test as road_test
+from grocery_deal_intelligence import ingestion, road_test
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
-from grocery_deal_intelligence.source_evidence import CONTRADICTED, SUPPORTED, UNVERIFIABLE
-
+from grocery_deal_intelligence.source_evidence import (
+    CONTRADICTED,
+    SUPPORTED,
+    UNVERIFIABLE,
+)
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _OBSERVED_AT = "2026-08-27T00:00:00Z"
@@ -71,7 +73,9 @@ def test_batch_preserves_input_order_and_does_not_mutate_records():
     records = _carrefour_records()
     before = deepcopy(records)
 
-    result = ingestion.ingest_deterministic_source_records(records, retailer="carrefour")
+    result = ingestion.ingest_deterministic_source_records(
+        records, retailer="carrefour"
+    )
 
     assert records == before
     assert [record["candidate"]["product_name"] for record in result["records"]] == [
@@ -97,9 +101,13 @@ def test_batch_delegates_each_record_to_single_record_ingestion(monkeypatch):
         calls.append((source_record["product_name"], retailer))
         return real_single(source_record, retailer=retailer)
 
-    monkeypatch.setattr(ingestion, "ingest_deterministic_source_record", recording_single)
+    monkeypatch.setattr(
+        ingestion, "ingest_deterministic_source_record", recording_single
+    )
 
-    result = ingestion.ingest_deterministic_source_records(records, retailer="carrefour")
+    result = ingestion.ingest_deterministic_source_records(
+        records, retailer="carrefour"
+    )
 
     assert result["summary"]["total_records"] == 3
     assert calls == [(record["product_name"], "carrefour") for record in records]
@@ -114,7 +122,9 @@ def test_road_test_uses_shared_batch_ingestion(monkeypatch):
         calls.append((retailer, len(records)))
         return real_batch(records, retailer=retailer)
 
-    monkeypatch.setattr(road_test, "ingest_deterministic_source_records", recording_batch)
+    monkeypatch.setattr(
+        road_test, "ingest_deterministic_source_records", recording_batch
+    )
 
     result = road_test.run_road_test()
 

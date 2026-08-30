@@ -6,15 +6,12 @@ import pytest
 
 from grocery_deal_intelligence.aggregation import aggregate_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 DATASETS = {
     "lidl": ROOT / "lidl/data/output/lidl-lucca-current-retailer-neutral.json",
     "esselunga": (
-        ROOT
-        / "esselunga/data/output/"
-        "esselunga-porcari-current-retailer-neutral.json"
+        ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
     ),
 }
 
@@ -99,12 +96,10 @@ def test_real_dataset_uses_same_aggregation_interface(retailer):
 
     assert set(results) == set(DIMENSIONS)
     assert all(
-        result["dimension"] == dimension
-        for dimension, result in results.items()
+        result["dimension"] == dimension for dimension, result in results.items()
     )
     assert all(
-        sum(result["groups"].values()) == len(dataset)
-        for result in results.values()
+        sum(result["groups"].values()) == len(dataset) for result in results.values()
     )
 
 

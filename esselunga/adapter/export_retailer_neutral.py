@@ -1,24 +1,17 @@
-from pathlib import Path
 import json
-from datetime import datetime, timezone
+from pathlib import Path
 
 from build_retailer_neutral_offers import (
     build_retailer_neutral_offers,
 )
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
-OUTPUT = (
-    ROOT
-    / "data/output/esselunga-porcari-current-retailer-neutral.json"
-)
+OUTPUT = ROOT / "data/output/esselunga-porcari-current-retailer-neutral.json"
 
 
 def map_record(item):
-    requires_loyalty = (
-        item.promotion_type == "Sc % Fidaty"
-    )
+    requires_loyalty = item.promotion_type == "Sc % Fidaty"
 
     return {
         "retailer": item.retailer,
@@ -28,32 +21,25 @@ def map_record(item):
         "reference_price": item.reference_price,
         "packaging_text": item.packaging_text,
         "base_price_text": item.base_price_text,
-
         "promotion": {
             "type": item.promotion_type,
             "requires_loyalty": requires_loyalty,
             "discount_text": item.discount_text,
         },
-
         "validity": {
             "from": item.valid_from,
             "to": item.valid_to,
         },
-
         "locality": {
             "scope": "store",
-            "stores": [item.region_id]
-            if item.region_id
-            else [],
+            "stores": [item.region_id] if item.region_id else [],
             "store_code": item.store_code,
             "campaign_id": item.campaign_id,
         },
-
         "verification": {
             "locality_status": "verified",
             "evidence_status": "verified",
         },
-
         "provenance": {
             "source_type": item.source_type,
             "source_url": item.source_url,
@@ -89,47 +75,42 @@ def main():
             f"{campaign_id}.html"
         )
 
-        records.append({
-            "retailer": offer.retailer,
-            "product_name": offer.product_name,
-            "price": offer.price,
-            "currency": offer.currency,
-            "reference_price": offer.reference_price,
-            "packaging_text": offer.packaging_text,
-            "base_price_text": offer.base_price_text,
-
-            "promotion": {
-                "type": offer.promotion_type,
-                "requires_loyalty": (
-                    offer.promotion_type == "Sc % Fidaty"
-                ),
-                "discount_text": offer.discount_text,
-            },
-
-            "validity": {
-                "from": offer.valid_from,
-                "to": offer.valid_to,
-            },
-
-            "locality": {
-                "scope": "store",
-                "stores": [store_code],
-            },
-
-            "verification": {
-                "locality_status": "verified",
-                "evidence_status": "verified",
-            },
-
-            "provenance": {
-                "source_type": "retailer_api",
-                "source_url": source_url,
-                "observed_at": offer.observed_at,
-                "campaign_url": campaign_url,
-                "store_code": store_code,
-                "campaign_id": campaign_id,
-            },
-        })
+        records.append(
+            {
+                "retailer": offer.retailer,
+                "product_name": offer.product_name,
+                "price": offer.price,
+                "currency": offer.currency,
+                "reference_price": offer.reference_price,
+                "packaging_text": offer.packaging_text,
+                "base_price_text": offer.base_price_text,
+                "promotion": {
+                    "type": offer.promotion_type,
+                    "requires_loyalty": (offer.promotion_type == "Sc % Fidaty"),
+                    "discount_text": offer.discount_text,
+                },
+                "validity": {
+                    "from": offer.valid_from,
+                    "to": offer.valid_to,
+                },
+                "locality": {
+                    "scope": "store",
+                    "stores": [store_code],
+                },
+                "verification": {
+                    "locality_status": "verified",
+                    "evidence_status": "verified",
+                },
+                "provenance": {
+                    "source_type": "retailer_api",
+                    "source_url": source_url,
+                    "observed_at": offer.observed_at,
+                    "campaign_url": campaign_url,
+                    "store_code": store_code,
+                    "campaign_id": campaign_id,
+                },
+            }
+        )
 
     OUTPUT.parent.mkdir(
         parents=True,
@@ -141,7 +122,8 @@ def main():
             records,
             ensure_ascii=False,
             indent=2,
-        ) + "\n",
+        )
+        + "\n",
         encoding="utf-8",
     )
 

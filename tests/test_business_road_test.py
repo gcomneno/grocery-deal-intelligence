@@ -12,7 +12,6 @@ from grocery_deal_intelligence.business_road_test import (
 )
 
 
-
 def test_business_road_test_advances_to_semantic_comparability():
     result = run_business_road_test()
 
@@ -61,9 +60,7 @@ def test_business_road_test_advances_to_semantic_comparability():
         "reached": True,
         "status": "fail_closed",
         "relationship": "unknown",
-        "reasons": {
-            "policy": [{"code": "no_authority_rules"}]
-        },
+        "reasons": {"policy": [{"code": "no_authority_rules"}]},
     }
 
     for stage_id in (
@@ -76,6 +73,7 @@ def test_business_road_test_advances_to_semantic_comparability():
             "status": "not_reached",
             "reason": "upstream_authority_unavailable",
         }
+
 
 def test_business_road_test_selects_expected_verified_real_offers():
     result = run_business_road_test()
@@ -111,7 +109,6 @@ def test_business_road_test_fixture_identity_is_enforced(monkeypatch):
         run_business_road_test()
 
 
-
 def test_human_report_makes_authorized_stop_explicit():
     report = render_report(run_business_road_test())
 
@@ -129,10 +126,10 @@ def test_human_report_makes_authorized_stop_explicit():
     assert "Authorized stopping boundary: semantic_comparability" in report
     assert "Business road test: PASS" in report
 
+
 def test_cli_human_report_exits_zero(capsys):
     assert main([]) == 0
     assert "Business road test: PASS" in capsys.readouterr().out
-
 
 
 def test_cli_json_report_is_stable_and_machine_readable(capsys):

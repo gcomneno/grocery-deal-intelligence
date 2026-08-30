@@ -2,7 +2,6 @@ from collections import Counter
 
 from extract_offers import extract_offers
 
-
 EXPECTED_MECHANICS = {
     "M000": "EVIDENZIAZIONE SENZA OFFERTA",
     "M001": "EVIDENZIAZIONE PREZZO FISSO",
@@ -20,10 +19,7 @@ def main():
 
     assert offers, "no offers extracted"
 
-    mechanics = Counter(
-        offer.mechanic_code
-        for offer in offers
-    )
+    mechanics = Counter(offer.mechanic_code for offer in offers)
 
     print("===== MECHANICS =====")
 
@@ -40,19 +36,13 @@ def main():
         code = offer.mechanic_code
 
         if code and code not in EXPECTED_MECHANICS:
-            raise AssertionError(
-                f"unknown mechanic: {code!r}"
-            )
+            raise AssertionError(f"unknown mechanic: {code!r}")
 
         if offer.regular_price < 0:
-            raise AssertionError(
-                f"negative regular price: {offer.product_code}"
-            )
+            raise AssertionError(f"negative regular price: {offer.product_code}")
 
         if offer.promotional_price < 0:
-            raise AssertionError(
-                f"negative promotional price: {offer.product_code}"
-            )
+            raise AssertionError(f"negative promotional price: {offer.product_code}")
 
         if code == "M002":
             assert offer.discount_percent != "", (

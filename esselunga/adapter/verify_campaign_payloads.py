@@ -1,8 +1,7 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 from extract_offers import extract_mechanics, extract_price, extract_validity
-
 
 CAMPAIGNS = [
     ("8260", Path("../esselunga/all-8260.json")),
@@ -45,11 +44,7 @@ for code, path in CAMPAIGNS:
     total_items += len(items)
     total_offers += campaign_offers
 
-    print(
-        f"campaign={code} "
-        f"items={len(items)} "
-        f"offers={campaign_offers}"
-    )
+    print(f"campaign={code} items={len(items)} offers={campaign_offers}")
 
 
 assert total_items == 1234

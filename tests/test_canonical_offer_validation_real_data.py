@@ -4,15 +4,12 @@ from pathlib import Path
 
 from grocery_deal_intelligence.validation import validate_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 DATASETS = {
     "lidl": ROOT / "lidl/data/output/lidl-lucca-current-retailer-neutral.json",
     "esselunga": (
-        ROOT
-        / "esselunga/data/output/"
-        "esselunga-porcari-current-retailer-neutral.json"
+        ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
     ),
 }
 
@@ -46,14 +43,10 @@ def test_real_esselunga_dataset_is_canonically_valid():
 
 
 def test_real_retailer_datasets_share_the_same_validation_interface():
-    datasets = {
-        retailer: load_dataset(path)
-        for retailer, path in DATASETS.items()
-    }
+    datasets = {retailer: load_dataset(path) for retailer, path in DATASETS.items()}
 
     results = {
-        retailer: validate_offers(dataset)
-        for retailer, dataset in datasets.items()
+        retailer: validate_offers(dataset) for retailer, dataset in datasets.items()
     }
 
     assert all(result["valid"] for result in results.values())
@@ -80,10 +73,7 @@ def test_real_esselunga_validation_does_not_mutate_dataset():
 
 
 def test_real_dataset_validation_is_deterministic():
-    datasets = {
-        retailer: load_dataset(path)
-        for retailer, path in DATASETS.items()
-    }
+    datasets = {retailer: load_dataset(path) for retailer, path in DATASETS.items()}
 
     for dataset in datasets.values():
         assert validate_offers(dataset) == validate_offers(dataset)

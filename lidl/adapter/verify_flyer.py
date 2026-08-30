@@ -5,10 +5,7 @@ import unicodedata
 def normalize_text(text):
     text = (text or "").lower()
     text = unicodedata.normalize("NFKD", text)
-    text = "".join(
-        c for c in text
-        if not unicodedata.combining(c)
-    )
+    text = "".join(c for c in text if not unicodedata.combining(c))
     text = re.sub(r"[^a-z0-9]+", " ", text)
     return " ".join(text.split())
 
@@ -20,10 +17,12 @@ def find_product_pages(product_name, pages):
 
     for page in pages:
         haystack = normalize_text(
-            " ".join([
-                page.get("keyWords") or "",
-                page.get("altText") or "",
-            ])
+            " ".join(
+                [
+                    page.get("keyWords") or "",
+                    page.get("altText") or "",
+                ]
+            )
         )
 
         if needle in haystack:
@@ -56,9 +55,12 @@ if __name__ == "__main__":
         pages,
     ) == [8]
 
-    assert find_product_pages(
-        "Prodotto inesistente",
-        pages,
-    ) == []
+    assert (
+        find_product_pages(
+            "Prodotto inesistente",
+            pages,
+        )
+        == []
+    )
 
     print("verify_flyer: PASS")

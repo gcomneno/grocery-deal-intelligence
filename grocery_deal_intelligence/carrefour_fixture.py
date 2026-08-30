@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+_CARREFOUR_MINIMUM_OFFER_PART_COUNT = 2
+
 
 @dataclass(frozen=True)
 class CarrefourOffer:
@@ -27,7 +29,7 @@ class CarrefourFixture:
 
 
 def _parse_offer(parts: list[str]) -> CarrefourOffer:
-    if len(parts) < 2:
+    if len(parts) < _CARREFOUR_MINIMUM_OFFER_PART_COUNT:
         raise ValueError("Carrefour offer line must contain product and price evidence")
 
     product_name = parts[0]

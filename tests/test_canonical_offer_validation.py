@@ -6,7 +6,6 @@ import pytest
 
 from grocery_deal_intelligence.validation import validate_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema/grocery-offer-v0.1.schema.json"
 

@@ -8,7 +8,6 @@ from typing import Any
 
 from .source_evidence import SUPPORTED, UNVERIFIABLE
 
-
 UNKNOWN_FAMILY = "unknown_product_family"
 UNSUPPORTED_FAMILY = "unsupported_product_family"
 FAMILY_EVIDENCE_UNAVAILABLE = "product_family_evidence_unavailable"
@@ -56,10 +55,10 @@ _FAMILY_POLICIES: dict[str, dict[str, object]] = {
 
 _ALLOWED_EVIDENCE_PATHS = (("packaging_text",), ("product_name",))
 _UNIT_MAP = {
-    "g": ("mass", Decimal("1"), "g"),
-    "kg": ("mass", Decimal("1000"), "g"),
-    "ml": ("volume", Decimal("1"), "ml"),
-    "l": ("volume", Decimal("1000"), "ml"),
+    "g": ("mass", Decimal(1), "g"),
+    "kg": ("mass", Decimal(1000), "g"),
+    "ml": ("volume", Decimal(1), "ml"),
+    "l": ("volume", Decimal(1000), "ml"),
 }
 _NUMBER = r"(?P<value>\d+(?:[\.,]\d+)?)"
 _UNIT = r"(?P<unit>kg|g|ml|l)"
@@ -223,8 +222,7 @@ def _verify_product_family(
     conflicting_phrases = tuple(policy["conflicting_phrases"])
 
     has_conflicting_form = any(
-        _contains_token_phrase(ordered_tokens, phrase)
-        for phrase in conflicting_phrases
+        _contains_token_phrase(ordered_tokens, phrase) for phrase in conflicting_phrases
     )
 
     if (
@@ -442,9 +440,7 @@ def _parse_quantity_text(
 
         derived_normalization = "exact_composite_arithmetic"
         if extra_simple_matches:
-            derived_normalization = (
-                "exact_composite_arithmetic_corroborated"
-            )
+            derived_normalization = "exact_composite_arithmetic_corroborated"
 
         claim_normalizations = {
             "pack_count": "explicit_composite_relation",
@@ -474,8 +470,7 @@ def _parse_quantity_text(
         normalized_matches.append(normalized)
 
     signatures = {
-        (dimension, value, unit)
-        for dimension, value, unit in normalized_matches
+        (dimension, value, unit) for dimension, value, unit in normalized_matches
     }
     if len(signatures) != 1:
         return None, QUANTITY_AMBIGUOUS

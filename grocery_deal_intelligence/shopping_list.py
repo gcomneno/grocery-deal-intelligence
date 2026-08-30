@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from copy import deepcopy
-from typing import Any, Callable
+from typing import Any
 
 from .comparison_policy import (
     evaluate_comparison_policy,
@@ -27,7 +27,6 @@ from .shopping_availability import (
     _coerce_date,
     resolve_shopping_item_availability,
 )
-
 
 LOWEST_PRICE = "lowest_price"
 
@@ -82,9 +81,13 @@ def resolve_shopping_list(
         if not isinstance(item_id, str) or not item_id:
             raise ValueError("shopping-list item id must be a non-empty string")
         if not isinstance(product_family, str) or not product_family:
-            raise ValueError("shopping-list item product_family must be a non-empty string")
+            raise ValueError(
+                "shopping-list item product_family must be a non-empty string"
+            )
         if not isinstance(policy_id, str) or not policy_id:
-            raise ValueError("shopping-list item selection_policy must be a non-empty string")
+            raise ValueError(
+                "shopping-list item selection_policy must be a non-empty string"
+            )
 
         availability = resolve_shopping_item_availability(
             records_copy,
@@ -359,11 +362,7 @@ def _unselected(
 
 
 def _count_status(items: Sequence[Mapping[str, Any]], status: str) -> int:
-    return sum(
-        1
-        for item in items
-        if item["selection"]["status"] == status
-    )
+    return sum(1 for item in items if item["selection"]["status"] == status)
 
 
 _Selector = Callable[[Mapping[str, Any], Mapping[str, Any]], dict[str, Any]]

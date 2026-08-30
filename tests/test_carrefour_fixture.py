@@ -8,7 +8,6 @@ from grocery_deal_intelligence.carrefour_fixture import (
     parse_carrefour_fixture_text,
 )
 
-
 FIXTURE = Path("fixtures/carrefour/store-5190-flyer-56879.txt")
 EXPECTED_SHA256 = "25f18f28c52ae114e68bb18f93ed78d777390b0d2ebf1a070e45d99a4b52d571"
 
@@ -35,7 +34,10 @@ def test_parse_loyalty_discount_and_price_evidence():
     parsed = load_carrefour_fixture(FIXTURE)
     offer = parsed.offers[0]
 
-    assert offer.product_name == "Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l"
+    assert (
+        offer.product_name
+        == "Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l"
+    )
     assert offer.discount_text == "-30%"
     assert offer.loyalty_text == "SPESAMICA PAYBACK"
     assert offer.price_texts == ("€1,57", "€1,09", "€1,09 al Lt")

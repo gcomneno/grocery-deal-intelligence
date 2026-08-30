@@ -47,9 +47,16 @@ def _leaf_count(value: Any) -> int:
     return 1
 
 
-def evaluate_fixture(source: dict[str, Any], source_identity: dict[str, Any], *, adapter: GiadaWareAIProposalAdapter) -> dict[str, Any]:
+def evaluate_fixture(
+    source: dict[str, Any],
+    source_identity: dict[str, Any],
+    *,
+    adapter: GiadaWareAIProposalAdapter,
+) -> dict[str, Any]:
     source_before = copy.deepcopy(source)
-    result = ingest_offer_proposal_path(source, ai=adapter, retailer=source_identity["retailer"])
+    result = ingest_offer_proposal_path(
+        source, ai=adapter, retailer=source_identity["retailer"]
+    )
 
     if source != source_before:
         raise AssertionError("Proposal-path experiment mutated a source record")
@@ -63,12 +70,27 @@ def evaluate_fixture(source: dict[str, Any], source_identity: dict[str, Any], *,
     admission = result["admission"]
     canonical = result["canonical"]
 
-    proposal_summary = summarize_claim_verification(claim_verification) if claim_verification is not None else None
-    canonical_summary = summarize_claim_verification(canonical_claim_verification) if canonical_claim_verification is not None else None
+    proposal_summary = (
+        summarize_claim_verification(claim_verification)
+        if claim_verification is not None
+        else None
+    )
+    canonical_summary = (
+        summarize_claim_verification(canonical_claim_verification)
+        if canonical_claim_verification is not None
+        else None
+    )
 
-    if projection is not None and not projection["projectable"]:
-        if canonical_validation is not None or admission is not None or canonical is not None:
-            raise AssertionError("not_projectable must not fabricate downstream authority")
+    if (
+        projection is not None
+        and not projection["projectable"]
+        and (
+            canonical_validation is not None
+            or admission is not None
+            or canonical is not None
+        )
+    ):
+        raise AssertionError("not_projectable must not fabricate downstream authority")
 
     if admission is not None and (canonical is not None) != bool(admission["eligible"]):
         raise AssertionError("canonical presence must match admission eligibility")
@@ -96,7 +118,9 @@ def summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
     canonical_counts: Counter[str] = Counter()
     missing_required_counts: Counter[str] = Counter()
     rejected_status_counts: Counter[str] = Counter()
-    proposal_valid = projectable = structural_valid = admission_eligible = canonical_records = proposal_total_claims = 0
+    proposal_valid = projectable = structural_valid = admission_eligible = (
+        canonical_records
+    ) = proposal_total_claims = 0
 
     for result in results:
         if result["proposal_validation"]["valid"]:
@@ -150,7 +174,9 @@ def summarize_results(results: list[dict[str, Any]]) -> dict[str, Any]:
 
 def run_experiment() -> dict[str, Any]:
     if os.environ.get(RUN_ENV) != "1":
-        raise RuntimeError(f"Proposal-path real-retailer experiment is opt-in; set {RUN_ENV}=1")
+        raise RuntimeError(
+            f"Proposal-path real-retailer experiment is opt-in; set {RUN_ENV}=1"
+        )
     base_url = os.environ.get(BASE_URL_ENV, DEFAULT_BASE_URL)
     model = os.environ.get(MODEL_ENV, DEFAULT_MODEL)
     timeout = float(os.environ.get(TIMEOUT_ENV, DEFAULT_TIMEOUT))
@@ -166,14 +192,23 @@ def run_experiment() -> dict[str, Any]:
             "name": "fixed-real-retailer-proposal-v0.1-ingestion",
             "fixture_count": len(FIXTURES),
             "fixture_order": [
-                {"retailer": spec["retailer"], "path": spec["path"], "selector": copy.deepcopy(spec["selector"])}
+                {
+                    "retailer": spec["retailer"],
+                    "path": spec["path"],
+                    "selector": copy.deepcopy(spec["selector"]),
+                }
                 for spec in FIXTURES
             ],
         },
         "fixtures": results,
         "summary": summarize_results(results),
         "comparison_baseline": copy.deepcopy(DIRECT_CANONICAL_BASELINE),
-        "runtime_metadata": {"backend": "giadaware_ai.backends.ollama.OllamaBackend", "base_url": base_url, "model": model, "timeout": timeout},
+        "runtime_metadata": {
+            "backend": "giadaware_ai.backends.ollama.OllamaBackend",
+            "base_url": base_url,
+            "model": model,
+            "timeout": timeout,
+        },
     }
 
 

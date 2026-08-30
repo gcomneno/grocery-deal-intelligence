@@ -154,6 +154,30 @@ Prefer:
     one issue -> one branch -> one reviewed PR
         -> verified merge -> branch cleanup
 
+## Python toolchain
+
+Ruff is the canonical repository-owned Python linter and formatter.
+
+The Ruff contract is defined in `pyproject.toml`.
+
+Policy:
+
+- lint starts from `select = ["ALL"]`;
+- exceptions must be narrow, explicit, and justified by repository context;
+- do not weaken domain contracts or tests merely to satisfy lint;
+- do not use unsafe Ruff fixes without explicit review of their semantics;
+- run `ruff check .` before final verification;
+- run `ruff format --check .` before final verification;
+- CI enforces both lint and formatter conformance.
+
+Ruff is pinned deliberately. Because `ALL` may acquire new rules when Ruff is
+upgraded, a Ruff version change is a reviewed toolchain-policy change rather
+than incidental dependency drift.
+
+This `AGENTS.md` is living operational documentation. Review and update it when
+durable tooling, methodology, verification, architecture, workflow, or other
+repository operating conventions change the canonical operating model.
+
 ## Verification discipline
 
 For behavioral changes, verify the relevant focused tests and full test suite.

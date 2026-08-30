@@ -1,3 +1,6 @@
+from collections.abc import Iterable, Mapping
+from typing import Any
+
 _SUPPORTED_DIMENSIONS = {
     "retailer",
     "currency",
@@ -11,7 +14,7 @@ _SUPPORTED_DIMENSIONS = {
 }
 
 
-def _dimension_value(record, dimension):
+def _dimension_value(record: Mapping[str, Any], dimension: str):
     if dimension == "retailer":
         return record["retailer"]
 
@@ -42,7 +45,9 @@ def _dimension_value(record, dimension):
     raise ValueError(f"unsupported aggregation dimension: {dimension}")
 
 
-def aggregate_offers(records, *, dimension):
+def aggregate_offers(
+    records: Iterable[Mapping[str, Any]], *, dimension: str
+) -> dict[str, Any]:
     if dimension not in _SUPPORTED_DIMENSIONS:
         raise ValueError(f"unsupported aggregation dimension: {dimension}")
 

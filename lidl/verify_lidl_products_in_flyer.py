@@ -1,7 +1,7 @@
-from pathlib import Path
 import json
 import re
 import unicodedata
+from pathlib import Path
 
 DATASET = Path("lidl-current-food-normalized.json")
 FLYER = Path("flyer-api/current.json")
@@ -21,16 +21,20 @@ flyer = json.loads(FLYER.read_text(encoding="utf-8"))["flyer"]
 pages = []
 
 for page in flyer.get("pages", []):
-    text = " ".join([
-        page.get("keyWords") or "",
-        page.get("altText") or "",
-    ])
+    text = " ".join(
+        [
+            page.get("keyWords") or "",
+            page.get("altText") or "",
+        ]
+    )
 
-    pages.append({
-        "number": page.get("number"),
-        "text": text,
-        "normalized": normalize(text),
-    })
+    pages.append(
+        {
+            "number": page.get("number"),
+            "text": text,
+            "normalized": normalize(text),
+        }
+    )
 
 
 # Riduciamo a prodotti unici per nome.
@@ -46,11 +50,7 @@ unmatched = []
 for name, item in products.items():
     needle = normalize(name)
 
-    hits = [
-        page
-        for page in pages
-        if needle in page["normalized"]
-    ]
+    hits = [page for page in pages if needle in page["normalized"]]
 
     record = {
         "product_name": name,
@@ -75,9 +75,9 @@ print("unmatched:", len(unmatched))
 print("\n===== MATCHED =====")
 for item in matched:
     print(
-        f'- {item["product_name"]}'
-        f' | {item["price"]} {item["currency"]}'
-        f' | pages={item["pages"]}'
+        f"- {item['product_name']}"
+        f" | {item['price']} {item['currency']}"
+        f" | pages={item['pages']}"
     )
 
 print("\n===== UNMATCHED =====")
@@ -85,9 +85,13 @@ for item in unmatched:
     print("-", item["product_name"])
 
 Path("flyer-api/product-verification.json").write_text(
-    json.dumps({
-        "matched": matched,
-        "unmatched": unmatched,
-    }, ensure_ascii=False, indent=2),
+    json.dumps(
+        {
+            "matched": matched,
+            "unmatched": unmatched,
+        },
+        ensure_ascii=False,
+        indent=2,
+    ),
     encoding="utf-8",
 )

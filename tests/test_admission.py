@@ -13,7 +13,12 @@ from grocery_deal_intelligence.admission import (
 
 def supported_claims():
     return [
-        {"path": list(path), "status": "supported", "candidate_value": "x", "evidence_value": "x"}
+        {
+            "path": list(path),
+            "status": "supported",
+            "candidate_value": "x",
+            "evidence_value": "x",
+        }
         for path in CRITICAL_CLAIM_PATHS
     ]
 
@@ -29,13 +34,14 @@ def test_structurally_invalid_candidate_is_ineligible():
 
 
 def test_any_contradicted_claim_blocks_admission_even_when_non_critical():
-    claims = supported_claims() + [
+    claims = [
+        *supported_claims(),
         {
             "path": ["promotion", "discount_text"],
             "status": "contradicted",
             "candidate_value": "-10%",
             "evidence_value": "-20%",
-        }
+        },
     ]
 
     result = evaluate_canonical_admission(
@@ -50,12 +56,13 @@ def test_any_contradicted_claim_blocks_admission_even_when_non_critical():
 
 
 def test_non_critical_unverifiable_claim_is_tolerated():
-    claims = supported_claims() + [
+    claims = [
+        *supported_claims(),
         {
             "path": ["provenance", "observed_at"],
             "status": "unverifiable",
             "candidate_value": "2026-08-27T00:00:00Z",
-        }
+        },
     ]
 
     result = evaluate_canonical_admission(
@@ -116,9 +123,7 @@ def test_critical_contradiction_is_reported_once_as_contradicted_claim():
         claim_verification=claims,
     )
 
-    assert result["reasons"] == [
-        {"code": CONTRADICTED_CLAIM, "path": ["product_name"]}
-    ]
+    assert result["reasons"] == [{"code": CONTRADICTED_CLAIM, "path": ["product_name"]}]
 
 
 def test_reason_order_is_stable_and_deterministic():
@@ -147,8 +152,9 @@ def test_reason_order_is_stable_and_deterministic():
 
 
 def test_inputs_are_not_mutated():
-    claims = supported_claims() + [
-        {"path": ["currency"], "status": "unverifiable", "candidate_value": "EUR"}
+    claims = [
+        *supported_claims(),
+        {"path": ["currency"], "status": "unverifiable", "candidate_value": "EUR"},
     ]
     before = copy.deepcopy(claims)
 

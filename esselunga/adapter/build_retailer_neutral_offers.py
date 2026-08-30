@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from extract_offers import EsselungaOffer, extract_offers
 
@@ -66,52 +66,36 @@ def normalize_offer(
 ) -> RetailerNeutralOffer:
     return RetailerNeutralOffer(
         retailer="esselunga",
-
         product_name=offer.product_name,
-
         # Esselunga does not currently expose the
         # retailer-neutral classification contract directly.
         classification=None,
-
         campaign_url=campaign_url(
             offer.cod_promo,
             offer.store_code,
         ),
-
         # Store geography is not automatically a "region"
         # in the common contract.
         regions=None,
-
         source_type="retailer_api",
-
         source_url=source_url(
             offer.store_code,
             offer.cod_promo,
         ),
-
         observed_at=observed_at,
-
         region_id=None,
-
         price=offer.promotional_price,
         currency="EUR",
-
         reference_price=offer.regular_price,
-
         discount_text=discount_text(offer),
-
         promotion_type=offer.mechanic_description,
-
         # Esselunga's Fìdaty is not Lidl Plus.
         # Do not collapse retailer-specific loyalty semantics.
         requires_lidl_plus=None,
-
         packaging_text=None,
         base_price_text=None,
-
         valid_from=offer.valid_from or None,
         valid_to=offer.valid_to or None,
-
         price_status=price_status(offer),
     )
 
@@ -125,11 +109,14 @@ def build_retailer_neutral_offers(
         cod_promo,
     )
 
-    observed_at = datetime.now(
-        timezone.utc
-    ).replace(microsecond=0).isoformat().replace(
-        "+00:00",
-        "Z",
+    observed_at = (
+        datetime.now(UTC)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace(
+            "+00:00",
+            "Z",
+        )
     )
 
     return [
@@ -148,17 +135,12 @@ if __name__ == "__main__":
     )
 
     assert len(offers) == 1156
-    assert len({
-        offer.product_name
-        for offer in offers
-    }) > 0
+    assert len({offer.product_name for offer in offers}) > 0
 
     first = offers[0]
 
     assert first.retailer == "esselunga"
-    assert first.product_name == (
-        "F.lli Orsero Ananas Tronchetto 500 g"
-    )
+    assert first.product_name == ("F.lli Orsero Ananas Tronchetto 500 g")
 
     assert first.price == 4.88
     assert first.reference_price == 6.98

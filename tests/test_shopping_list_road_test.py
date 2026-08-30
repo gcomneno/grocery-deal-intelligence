@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from grocery_deal_intelligence import shopping_list_road_test
@@ -11,7 +9,6 @@ from grocery_deal_intelligence.shopping_list import (
 from grocery_deal_intelligence.shopping_list_road_test import (
     _FIXTURE_SHA256,
     _load_fixture_records,
-    main,
     render_report,
     run_shopping_list_road_test,
 )
@@ -42,10 +39,7 @@ def test_shopping_list_road_test_contract():
 
     assert "as_of" not in result
     assert shopping_list["as_of"] == "2026-08-25"
-    assert all(
-        "as_of" not in item["availability"]
-        for item in shopping_list["items"]
-    )
+    assert all("as_of" not in item["availability"] for item in shopping_list["items"])
 
     assert shopping_list["requested_item_count"] == 2
     assert shopping_list["resolved_item_count"] == 1
@@ -74,9 +68,7 @@ def test_caller_item_order_and_per_item_outcomes():
 
     assert second["availability"]["status"] == "unknown"
     assert second["selection"]["status"] == SELECTION_UNSELECTED
-    assert second["selection"]["reason"] == {
-        "code": NO_ELIGIBLE_OFFERS
-    }
+    assert second["selection"]["reason"] == {"code": NO_ELIGIBLE_OFFERS}
 
 
 def test_provenance_remains_inspectable():

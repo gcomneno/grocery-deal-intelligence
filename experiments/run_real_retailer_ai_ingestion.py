@@ -13,7 +13,6 @@ from grocery_deal_intelligence.giadaware_ai_adapter import GiadaWareAIAdapter
 from grocery_deal_intelligence.ingestion import ingest_offer
 from grocery_deal_intelligence.offer_proposal import ProposeOfferCandidateCapability
 
-
 RUN_ENV = "GROCERY_DEAL_INTELLIGENCE_RUN_REAL_RETAILER_EXPERIMENT"
 BASE_URL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_BASE_URL"
 MODEL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_MODEL"
@@ -50,7 +49,11 @@ def load_selected_source_record() -> dict[str, Any]:
     if not isinstance(items, list):
         raise ValueError("real retailer source payload must contain an items list")
 
-    matches = [item for item in items if isinstance(item, dict) and item.get("id") == SOURCE_RECORD_ID]
+    matches = [
+        item
+        for item in items
+        if isinstance(item, dict) and item.get("id") == SOURCE_RECORD_ID
+    ]
 
     if len(matches) != 1:
         raise ValueError(
@@ -71,9 +74,7 @@ def load_selected_source_record() -> dict[str, Any]:
 
 def run_experiment() -> dict[str, Any]:
     if os.environ.get(RUN_ENV) != "1":
-        raise RuntimeError(
-            f"real retailer AI experiment is opt-in; set {RUN_ENV}=1"
-        )
+        raise RuntimeError(f"real retailer AI experiment is opt-in; set {RUN_ENV}=1")
 
     base_url = os.environ.get(BASE_URL_ENV, DEFAULT_BASE_URL)
     model = os.environ.get(MODEL_ENV, DEFAULT_MODEL)

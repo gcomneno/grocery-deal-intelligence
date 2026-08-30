@@ -12,7 +12,6 @@ from grocery_deal_intelligence.despar_fixture import (
     parse_euro_price,
 )
 
-
 FIXTURE = Path("fixtures/despar/store-191-flyer-2026-08-13.txt")
 EXPECTED_SHA256 = "54607c3e32d3984d68b6889c522cd17486c31361a8e781f1447c5abe24edaf17"
 
@@ -50,7 +49,9 @@ def test_preserves_multiple_prices_and_promotion_text():
     parsed = load_despar_fixture(FIXTURE)
     offer = parsed.offers[2]
 
-    assert offer.product_name == "Olio Extra Vergine di oliva Grezzo Il Casolare Farchioni"
+    assert (
+        offer.product_name == "Olio Extra Vergine di oliva Grezzo Il Casolare Farchioni"
+    )
     assert offer.package_text == "1 L"
     assert offer.price_texts == ("9,49 €", "7,59 € al pz.")
     assert offer.promotion_text == "Sconto extra App -20%"

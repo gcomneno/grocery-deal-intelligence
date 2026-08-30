@@ -4,15 +4,18 @@ import argparse
 import json
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
-from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.comparison_policy import (
     NO_AUTHORITY_RULES,
     evaluate_comparison_policy,
     resolve_comparison_policy,
 )
+from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_record
 from grocery_deal_intelligence.product_attributes import (
     comparison_verification_from_attributes,
@@ -24,7 +27,6 @@ from grocery_deal_intelligence.source_evidence import (
     UNVERIFIABLE,
     summarize_claim_verification,
 )
-
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _OBSERVED_AT = "2026-08-27T00:00:00Z"
@@ -59,9 +61,7 @@ def run_business_road_test() -> dict[str, Any]:
     """Run the committed real-offer business scenario without adding authority."""
     offers = [_run_offer(spec) for spec in _SCENARIO]
 
-    source_pass = all(
-        offer["source_evidence"]["status"] == "pass" for offer in offers
-    )
+    source_pass = all(offer["source_evidence"]["status"] == "pass" for offer in offers)
     admission_pass = all(
         offer["canonical_admission"]["status"] == "pass" for offer in offers
     )
@@ -85,9 +85,7 @@ def run_business_road_test() -> dict[str, Any]:
                 for offer in offers
             },
             "reasons": {
-                offer["retailer"]: deepcopy(
-                    offer["canonical_admission"]["reasons"]
-                )
+                offer["retailer"]: deepcopy(offer["canonical_admission"]["reasons"])
                 for offer in offers
                 if offer["canonical_admission"]["reasons"]
             },
@@ -99,16 +97,22 @@ def run_business_road_test() -> dict[str, Any]:
 
     if not source_pass:
         stopping_boundary = "source_evidence"
-        stages.extend(_not_reached(stage_id) for stage_id in (
-            "normalized_attributes",
-            *_AFTER_ATTRIBUTES,
-        ))
+        stages.extend(
+            _not_reached(stage_id)
+            for stage_id in (
+                "normalized_attributes",
+                *_AFTER_ATTRIBUTES,
+            )
+        )
     elif not admission_pass:
         stopping_boundary = "canonical_admission"
-        stages.extend(_not_reached(stage_id) for stage_id in (
-            "normalized_attributes",
-            *_AFTER_ATTRIBUTES,
-        ))
+        stages.extend(
+            _not_reached(stage_id)
+            for stage_id in (
+                "normalized_attributes",
+                *_AFTER_ATTRIBUTES,
+            )
+        )
     else:
         attributes_pass = all(
             offer["normalized_attributes"]["status"] == "pass" for offer in offers
@@ -162,9 +166,7 @@ def run_business_road_test() -> dict[str, Any]:
                     "reached": True,
                     "status": "pass" if semantic_pass else "fail_closed",
                     "relationship": semantic_result["relationship"],
-                    "reasons": {
-                        "policy": deepcopy(semantic_result["reasons"])
-                    },
+                    "reasons": {"policy": deepcopy(semantic_result["reasons"])},
                 }
             )
 
@@ -203,9 +205,7 @@ def run_business_road_test() -> dict[str, Any]:
         if offer["retailer"] == "despar"
     )
     semantic_stage = next(
-        stage
-        for stage in stages
-        if stage["id"] == "semantic_comparability"
+        stage for stage in stages if stage["id"] == "semantic_comparability"
     )
 
     expected_semantic_stop = (
@@ -217,15 +217,14 @@ def run_business_road_test() -> dict[str, Any]:
         and semantic_stage["reached"] is True
         and semantic_stage["status"] == "fail_closed"
         and semantic_stage["relationship"] == "unknown"
-        and semantic_stage["reasons"] == {
-            "policy": [{"code": NO_AUTHORITY_RULES}]
-        }
+        and semantic_stage["reasons"] == {"policy": [{"code": NO_AUTHORITY_RULES}]}
     )
 
     downstream_not_reached = all(
         stage["reached"] is False
         for stage in stages
-        if stage["id"] in (
+        if stage["id"]
+        in (
             "economic_normalization",
             "price_comparison",
         )
@@ -267,7 +266,9 @@ def _run_offer(spec: dict[str, Any]) -> dict[str, Any]:
         expected_sha256=spec["sha256"],
     )
     selected = [
-        record for record in records if record.get("product_name") == spec["product_name"]
+        record
+        for record in records
+        if record.get("product_name") == spec["product_name"]
     ]
     if len(selected) != 1:
         raise ValueError(
@@ -368,7 +369,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Run the fail-closed real-offer GDI business road test"
     )
-    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    parser.add_argument(
+        "--json", action="store_true", help="emit machine-readable JSON"
+    )
     args = parser.parse_args(argv)
 
     result = run_business_road_test()

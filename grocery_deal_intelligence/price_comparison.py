@@ -5,7 +5,6 @@ from copy import deepcopy
 from fractions import Fraction
 from typing import Any
 
-
 SUPPORTED_RESULT = "supported"
 UNKNOWN_RESULT = "unknown"
 LEFT_CHEAPER = "left_cheaper"
@@ -201,7 +200,7 @@ def _strict_int(value: Any) -> int | None:
     if isinstance(value, str):
         if not value or value.strip() != value:
             return None
-        signless = value[1:] if value.startswith("-") else value
+        signless = value.removeprefix("-")
         if not signless or not signless.isdigit():
             return None
         try:

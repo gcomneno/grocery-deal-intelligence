@@ -11,8 +11,8 @@ from grocery_deal_intelligence.carrefour_fixture import (
     parse_carrefour_fixture_text,
 )
 
-
 _EURO_AMOUNT = re.compile(r"€\s*([0-9]+(?:[.,][0-9]+)?)")
+_CARREFOUR_MINIMUM_PRICE_EVIDENCE_COUNT = 2
 
 
 def adapt_carrefour_fixture_text(
@@ -60,7 +60,7 @@ def _adapt_offer(
     # The captured fixture preserves explicit source order:
     # base/original displayed price | current/promo price | unit price.
     # Canonical reference_price is the normalized numeric form of the first value.
-    if len(offer.price_texts) < 2:
+    if len(offer.price_texts) < _CARREFOUR_MINIMUM_PRICE_EVIDENCE_COUNT:
         raise ValueError("Carrefour adapter requires explicit current price evidence")
 
     base_price_text = offer.price_texts[0]
@@ -95,9 +95,7 @@ def _adapt_offer(
         },
     }
 
-    record["reference_price"] = _decimal_to_number(
-        _parse_euro_amount(base_price_text)
-    )
+    record["reference_price"] = _decimal_to_number(_parse_euro_amount(base_price_text))
 
     if offer.discount_text is not None:
         record["discount_text"] = offer.discount_text

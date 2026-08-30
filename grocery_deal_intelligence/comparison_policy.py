@@ -11,7 +11,6 @@ from jsonschema import Draft202012Validator
 from .comparison import COMPARABLE, UNKNOWN
 from .source_evidence import SUPPORTED
 
-
 ROOT = Path(__file__).resolve().parent.parent
 POLICY_SCHEMA_PATH = ROOT / "schema/comparison-policy-layer-v0.1.schema.json"
 BUILTIN_DEFAULTS_PATH = ROOT / "policies/comparison-defaults-v0.1.json"

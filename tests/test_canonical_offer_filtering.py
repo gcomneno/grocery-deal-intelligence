@@ -80,10 +80,7 @@ def offers():
 def test_without_filters_returns_all_records_in_deterministic_order(offers):
     results = filter_offers(offers)
 
-    assert [
-        (record["retailer"], record["product_name"])
-        for record in results
-    ] == [
+    assert [(record["retailer"], record["product_name"]) for record in results] == [
         ("esselunga", "Ananas"),
         ("esselunga", "Latte Intero"),
         ("lidl", "Latte Fresco"),
@@ -93,8 +90,7 @@ def test_without_filters_returns_all_records_in_deterministic_order(offers):
 
 def test_retailer_filter_is_exact_and_case_sensitive(offers):
     assert [
-        record["product_name"]
-        for record in filter_offers(offers, retailer="lidl")
+        record["product_name"] for record in filter_offers(offers, retailer="lidl")
     ] == ["Latte Fresco", "Pasta"]
 
     assert filter_offers(offers, retailer="LIDL") == []
@@ -103,9 +99,7 @@ def test_retailer_filter_is_exact_and_case_sensitive(offers):
 def test_locality_scope_filter_is_exact(offers):
     results = filter_offers(offers, locality_scope="regional")
 
-    assert [record["product_name"] for record in results] == [
-        "Latte Fresco"
-    ]
+    assert [record["product_name"] for record in results] == ["Latte Fresco"]
 
 
 def test_locality_verification_status_filter_is_exact(offers):
@@ -156,9 +150,7 @@ def test_multiple_filters_are_combined_conjunctively(offers):
         requires_loyalty=True,
     )
 
-    assert [record["product_name"] for record in results] == [
-        "Latte Fresco"
-    ]
+    assert [record["product_name"] for record in results] == ["Latte Fresco"]
 
 
 def test_source_order_does_not_affect_result_order(offers):

@@ -1,23 +1,21 @@
+from collections.abc import Iterable, Mapping
+from typing import Any
+
+
 def filter_offers(
-    records,
+    records: Iterable[Mapping[str, Any]],
     *,
-    retailer=None,
-    locality_scope=None,
-    locality_status=None,
-    evidence_status=None,
-    requires_loyalty=None,
-):
+    retailer: str | None = None,
+    locality_scope: str | None = None,
+    locality_status: str | None = None,
+    evidence_status: str | None = None,
+    requires_loyalty: bool | None = None,
+) -> list[Mapping[str, Any]]:
     matches = [
         record
         for record in records
-        if (
-            retailer is None
-            or record["retailer"] == retailer
-        )
-        and (
-            locality_scope is None
-            or record["locality"]["scope"] == locality_scope
-        )
+        if (retailer is None or record["retailer"] == retailer)
+        and (locality_scope is None or record["locality"]["scope"] == locality_scope)
         and (
             locality_status is None
             or record["verification"]["locality_status"] == locality_status

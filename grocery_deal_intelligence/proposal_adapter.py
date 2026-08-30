@@ -1,5 +1,5 @@
-from copy import deepcopy
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -15,13 +15,23 @@ class GiadaWareAIProposalAdapter:
     ) -> None:
         self._capability = capability
 
-    def propose(self, source_record):
+    def propose(self, source_record: Mapping[str, Any]) -> dict[str, Any]:
         return self._propose(source_record)
 
-    def propose_grounded(self, source_record, *, source_evidence):
+    def propose_grounded(
+        self,
+        source_record: Mapping[str, Any],
+        *,
+        source_evidence: Mapping[str, Any],
+    ) -> dict[str, Any]:
         return self._propose(source_record, source_evidence=source_evidence)
 
-    def _propose(self, source_record, *, source_evidence=None):
+    def _propose(
+        self,
+        source_record: Mapping[str, Any],
+        *,
+        source_evidence: Mapping[str, Any] | None = None,
+    ):
         source = deepcopy(source_record)
 
         if source_evidence is None:

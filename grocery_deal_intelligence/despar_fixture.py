@@ -3,7 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
-from typing import Iterable
+
+_DESPAR_MINIMUM_OFFER_PART_COUNT = 3
 
 
 @dataclass(frozen=True)
@@ -28,7 +29,7 @@ class DesparFixture:
 
 
 def _parse_offer(parts: list[str]) -> DesparOffer:
-    if len(parts) < 3:
+    if len(parts) < _DESPAR_MINIMUM_OFFER_PART_COUNT:
         raise ValueError("Despar offer line must contain product, package, and price")
 
     product_name = parts[0]

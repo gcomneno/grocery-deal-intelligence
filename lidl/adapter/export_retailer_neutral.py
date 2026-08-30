@@ -1,6 +1,5 @@
-from pathlib import Path
 import json
-
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -17,27 +16,21 @@ def map_record(item):
         "reference_price": item.get("reference_price"),
         "packaging_text": item.get("packaging_text"),
         "base_price_text": item.get("base_price_text"),
-
         "promotion": {
             "type": item.get("promotion_type"),
             "requires_loyalty": item.get("requires_loyalty", False),
             "discount_text": item.get("discount_text"),
         },
-
         "validity": {
             "from": item.get("valid_from"),
             "to": item.get("valid_to"),
         },
-
         "locality": {
             "scope": "regional",
             "stores": item.get("locality", {}).get("stores", []),
             "offer_region": item.get("locality", {}).get("offer_region"),
-            "offer_region_name": item.get("locality", {}).get(
-                "offer_region_name"
-            ),
+            "offer_region_name": item.get("locality", {}).get("offer_region_name"),
         },
-
         "verification": {
             "locality_status": (
                 "verified"
@@ -54,7 +47,6 @@ def map_record(item):
                 [],
             ),
         },
-
         "provenance": {
             "source_type": item.get("provenance", {}).get("source_type"),
             "source_url": item.get("provenance", {}).get("campaign_url"),
@@ -65,14 +57,9 @@ def map_record(item):
 
 
 def main():
-    records = json.loads(
-        SOURCE.read_text(encoding="utf-8")
-    )
+    records = json.loads(SOURCE.read_text(encoding="utf-8"))
 
-    mapped = [
-        map_record(item)
-        for item in records
-    ]
+    mapped = [map_record(item) for item in records]
 
     OUTPUT.write_text(
         json.dumps(mapped, ensure_ascii=False, indent=2) + "\n",

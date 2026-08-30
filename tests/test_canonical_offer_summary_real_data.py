@@ -3,15 +3,12 @@ from pathlib import Path
 
 from grocery_deal_intelligence.summary import summarize_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 DATASETS = {
     "lidl": ROOT / "lidl/data/output/lidl-lucca-current-retailer-neutral.json",
     "esselunga": (
-        ROOT
-        / "esselunga/data/output/"
-        "esselunga-porcari-current-retailer-neutral.json"
+        ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
     ),
 }
 
@@ -90,9 +87,7 @@ def test_real_summary_retailers_match_retailer_count_keys():
         dataset = load_dataset(path)
         summary = summarize_offers(dataset)
 
-        assert sorted(summary["retailers"]) == sorted(
-            summary["offers_by_retailer"]
-        )
+        assert sorted(summary["retailers"]) == sorted(summary["offers_by_retailer"])
 
 
 def test_real_summary_distributions_sum_to_total():
@@ -133,13 +128,5 @@ def test_real_summary_optional_field_counts_are_bounded():
         dataset = load_dataset(path)
         summary = summarize_offers(dataset)
 
-        assert (
-            0
-            <= summary["offers_with_reference_price"]
-            <= summary["total_offers"]
-        )
-        assert (
-            0
-            <= summary["offers_with_base_price_text"]
-            <= summary["total_offers"]
-        )
+        assert 0 <= summary["offers_with_reference_price"] <= summary["total_offers"]
+        assert 0 <= summary["offers_with_base_price_text"] <= summary["total_offers"]

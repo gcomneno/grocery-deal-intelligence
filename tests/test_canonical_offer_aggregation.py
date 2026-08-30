@@ -45,16 +45,8 @@ def make_record(
             "source_url": "https://example.test/offer",
             "observed_at": "2026-08-26T00:00:00Z",
         },
-        **(
-            {"reference_price": reference_price}
-            if reference_price is not None
-            else {}
-        ),
-        **(
-            {"base_price_text": base_price_text}
-            if base_price_text is not None
-            else {}
-        ),
+        **({"reference_price": reference_price} if reference_price is not None else {}),
+        **({"base_price_text": base_price_text} if base_price_text is not None else {}),
     }
 
 
@@ -244,7 +236,7 @@ def test_aggregation_does_not_mutate_source_dataset(offers):
 
 
 def test_unknown_dimension_is_rejected():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="unsupported aggregation dimension: price"):
         aggregate_offers(
             offers,
             dimension="price",
@@ -257,7 +249,9 @@ def test_missing_dimension_argument_is_rejected():
 
 
 def test_temporal_dimension_is_not_supported():
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError, match=r"unsupported aggregation dimension: validity\.from"
+    ):
         aggregate_offers(
             offers,
             dimension="validity.from",

@@ -4,7 +4,6 @@ from collections.abc import Mapping
 from copy import deepcopy
 from typing import Any
 
-
 SUPPORTED = "supported"
 CONTRADICTED = "contradicted"
 UNVERIFIABLE = "unverifiable"
@@ -59,7 +58,9 @@ def verify_candidate_claims(
     evidence_leaves = dict(_leaf_items(evidence_copy))
 
     results: list[dict[str, Any]] = []
-    for path, candidate_value in sorted(_leaf_items(candidate_copy), key=lambda item: item[0]):
+    for path, candidate_value in sorted(
+        _leaf_items(candidate_copy), key=lambda item: item[0]
+    ):
         result: dict[str, Any] = {
             "path": list(path),
             "candidate_value": deepcopy(candidate_value),
@@ -140,7 +141,9 @@ def _project_lidl(source: dict[str, Any]) -> dict[str, Any]:
             verification["locality_status"] = deepcopy(source_verification["locality"])
         flyer_match = source_verification.get("flyer_match")
         if flyer_match in _LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS:
-            verification["evidence_status"] = _LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS[flyer_match]
+            verification["evidence_status"] = _LIDL_FLYER_MATCH_TO_EVIDENCE_STATUS[
+                flyer_match
+            ]
         if "flyer_match" in source_verification:
             verification["flyer_match"] = deepcopy(source_verification["flyer_match"])
         if verification:
@@ -329,6 +332,6 @@ def _copy_if_present(source: dict[str, Any], target: dict[str, Any], key: str) -
 def _leaf_items(value: Any, path: tuple[str, ...] = ()):
     if isinstance(value, Mapping):
         for key in sorted(value):
-            yield from _leaf_items(value[key], path + (str(key),))
+            yield from _leaf_items(value[key], (*path, str(key)))
         return
     yield path, value

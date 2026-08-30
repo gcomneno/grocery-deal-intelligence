@@ -18,7 +18,6 @@ from grocery_deal_intelligence.product_attributes import (
     normalize_product_attributes,
 )
 
-
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = ROOT / "schema/normalized-product-attributes-v0.1.schema.json"
 
@@ -42,7 +41,9 @@ def test_100_g_normalizes_to_weight_g_with_provenance():
         "dimension": "mass",
     }
     assert result["values"]["weight_g"] == 100
-    weight_claim = next(item for item in result["claims"] if item["path"] == ["weight_g"])
+    weight_claim = next(
+        item for item in result["claims"] if item["path"] == ["weight_g"]
+    )
     assert weight_claim["evidence_path"] == ["packaging_text"]
     assert weight_claim["raw_value"] == "100 g"
     assert weight_claim["status"] == "supported"
@@ -78,9 +79,7 @@ def test_composite_pack_preserves_unit_and_total_quantity():
 
 
 def test_word_composite_pack_derives_exact_total():
-    result = normalize_product_attributes(
-        {"packaging_text": "3 pz da 330 ml"}
-    )
+    result = normalize_product_attributes({"packaging_text": "3 pz da 330 ml"})
 
     assert result["values"]["pack_count"] == 3
     assert result["values"]["unit_quantity"] == {
@@ -101,29 +100,20 @@ def test_word_composite_pack_derives_exact_total():
     assert result["values"]["volume_ml"] == 990
     assert result["reasons"] == []
 
-    claims = {
-        tuple(item["path"]): item
-        for item in result["claims"]
-    }
-    assert claims[("pack_count",)]["normalization"] == (
-        "explicit_composite_relation"
-    )
+    claims = {tuple(item["path"]): item for item in result["claims"]}
+    assert claims[("pack_count",)]["normalization"] == ("explicit_composite_relation")
     assert claims[("unit_quantity",)]["normalization"] == (
         "explicit_composite_relation"
     )
     assert claims[("total_quantity",)]["normalization"] == (
         "exact_composite_arithmetic"
     )
-    assert claims[("volume_ml",)]["normalization"] == (
-        "exact_composite_arithmetic"
-    )
+    assert claims[("volume_ml",)]["normalization"] == ("exact_composite_arithmetic")
 
 
 def test_word_composite_pack_accepts_compatible_explicit_total():
     raw = "Conf. 3 pz da 330 ml Cad. 990 ml"
-    result = normalize_product_attributes(
-        {"product_name": raw}
-    )
+    result = normalize_product_attributes({"product_name": raw})
 
     assert result["values"]["pack_count"] == 3
     assert result["values"]["unit_quantity"]["value"] == 330
@@ -131,14 +121,9 @@ def test_word_composite_pack_accepts_compatible_explicit_total():
     assert result["values"]["volume_ml"] == 990
     assert result["reasons"] == []
 
-    claims = {
-        tuple(item["path"]): item
-        for item in result["claims"]
-    }
+    claims = {tuple(item["path"]): item for item in result["claims"]}
     assert claims[("pack_count",)]["raw_value"] == raw
-    assert claims[("pack_count",)]["evidence_path"] == [
-        "product_name"
-    ]
+    assert claims[("pack_count",)]["evidence_path"] == ["product_name"]
     assert claims[("total_quantity",)]["normalization"] == (
         "exact_composite_arithmetic_corroborated"
     )
@@ -149,18 +134,12 @@ def test_word_composite_pack_accepts_compatible_explicit_total():
 
 def test_word_composite_pack_conflicting_total_fails_closed():
     result = normalize_product_attributes(
-        {
-            "product_name": (
-                "Birra Conf. 3 pz da 330 ml totale 1 l"
-            )
-        }
+        {"product_name": ("Birra Conf. 3 pz da 330 ml totale 1 l")}
     )
 
     assert result["values"] == {}
     assert result["claims"] == []
-    assert result["reasons"] == [
-        {"code": QUANTITY_AMBIGUOUS}
-    ]
+    assert result["reasons"] == [{"code": QUANTITY_AMBIGUOUS}]
 
 
 def test_multiple_simple_quantities_without_relation_fail_closed():
@@ -170,9 +149,7 @@ def test_multiple_simple_quantities_without_relation_fail_closed():
 
     assert result["values"] == {}
     assert result["claims"] == []
-    assert result["reasons"] == [
-        {"code": QUANTITY_AMBIGUOUS}
-    ]
+    assert result["reasons"] == [{"code": QUANTITY_AMBIGUOUS}]
 
 
 def test_word_composite_quantity_is_retailer_neutral():
@@ -199,8 +176,7 @@ def test_real_raffo_quantity_normalizes_from_generic_relation():
     result = normalize_product_attributes(
         {
             "product_name": (
-                "Raffo Birra Raffo Originale "
-                "Conf. 3 pz da 330 ml Cad. 990 ml"
+                "Raffo Birra Raffo Originale Conf. 3 pz da 330 ml Cad. 990 ml"
             )
         }
     )
@@ -282,8 +258,7 @@ def test_dark_chocolate_family_accepts_supported_real_bar_examples():
 
         assert result["values"]["product_family"] == "dark_chocolate"
         assert not any(
-            item["code"] == FAMILY_EVIDENCE_MISMATCH
-            for item in result["reasons"]
+            item["code"] == FAMILY_EVIDENCE_MISMATCH for item in result["reasons"]
         )
 
 
@@ -311,8 +286,7 @@ def test_dark_chocolate_family_rejects_explicit_conflicting_product_forms():
 
         assert "product_family" not in result["values"]
         assert any(
-            item["code"] == FAMILY_EVIDENCE_MISMATCH
-            for item in result["reasons"]
+            item["code"] == FAMILY_EVIDENCE_MISMATCH for item in result["reasons"]
         )
 
 
@@ -336,19 +310,12 @@ def test_dark_chocolate_conflicting_form_rule_is_retailer_neutral():
 
     assert left == right
     assert "product_family" not in left["values"]
-    assert any(
-        item["code"] == FAMILY_EVIDENCE_MISMATCH
-        for item in left["reasons"]
-    )
+    assert any(item["code"] == FAMILY_EVIDENCE_MISMATCH for item in left["reasons"])
 
 
 def test_dark_chocolate_conflict_requires_explicit_observed_phrase():
     result = normalize_product_attributes(
-        {
-            "product_name": (
-                "Cioccolato fondente con riso soffiato 100 g"
-            )
-        },
+        {"product_name": ("Cioccolato fondente con riso soffiato 100 g")},
         product_family_candidate=family(),
     )
 

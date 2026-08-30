@@ -13,7 +13,6 @@ from grocery_deal_intelligence.source_evidence import (
 )
 from grocery_deal_intelligence.validation import validate_offers
 
-
 FIXTURE = Path("fixtures/despar/store-191-flyer-2026-08-13.txt")
 EXPECTED_SHA256 = "54607c3e32d3984d68b6889c522cd17486c31361a8e781f1447c5abe24edaf17"
 OBSERVED_AT = "2026-08-27T00:00:00Z"

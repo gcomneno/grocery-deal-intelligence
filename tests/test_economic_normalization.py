@@ -16,10 +16,11 @@ from grocery_deal_intelligence.economic_normalization import (
 )
 from grocery_deal_intelligence.product_attributes import normalize_product_attributes
 
-
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = json.loads(
-    (ROOT / "schema/economic-normalization-v0.1.schema.json").read_text(encoding="utf-8")
+    (ROOT / "schema/economic-normalization-v0.1.schema.json").read_text(
+        encoding="utf-8"
+    )
 )
 
 
@@ -55,7 +56,9 @@ class EconomicNormalizationTests(unittest.TestCase):
         return normalize_economic_basis(
             offer,
             attributes,
-            comparison_decision=self.admitted_decision() if decision is None else decision,
+            comparison_decision=self.admitted_decision()
+            if decision is None
+            else decision,
         )
 
     def assert_schema_valid(self, result):
@@ -173,7 +176,9 @@ class EconomicNormalizationTests(unittest.TestCase):
     def test_missing_quantity_claim_fails_closed(self):
         offer = self.offer()
         attributes = normalize_product_attributes(offer)
-        attributes["claims"] = [claim for claim in attributes["claims"] if claim["path"] != ["weight_g"]]
+        attributes["claims"] = [
+            claim for claim in attributes["claims"] if claim["path"] != ["weight_g"]
+        ]
         result = self.normalize(offer, attributes)
 
         self.assertEqual(result["reasons"][0]["code"], QUANTITY_CLAIM_MISMATCH)
@@ -241,7 +246,12 @@ class EconomicNormalizationTests(unittest.TestCase):
         self.assertEqual(result["reasons"][0]["code"], QUANTITY_UNAVAILABLE)
 
     def test_schema_rejects_supported_null_result(self):
-        invalid = {"version": "0.1", "status": "supported", "result": None, "reasons": []}
+        invalid = {
+            "version": "0.1",
+            "status": "supported",
+            "result": None,
+            "reasons": [],
+        }
         self.assertTrue(list(Draft202012Validator(SCHEMA).iter_errors(invalid)))
 
     def test_schema_rejects_mass_with_litre_basis(self):

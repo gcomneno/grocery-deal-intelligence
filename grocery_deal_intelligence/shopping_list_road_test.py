@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
-from collections.abc import Mapping
 
 from grocery_deal_intelligence.shopping_list import (
     LOWEST_PRICE,
@@ -17,16 +17,12 @@ from grocery_deal_intelligence.shopping_list import (
 )
 from grocery_deal_intelligence.validation import validate_offers
 
-
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _FIXTURE_PATH = (
-    _REPO_ROOT
-    / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
+    _REPO_ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
 )
 _FIXTURE_ID = "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
-_FIXTURE_SHA256 = (
-    "2f4d9ad9015490f326cc95ba17243b9889b2a8f83caea224d3e2769552b5c717"
-)
+_FIXTURE_SHA256 = "2f4d9ad9015490f326cc95ba17243b9889b2a8f83caea224d3e2769552b5c717"
 
 _AS_OF = "2026-08-25"
 _LOCALITY_SCOPE = "store"
@@ -73,9 +69,7 @@ def run_shopping_list_road_test() -> dict[str, Any]:
         and result["items"][0]["selection"]["comparative_claim"] is None
         and result["items"][1]["availability"]["status"] == "unknown"
         and result["items"][1]["selection"]["status"] == SELECTION_UNSELECTED
-        and result["items"][1]["selection"]["reason"] == {
-            "code": NO_ELIGIBLE_OFFERS
-        }
+        and result["items"][1]["selection"]["reason"] == {"code": NO_ELIGIBLE_OFFERS}
         and _provenance_is_inspectable(result)
     )
 
@@ -116,11 +110,7 @@ def _selected_records(
 ) -> list[dict[str, Any]]:
     selected: list[dict[str, Any]] = []
     for name in names:
-        matches = [
-            record
-            for record in records
-            if record.get("product_name") == name
-        ]
+        matches = [record for record in records if record.get("product_name") == name]
         if len(matches) != 1:
             raise ValueError(
                 f"expected exactly one Esselunga fixture record for {name!r}"
@@ -155,30 +145,12 @@ def render_report(result: Mapping[str, Any]) -> str:
     return "\n".join(
         [
             "Shopping list road test",
-            (
-                "requested items: "
-                f"{shopping_list['requested_item_count']}"
-            ),
-            (
-                "resolved items: "
-                f"{shopping_list['resolved_item_count']}"
-            ),
-            (
-                "unresolved items: "
-                f"{shopping_list['unresolved_item_count']}"
-            ),
-            (
-                "business/road test: "
-                f"{'PASS' if result['pass'] else 'FAIL'}"
-            ),
-            (
-                "network required: "
-                f"{'YES' if result['network_required'] else 'NO'}"
-            ),
-            (
-                "AI required: "
-                f"{'YES' if result['ai_required'] else 'NO'}"
-            ),
+            (f"requested items: {shopping_list['requested_item_count']}"),
+            (f"resolved items: {shopping_list['resolved_item_count']}"),
+            (f"unresolved items: {shopping_list['unresolved_item_count']}"),
+            (f"business/road test: {'PASS' if result['pass'] else 'FAIL'}"),
+            (f"network required: {'YES' if result['network_required'] else 'NO'}"),
+            (f"AI required: {'YES' if result['ai_required'] else 'NO'}"),
         ]
     )
 

@@ -3,9 +3,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from grocery_deal_intelligence.shopping_availability import (
     AVAILABLE,
@@ -16,16 +17,12 @@ from grocery_deal_intelligence.shopping_availability import (
 )
 from grocery_deal_intelligence.validation import validate_offers
 
-
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _FIXTURE_PATH = (
-    _REPO_ROOT
-    / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
+    _REPO_ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
 )
 _FIXTURE_ID = "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
-_FIXTURE_SHA256 = (
-    "2f4d9ad9015490f326cc95ba17243b9889b2a8f83caea224d3e2769552b5c717"
-)
+_FIXTURE_SHA256 = "2f4d9ad9015490f326cc95ba17243b9889b2a8f83caea224d3e2769552b5c717"
 
 _PRODUCT_FAMILY = "dark_chocolate"
 _LOCALITY_SCOPE = "store"
@@ -139,9 +136,7 @@ def run_shopping_availability_road_test() -> dict[str, Any]:
                 *_CURRENT_GENUINE_DARK_CHOCOLATE_NAMES,
                 *_CURRENT_WRONG_FAMILY_NAMES,
             ],
-            "genuine_dark_chocolate_names": list(
-                _CURRENT_GENUINE_DARK_CHOCOLATE_NAMES
-            ),
+            "genuine_dark_chocolate_names": list(_CURRENT_GENUINE_DARK_CHOCOLATE_NAMES),
             "wrong_family_names": list(_CURRENT_WRONG_FAMILY_NAMES),
             "structural_validation": current_validation,
             "availability": current_availability,
@@ -173,11 +168,7 @@ def _selected_records(
     selected: list[dict[str, Any]] = []
 
     for name in names:
-        matches = [
-            record
-            for record in records
-            if record.get("product_name") == name
-        ]
+        matches = [record for record in records if record.get("product_name") == name]
         if len(matches) != 1:
             raise ValueError(
                 f"expected exactly one Esselunga fixture record for {name!r}"
@@ -214,7 +205,8 @@ def _historical_singleton_pass(
         offer.get("retailer") == "esselunga"
         and offer.get("price") == 2.19
         and offer.get("currency") == "EUR"
-        and offer.get("locality") == {
+        and offer.get("locality")
+        == {
             "scope": "store",
             "stores": ["ARI"],
         }
@@ -242,23 +234,15 @@ def _current_availability_pass(
         return False
 
     reasons_by_product = {
-        rejection.get("product_name"): rejection.get("code")
-        for rejection in rejections
+        rejection.get("product_name"): rejection.get("code") for rejection in rejections
     }
     expected = {
-        **{
-            name: NOT_CURRENT
-            for name in _CURRENT_GENUINE_DARK_CHOCOLATE_NAMES
-        },
-        **{
-            name: PRODUCT_FAMILY_MISMATCH
-            for name in _CURRENT_WRONG_FAMILY_NAMES
-        },
+        **dict.fromkeys(_CURRENT_GENUINE_DARK_CHOCOLATE_NAMES, NOT_CURRENT),
+        **dict.fromkeys(_CURRENT_WRONG_FAMILY_NAMES, PRODUCT_FAMILY_MISMATCH),
     }
 
-    return (
-        reasons_by_product == expected
-        and not _contains_forbidden_comparative_key(availability)
+    return reasons_by_product == expected and not _contains_forbidden_comparative_key(
+        availability
     )
 
 
@@ -270,10 +254,7 @@ def _contains_forbidden_comparative_key(value: Any) -> bool:
             if _contains_forbidden_comparative_key(child):
                 return True
     elif isinstance(value, list):
-        return any(
-            _contains_forbidden_comparative_key(child)
-            for child in value
-        )
+        return any(_contains_forbidden_comparative_key(child) for child in value)
 
     return False
 
@@ -285,34 +266,16 @@ def render_report(result: Mapping[str, Any]) -> str:
     return "\n".join(
         [
             "Shopping availability road test",
-            (
-                "historical singleton probe: "
-                f"{'PASS' if historical['pass'] else 'FAIL'}"
-            ),
+            (f"historical singleton probe: {'PASS' if historical['pass'] else 'FAIL'}"),
             (
                 "historical eligible offers: "
                 f"{historical['availability']['offer_count']}"
             ),
-            (
-                "current availability: "
-                f"{str(current['final']).upper()}"
-            ),
-            (
-                "current eligible offers: "
-                f"{current['availability']['offer_count']}"
-            ),
-            (
-                "business/road test: "
-                f"{'PASS' if result['pass'] else 'FAIL'}"
-            ),
-            (
-                "network required: "
-                f"{'YES' if result['network_required'] else 'NO'}"
-            ),
-            (
-                "AI required: "
-                f"{'YES' if result['ai_required'] else 'NO'}"
-            ),
+            (f"current availability: {str(current['final']).upper()}"),
+            (f"current eligible offers: {current['availability']['offer_count']}"),
+            (f"business/road test: {'PASS' if result['pass'] else 'FAIL'}"),
+            (f"network required: {'YES' if result['network_required'] else 'NO'}"),
+            (f"AI required: {'YES' if result['ai_required'] else 'NO'}"),
         ]
     )
 

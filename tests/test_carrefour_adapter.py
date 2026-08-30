@@ -14,7 +14,6 @@ from grocery_deal_intelligence.source_evidence import (
 )
 from grocery_deal_intelligence.validation import validate_offers
 
-
 FIXTURE = Path("fixtures/carrefour/store-5190-flyer-56879.txt")
 EXPECTED_SHA256 = "25f18f28c52ae114e68bb18f93ed78d777390b0d2ebf1a070e45d99a4b52d571"
 OBSERVED_AT = "2026-08-27T00:00:00Z"
@@ -47,7 +46,10 @@ def test_maps_explicit_current_base_and_loyalty_semantics():
 
     record = records[0]
     assert record["retailer"] == "carrefour"
-    assert record["product_name"] == "Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l"
+    assert (
+        record["product_name"]
+        == "Brescia Latte UHT Centrale Brescia Parzialmente Scremato 1 l"
+    )
     assert record["currency"] == "EUR"
     assert record["promotion_type"] == "SPESAMICA PAYBACK"
     assert record["requires_loyalty"] is True

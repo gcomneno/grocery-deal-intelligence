@@ -1,8 +1,9 @@
 from copy import deepcopy
 
+import pytest
+
 from grocery_deal_intelligence.diagnostics import diagnose_candidate_rejection
 from grocery_deal_intelligence.validation import validate_offers
-
 
 VALID_CANDIDATE = {
     "retailer": "Example Retailer",
@@ -99,10 +100,7 @@ def test_missing_unexpected_and_invalid_value_failures_are_preserved():
 
     diagnostics = diagnose_candidate_rejection(candidate)
 
-    assert {
-        (item["category"], tuple(item["path"]))
-        for item in diagnostics
-    } == {
+    assert {(item["category"], tuple(item["path"])) for item in diagnostics} == {
         ("missing_required_field", ("currency",)),
         ("unexpected_field", ("unexpected",)),
         ("invalid_enum_or_value", ("locality", "scope")),
@@ -146,9 +144,5 @@ def test_diagnostics_do_not_repair_or_promote_invalid_candidate():
 
 
 def test_non_mapping_candidate_is_rejected_explicitly():
-    try:
+    with pytest.raises(TypeError, match="candidate must be a mapping"):
         diagnose_candidate_rejection(["not", "a", "mapping"])
-    except TypeError as exc:
-        assert str(exc) == "candidate must be a mapping"
-    else:
-        raise AssertionError("expected TypeError")

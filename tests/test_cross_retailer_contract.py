@@ -1,30 +1,22 @@
-from pathlib import Path
 import json
+from pathlib import Path
 
 import jsonschema
-
 
 ROOT = Path(__file__).resolve().parent.parent
 
 SCHEMA = ROOT / "schema/grocery-offer-v0.1.schema.json"
 
 DATASETS = {
-    "lidl": (
-        ROOT
-        / "lidl/data/output/lidl-lucca-current-retailer-neutral.json"
-    ),
+    "lidl": (ROOT / "lidl/data/output/lidl-lucca-current-retailer-neutral.json"),
     "esselunga": (
-        ROOT
-        / "esselunga/data/output/"
-        "esselunga-porcari-current-retailer-neutral.json"
+        ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
     ),
 }
 
 
 def load_json(path):
-    return json.loads(
-        path.read_text(encoding="utf-8")
-    )
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def test_cross_retailer_contract():
@@ -39,9 +31,7 @@ def test_cross_retailer_contract():
         assert dataset, f"{retailer}: empty dataset"
 
         for index, record in enumerate(dataset):
-            errors = list(
-                validator.iter_errors(record)
-            )
+            errors = list(validator.iter_errors(record))
 
             assert not errors, (
                 f"{retailer} record {index} violates "
@@ -53,20 +43,6 @@ def test_cross_retailer_contract():
 
         records.extend(dataset)
 
-    retailers = {
-        record["retailer"]
-        for record in records
-    }
+    retailers = {record["retailer"] for record in records}
 
     assert retailers == {"lidl", "esselunga"}
-
-    print()
-    print("===== CROSS-RETAILER CONTRACT TEST =====")
-    print("Lidl records:", len(load_json(DATASETS["lidl"])))
-    print(
-        "Esselunga records:",
-        len(load_json(DATASETS["esselunga"])),
-    )
-    print("total records:", len(records))
-    print("retailers:", ", ".join(sorted(retailers)))
-    print("cross-retailer contract: PASS")

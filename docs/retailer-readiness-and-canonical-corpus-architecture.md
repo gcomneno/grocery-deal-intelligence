@@ -18,28 +18,21 @@ claim about retailer availability in the external market.
 
 ## Executive finding
 
-Grocery Deal Intelligence currently has two retailers demonstrated end-to-end as
-corpus-ready under the current canonical authority model:
+Grocery Deal Intelligence currently has three retailers represented in the
+first-class deterministic canonical corpus:
 
 - Carrefour;
-- Despar.
+- Despar;
+- Lidl.
 
-Both have:
+All three are exercised through deterministic source evidence, canonical
+admission, `IngestionResultSet`, and `CorpusSnapshot` assembly.
 
-- committed store-scoped captured evidence;
-- expected SHA-256 fixture identity;
-- deterministic retailer adapters;
-- source-evidence projection;
-- deterministic claim verification;
-- structural validation;
-- canonical admission;
-- deterministic road-test coverage.
+Carrefour and Despar use their existing deterministic fixture/adapter paths.
 
-Lidl is the closest next integration candidate.
-
-Its committed source-shaped dataset can pass the current deterministic ingestion
-and admission path, but Lidl is not yet part of the first-class deterministic
-corpus path and its current fixture/adapter organization remains experimental.
+Lidl is integrated for one exact pinned source-shaped fixture only. Its broader
+acquisition/build tooling remains experimental and is not promoted by that
+fixture-backed corpus integration.
 
 Esselunga has substantial captured data, retailer-specific tooling, and
 schema-valid retailer-neutral outputs, but those outputs have not been
@@ -163,11 +156,16 @@ new authority or repair one record using another.
 `project_source_evidence()` currently contains deterministic retailer-specific
 projection for Carrefour, Despar, Lidl, and Esselunga.
 
-The deterministic acceptance road test currently exercises Carrefour and Despar.
+The deterministic acceptance road test currently exercises Carrefour, Despar,
+and Lidl and assembles 64 admitted canonical records.
 
-The first-class canonical consumers, including current-offer and retailer
-listing, consume caller-provided canonical records and perform no acquisition or
-canonical admission.
+The first-class canonical consumers consume caller-provided canonical records and
+perform no acquisition or canonical admission.
+
+Issue #170 adds a repository-verified vertical slice in which current-offer
+listing, canonical filtering/query, comparison, shopping availability, and
+shopping-list resolution operate directly on the assembled
+`CorpusSnapshot.canonical_records`.
 
 ## Retailer readiness matrix
 
@@ -178,7 +176,7 @@ external retailer status.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Carrefour | READY | READY | READY | READY | READY | READY | READY | READY | READY |
 | Despar | READY | READY | READY | READY | READY | READY | READY | READY | READY |
-| Lidl | READY | PARTIAL | PARTIAL | READY | READY | READY | READY | PARTIAL | PARTIAL |
+| Lidl | READY | PARTIAL | PARTIAL | READY | READY | READY | READY | READY | READY |
 | Esselunga | READY | PARTIAL | HISTORICAL / PARALLEL | PARTIAL | PARTIAL | PARTIAL | BLOCKED | PARTIAL | BLOCKED |
 | Aldi | RESEARCH-ONLY | BLOCKED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | BLOCKED |
 | Bennet | RESEARCH-ONLY | BLOCKED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | NOT DEMONSTRATED | BLOCKED |
@@ -305,23 +303,24 @@ claims_contradicted: 0
 claims_unverifiable: 0
 ```
 
-This is strong evidence that Lidl can bridge into the current canonical
-pipeline.
+Lidl is now part of the deterministic corpus/acceptance road test through one
+exact pinned source-shaped fixture.
 
-However:
+The repository-owned SHA-256 identity is:
 
-- the Lidl area is still described as experimental;
-- Lidl is not yet part of the deterministic corpus/acceptance road test;
-- the source-shaped dataset does not yet have a first-class pinned fixture spec
-  equivalent to Carrefour and Despar;
-- rebuilding parts of the existing Lidl dataset uses current time;
-- locality semantics between legacy retailer-neutral export and current source
-  projection require an explicit decision.
+~~~text
+a74d6ffa880b46513f90cbe22b1dccd3a99a21ed80f84680808ea4cb363500df
+~~~
 
-The existing retailer-neutral export is useful evidence but is not the correct
-source input to current deterministic ingestion.
+The admitted canonical locality is store-scoped from verified store IDs.
 
-Classification: admission-capable but not yet corpus-ready.
+The broader Lidl acquisition/build area remains experimental, and rebuilding
+parts of that historical pipeline may still depend on current time.
+
+The existing retailer-neutral export remains useful historical evidence but is
+not canonical ingestion authority.
+
+Classification: corpus-ready for the pinned deterministic fixture.
 
 ## Esselunga
 
@@ -645,10 +644,12 @@ The migration should remain incremental:
 4. add deterministic snapshot metadata;
 5. bridge Lidl source-shaped captured records into the assembled corpus;
 6. resolve Lidl locality semantics explicitly;
-7. clean stale documentation where current deterministic behavior supersedes it;
-8. establish an Esselunga acquisition-context evidence contract;
-9. admit Esselunga only after source-backed canonical authority is demonstrated;
-10. revisit research/watch retailers one at a time when their documented
+7. exercise retailer-neutral business consumers over the assembled deterministic
+   corpus;
+8. clean stale documentation where current deterministic behavior supersedes it;
+9. establish an Esselunga acquisition-context evidence contract;
+10. admit Esselunga only after source-backed canonical authority is demonstrated;
+11. revisit research/watch retailers one at a time when their documented
     blockers are resolved.
 
 ## Explicit non-goals
@@ -708,6 +709,39 @@ Its current admitted locality remains store-scoped from verified store IDs.
 This fixture integration does not promote Lidl acquisition/build tooling as
 production-ready and does not grant authority to the historical
 retailer-neutral Lidl export.
+
+## Implemented corpus-to-business vertical slice
+
+The assembled 64-record deterministic corpus is now exercised directly by
+retailer-neutral business consumers through:
+
+~~~text
+pinned retailer evidence
+    -> deterministic source evidence
+    -> claim verification
+    -> structural validation
+    -> canonical admission
+    -> IngestionResultSet
+    -> CorpusSnapshot
+    -> current-offer listing / filtering / query
+    -> comparison
+    -> shopping availability
+    -> shopping-list resolution
+~~~
+
+The repository acceptance scenario verifies:
+
+- 64 canonical records across Carrefour, Despar, and Lidl;
+- a cross-retailer `birra` query over the assembled corpus;
+- comparison remaining explicitly `unknown` where stronger semantic authority
+  is unavailable;
+- deterministic `passata` availability from canonical evidence;
+- explicit no-match behavior for `dark_chocolate`;
+- no AI requirement;
+- no network requirement.
+
+This does not claim live freshness, market completeness, global shopping
+optimality, or production-ready acquisition for every retailer.
 
 ## Durable principle
 

@@ -84,8 +84,7 @@ _RETAILERS: tuple[dict[str, Any], ...] = (
 )
 
 
-def run_road_test() -> dict[str, Any]:
-    """Run the committed real-fixture deterministic road test."""
+def _run_retailers_and_assemble_corpus():
     retailers: list[dict[str, Any]] = []
     result_sets: list[IngestionResultSet] = []
     overall_pass = True
@@ -96,7 +95,12 @@ def run_road_test() -> dict[str, Any]:
         retailers.append(result)
         overall_pass = overall_pass and result["pass"]
 
-    corpus = assemble_corpus(result_sets)
+    return retailers, assemble_corpus(result_sets), overall_pass
+
+
+def run_road_test() -> dict[str, Any]:
+    """Run the committed real-fixture deterministic road test."""
+    retailers, corpus, overall_pass = _run_retailers_and_assemble_corpus()
     represented_retailers = list_available_retailers(corpus.canonical_records)
     corpus_invariants = {
         "expected_canonical_records": (

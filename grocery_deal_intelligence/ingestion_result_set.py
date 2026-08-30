@@ -2,6 +2,7 @@ from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from types import MappingProxyType
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -33,7 +34,7 @@ class IngestionResultSet:
     ai_used: bool
     network_required: bool
 
-    def __init__(self, batch_result):
+    def __init__(self, batch_result: object) -> None:
         snapshot = deepcopy(batch_result)
         projection = _build_projection(snapshot)
 
@@ -55,7 +56,7 @@ class IngestionResultSet:
         )
 
 
-def _build_projection(snapshot):
+def _build_projection(snapshot: object):
     if not isinstance(snapshot, Mapping):
         raise ValueError("batch result must be a mapping")
 
@@ -120,7 +121,7 @@ def _build_projection(snapshot):
     }
 
 
-def _validate_outcome(outcome, record_index):
+def _validate_outcome(outcome: object, record_index: int):
     if not isinstance(outcome, Mapping):
         raise ValueError(
             f"batch outcome at record_index {record_index} must be a mapping"
@@ -154,26 +155,21 @@ def _validate_outcome(outcome, record_index):
             f"ineligible outcome at record_index {record_index} requires canonical to be None"
         )
 
-    return None
-
 
 def _validate_summary(
     *,
-    summary,
-    total_outcomes,
-    admitted_count,
-    rejected_count,
-    canonical_count,
+    summary: Mapping[str, Any],
+    total_outcomes: int,
+    admitted_count: int,
+    rejected_count: int,
+    canonical_count: int,
 ):
     _require_summary_count(summary, "total_records", total_outcomes)
     _require_summary_count(summary, "admission_eligible", admitted_count)
     _require_summary_count(summary, "admission_ineligible", rejected_count)
     _require_summary_count(summary, "canonical_records", canonical_count)
 
-    if (
-        "structurally_valid" in summary
-        or "structurally_invalid" in summary
-    ):
+    if "structurally_valid" in summary or "structurally_invalid" in summary:
         if "structurally_valid" not in summary:
             raise ValueError("summary.structurally_valid is required")
         if "structurally_invalid" not in summary:
@@ -182,35 +178,27 @@ def _validate_summary(
         structurally_valid = _summary_int(summary, "structurally_valid")
         structurally_invalid = _summary_int(summary, "structurally_invalid")
         if structurally_valid + structurally_invalid != total_outcomes:
-            raise ValueError(
-                "summary structural counts must match observed outcomes"
-            )
+            raise ValueError("summary structural counts must match observed outcomes")
 
 
-def _require_summary_count(summary, key, expected):
+def _require_summary_count(summary: Mapping[str, Any], key: str, expected: int):
     actual = _summary_int(summary, key)
     if actual != expected:
         raise ValueError(f"summary.{key} does not match observed outcomes")
 
 
-def _summary_int(summary, key):
+def _summary_int(summary: Mapping[str, Any], key: str):
     if key not in summary:
         raise ValueError(f"summary.{key} is required")
 
     value = summary[key]
-    if (
-        not isinstance(value, int)
-        or isinstance(value, bool)
-        or value < 0
-    ):
-        raise ValueError(
-            f"summary.{key} must be a non-negative integer count"
-        )
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise ValueError(f"summary.{key} must be a non-negative integer count")
 
     return value
 
 
-def _required_bool(snapshot, key):
+def _required_bool(snapshot: Mapping[str, Any], key: str):
     if key not in snapshot:
         raise ValueError(f"batch result {key} is required")
 

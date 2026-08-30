@@ -1,7 +1,5 @@
 import copy
 
-import pytest
-
 from grocery_deal_intelligence.ingestion import ingest_offer
 
 

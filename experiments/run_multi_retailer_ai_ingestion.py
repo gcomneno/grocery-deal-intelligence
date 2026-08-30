@@ -21,7 +21,6 @@ from grocery_deal_intelligence.source_evidence import (
     summarize_claim_verification,
 )
 
-
 RUN_ENV = "GROCERY_DEAL_INTELLIGENCE_RUN_MULTI_RETAILER_EXPERIMENT"
 BASE_URL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_BASE_URL"
 MODEL_ENV = "GROCERY_DEAL_INTELLIGENCE_OLLAMA_MODEL"
@@ -82,7 +81,9 @@ def load_fixture_record(spec: dict[str, Any]) -> tuple[dict[str, Any], dict[str,
 
     if selector["kind"] == "item_id":
         if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
-            raise ValueError(f"fixture payload {spec['path']} must contain an items list")
+            raise ValueError(
+                f"fixture payload {spec['path']} must contain an items list"
+            )
         matches = [
             item
             for item in payload["items"]
@@ -98,7 +99,9 @@ def load_fixture_record(spec: dict[str, Any]) -> tuple[dict[str, Any], dict[str,
             raise ValueError(f"fixture payload {spec['path']} must be a list")
         index = selector["value"]
         if not isinstance(index, int) or index < 0 or index >= len(payload):
-            raise ValueError(f"fixture index out of range for {spec['path']}: {index!r}")
+            raise ValueError(
+                f"fixture index out of range for {spec['path']}: {index!r}"
+            )
         record = payload[index]
         if not isinstance(record, dict):
             raise ValueError(f"fixture record at index {index} must be an object")

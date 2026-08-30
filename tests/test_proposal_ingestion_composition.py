@@ -1,5 +1,7 @@
 import copy
 
+import pytest
+
 import grocery_deal_intelligence.ingestion as ingestion_module
 from grocery_deal_intelligence.ingestion import (
     ingest_offer,
@@ -191,17 +193,9 @@ def test_legacy_ingest_offer_path_remains_unchanged():
 
 
 def test_proposal_path_requires_adapter_and_retailer():
-    try:
+    with pytest.raises(ValueError, match="AI proposal adapter"):
         ingest_offer_proposal_path({}, ai=None, retailer="testmart")
-    except ValueError as exc:
-        assert "AI proposal adapter" in str(exc)
-    else:
-        raise AssertionError("expected proposal path to require an adapter")
 
     adapter = FakeProposalAdapter({})
-    try:
+    with pytest.raises(ValueError, match="non-empty retailer"):
         ingest_offer_proposal_path({}, ai=adapter, retailer="")
-    except ValueError as exc:
-        assert "non-empty retailer" in str(exc)
-    else:
-        raise AssertionError("expected proposal path to require retailer context")

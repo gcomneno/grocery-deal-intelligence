@@ -25,25 +25,25 @@ def extract_price_variants(product):
         packaging = price_data.get("packaging") or {}
         base_price = price_data.get("basePrice") or {}
 
-        results.append({
-            "region_id": region_id,
-            "price": price_data.get("price"),
-            "currency": price_data.get("currencyCode"),
-            "reference_price": (
-                price_data.get("oldPrice")
-                or discount.get("deletedPrice")
-            ),
-            "discount_text": discount.get("discountText"),
-            "promotion_type": promotion_type,
-            "requires_loyalty": requires_loyalty,
-            "packaging_text": packaging.get("text"),
-            "base_price_text": base_price.get("text"),
-            "valid_from": price_data.get("startDate"),
-            "valid_to": (
-                price_data.get("endDateExclusive")
-                or price_data.get("endDate")
-            ),
-        })
+        results.append(
+            {
+                "region_id": region_id,
+                "price": price_data.get("price"),
+                "currency": price_data.get("currencyCode"),
+                "reference_price": (
+                    price_data.get("oldPrice") or discount.get("deletedPrice")
+                ),
+                "discount_text": discount.get("discountText"),
+                "promotion_type": promotion_type,
+                "requires_loyalty": requires_loyalty,
+                "packaging_text": packaging.get("text"),
+                "base_price_text": base_price.get("text"),
+                "valid_from": price_data.get("startDate"),
+                "valid_to": (
+                    price_data.get("endDateExclusive") or price_data.get("endDate")
+                ),
+            }
+        )
 
     return results
 

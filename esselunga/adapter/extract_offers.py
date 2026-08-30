@@ -1,12 +1,10 @@
+import json
 from dataclasses import dataclass
 from urllib.request import urlopen
-import json
 
+from url_validation import validate_esselunga_url
 
-BASE_URL = (
-    "https://www.esselunga.it/services/istituzionale35/"
-    "digital-grid"
-)
+BASE_URL = "https://www.esselunga.it/services/istituzionale35/digital-grid"
 
 
 @dataclass(frozen=True)
@@ -42,14 +40,12 @@ def extract_offers(
         f".json"
     )
 
-    with urlopen(url) as response:
+    validated_url = validate_esselunga_url(url)
+    with urlopen(validated_url) as response:  # noqa: S310
         payload = json.load(response)
 
     if payload.get("status") != "OK":
-        raise ValueError(
-            f"unexpected digital-grid status: "
-            f"{payload.get('status')!r}"
-        )
+        raise ValueError(f"unexpected digital-grid status: {payload.get('status')!r}")
 
     items = payload.get("items")
 
@@ -73,9 +69,7 @@ def extract_offers(
             normalized_items.extend(related_items)
             continue
 
-        raise ValueError(
-            "offer missing product identity and related_items"
-        )
+        raise ValueError("offer missing product identity and related_items")
 
     for item in normalized_items:
         product_code = item.get("code")
@@ -91,9 +85,7 @@ def extract_offers(
             promo_price = regular_price
 
         if regular_price is None or promo_price is None:
-            raise ValueError(
-                f"offer missing price: {product_code}"
-            )
+            raise ValueError(f"offer missing price: {product_code}")
 
         offers.append(
             EsselungaOffer(
@@ -104,24 +96,13 @@ def extract_offers(
                 discount_percent=(
                     (item.get("promozioni_scontoPercentuale") or [""])[0]
                 ),
-                mechanic_code=(
-                    (item.get("promozioni_codMeccanica") or [""])[0]
-                ),
-                mechanic_description=(
-                    (item.get("promozioni_desMeccanica") or [""])[0]
-                ),
+                mechanic_code=((item.get("promozioni_codMeccanica") or [""])[0]),
+                mechanic_description=((item.get("promozioni_desMeccanica") or [""])[0]),
                 valid_from=(
-                    (item.get("promozioni_dataInizioPromoArticolo")
-                     or [""])[0]
+                    (item.get("promozioni_dataInizioPromoArticolo") or [""])[0]
                 ),
-                valid_to=(
-                    (item.get("promozioni_dataFinePromoArticolo")
-                     or [""])[0]
-                ),
-                flyer=bool(
-                    (item.get("promozioni_flgVolantino")
-                     or [False])[0]
-                ),
+                valid_to=((item.get("promozioni_dataFinePromoArticolo") or [""])[0]),
+                flyer=bool((item.get("promozioni_flgVolantino") or [False])[0]),
                 store_code=store_code.upper(),
                 cod_promo=str(cod_promo),
             )

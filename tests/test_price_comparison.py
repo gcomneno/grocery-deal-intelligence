@@ -156,7 +156,10 @@ def test_upstream_unknown_fails_closed():
     assert result["reasons"][0]["left_error"] == NORMALIZATION_NOT_SUPPORTED
 
 
-@pytest.mark.parametrize("numerator,denominator", [("1", "0"), ("1", "-2"), ("-1", "2"), ("1.0", "2")])
+@pytest.mark.parametrize(
+    ("numerator", "denominator"),
+    [("1", "0"), ("1", "-2"), ("-1", "2"), ("1.0", "2")],
+)
 def test_malformed_or_invalid_ratio_fails_closed(numerator, denominator):
     left = economic_result(1, 1)
     left["result"]["comparable_price"]["exact_ratio"] = {

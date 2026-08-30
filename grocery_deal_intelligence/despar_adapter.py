@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
-from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 from grocery_deal_intelligence.despar_fixture import (
     DesparFixture,
@@ -10,6 +12,8 @@ from grocery_deal_intelligence.despar_fixture import (
     parse_despar_fixture_text,
     parse_euro_price,
 )
+
+_SHA256_HEX_DIGEST_LENGTH = 64
 
 
 def adapt_despar_fixture_text(
@@ -28,7 +32,10 @@ def adapt_despar_fixture_text(
         raise TypeError("text must be a string")
     if not isinstance(observed_at, str) or not observed_at.strip():
         raise ValueError("observed_at must be a non-empty string")
-    if not isinstance(expected_sha256, str) or len(expected_sha256) != 64:
+    if (
+        not isinstance(expected_sha256, str)
+        or len(expected_sha256) != _SHA256_HEX_DIGEST_LENGTH
+    ):
         raise ValueError("expected_sha256 must be a 64-character SHA-256 hex digest")
 
     actual_sha256 = hashlib.sha256(text.encode("utf-8")).hexdigest()

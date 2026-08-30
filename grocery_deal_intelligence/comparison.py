@@ -10,7 +10,6 @@ from jsonschema import Draft202012Validator
 
 from .source_evidence import CONTRADICTED, SUPPORTED, UNVERIFIABLE
 
-
 ROOT = Path(__file__).resolve().parent.parent
 COMPARISON_PROPOSAL_SCHEMA_PATH = (
     ROOT / "schema/product-comparison-proposal-v0.1.schema.json"
@@ -227,9 +226,7 @@ def evaluate_comparison_admission(
             or not raw_path
             or not all(isinstance(part, str) and part for part in raw_path)
         ):
-            raise ValueError(
-                "verification path must be a non-empty list of strings"
-            )
+            raise ValueError("verification path must be a non-empty list of strings")
 
         left = item.get("left")
         right = item.get("right")

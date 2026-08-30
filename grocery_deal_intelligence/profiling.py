@@ -1,16 +1,20 @@
-def _increment(groups, value):
+from collections.abc import Iterable, Mapping
+from typing import Any
+
+
+def _increment(groups: dict[object, int], value: object):
     groups[value] = groups.get(value, 0) + 1
 
 
-def _presence(record, field):
+def _presence(record: Mapping[str, Any], field: str):
     return "present" if record.get(field) is not None else "absent"
 
 
-def _sorted_groups(groups):
+def _sorted_groups(groups: Mapping[object, int]):
     return dict(sorted(groups.items(), key=lambda item: str(item[0])))
 
 
-def profile_offers(records):
+def profile_offers(records: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     records = list(records)
 
     retailers = {}
@@ -58,19 +62,13 @@ def profile_offers(records):
         "currencies": _sorted_groups(currencies),
         "promotion_types": _sorted_groups(promotion_types),
         "loyalty_distribution": _sorted_groups(loyalty_distribution),
-        "locality_scope_distribution": _sorted_groups(
-            locality_scope_distribution
-        ),
+        "locality_scope_distribution": _sorted_groups(locality_scope_distribution),
         "locality_verification_distribution": _sorted_groups(
             locality_verification_distribution
         ),
         "evidence_verification_distribution": _sorted_groups(
             evidence_verification_distribution
         ),
-        "reference_price_presence": _sorted_groups(
-            reference_price_presence
-        ),
-        "base_price_text_presence": _sorted_groups(
-            base_price_text_presence
-        ),
+        "reference_price_presence": _sorted_groups(reference_price_presence),
+        "base_price_text_presence": _sorted_groups(base_price_text_presence),
     }

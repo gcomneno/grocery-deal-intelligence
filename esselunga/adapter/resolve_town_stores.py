@@ -1,7 +1,8 @@
+import json
 from dataclasses import dataclass
 from urllib.request import urlopen
-import json
 
+from url_validation import validate_esselunga_url
 
 BASE_URL = "https://www.esselunga.it/services/istituzionale35/"
 
@@ -24,7 +25,8 @@ def discover_stores_by_town(town_id: int) -> list[dict]:
         f".json"
     )
 
-    with urlopen(url) as response:
+    validated_url = validate_esselunga_url(url)
+    with urlopen(validated_url) as response:  # noqa: S310
         payload = json.load(response)
 
     if not isinstance(payload, list):
@@ -34,13 +36,10 @@ def discover_stores_by_town(town_id: int) -> list[dict]:
 
 
 def resolve_store(store_code: str) -> EsselungaStore:
-    url = (
-        f"{BASE_URL}info-stores-by-abbrev"
-        f".abbrev:{store_code}"
-        f".json"
-    )
+    url = f"{BASE_URL}info-stores-by-abbrev.abbrev:{store_code}.json"
 
-    with urlopen(url) as response:
+    validated_url = validate_esselunga_url(url)
+    with urlopen(validated_url) as response:  # noqa: S310
         payload = json.load(response)
 
     if not isinstance(payload, dict):
@@ -58,12 +57,7 @@ def resolve_store(store_code: str) -> EsselungaStore:
 def resolve_town_stores(town_id: int) -> list[EsselungaStore]:
     refs = discover_stores_by_town(town_id)
 
-    stores = []
-
-    for ref in refs:
-        stores.append(resolve_store(ref["code"]))
-
-    return stores
+    return [resolve_store(ref["code"]) for ref in refs]
 
 
 if __name__ == "__main__":

@@ -2,9 +2,9 @@ from collections.abc import Mapping
 from typing import Any
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 
 from .validation import _load_schema
-
 
 _CATEGORY_ORDER = {
     "missing_required_field": 0,
@@ -59,7 +59,7 @@ def _diagnostic(
     }
 
 
-def _required_diagnostics(error) -> list[dict[str, Any]]:
+def _required_diagnostics(error: ValidationError) -> list[dict[str, Any]]:
     if not isinstance(error.instance, Mapping):
         return []
 
@@ -79,7 +79,7 @@ def _required_diagnostics(error) -> list[dict[str, Any]]:
     ]
 
 
-def _unexpected_field_diagnostics(error) -> list[dict[str, Any]]:
+def _unexpected_field_diagnostics(error: ValidationError) -> list[dict[str, Any]]:
     if not isinstance(error.instance, Mapping):
         return []
 
@@ -97,7 +97,7 @@ def _unexpected_field_diagnostics(error) -> list[dict[str, Any]]:
     ]
 
 
-def _type_diagnostic(error) -> dict[str, Any]:
+def _type_diagnostic(error: ValidationError) -> dict[str, Any]:
     expected = _expected_types(error.validator_value)
     category = (
         "wrong_canonical_shape"
@@ -113,7 +113,7 @@ def _type_diagnostic(error) -> dict[str, Any]:
     )
 
 
-def _constraint_diagnostic(error) -> dict[str, Any]:
+def _constraint_diagnostic(error: ValidationError) -> dict[str, Any]:
     validator = str(error.validator)
     messages = {
         "enum": "value is not one of the allowed values",

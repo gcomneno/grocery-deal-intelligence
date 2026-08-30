@@ -1,12 +1,11 @@
-from copy import deepcopy
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any
 
 from giadaware_ai.extension import ProposeCapability
 
 from .proposal_validation import _load_proposal_schema, validate_proposal
-
 
 _SYSTEM_PROMPT = """
 You propose advisory grocery-offer claims from one supplied source record.
@@ -31,7 +30,9 @@ def _serialize_mapping(value: Mapping[str, Any]) -> str:
     )
 
 
-class ProposeOfferProposalCapability(ProposeCapability[Mapping[str, Any], dict[str, Any]]):
+class ProposeOfferProposalCapability(
+    ProposeCapability[Mapping[str, Any], dict[str, Any]]
+):
     """Produce advisory Proposal v0.1 data without canonical authority."""
 
     def execute(self, value: Mapping[str, Any]) -> dict[str, Any]:

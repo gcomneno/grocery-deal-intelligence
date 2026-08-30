@@ -13,12 +13,8 @@ def sample(code, description, regular, promo):
         "promozioni_prezzoPromo": [promo],
         "promozioni_codMeccanica": [code],
         "promozioni_desMeccanica": [description],
-        "promozioni_dataInizioPromoArticolo": [
-            "2026-08-13T00:00:00Z"
-        ],
-        "promozioni_dataFinePromoArticolo": [
-            "2026-08-26T00:00:00Z"
-        ],
+        "promozioni_dataInizioPromoArticolo": ["2026-08-13T00:00:00Z"],
+        "promozioni_dataFinePromoArticolo": ["2026-08-26T00:00:00Z"],
     }
 
 

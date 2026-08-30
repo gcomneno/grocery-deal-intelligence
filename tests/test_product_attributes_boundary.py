@@ -35,7 +35,9 @@ def test_comparison_projection_rejects_value_changed_after_supported_claim():
     left["values"]["product_family"] = "milk_chocolate"
 
     verification = comparison_verification_from_attributes(left, right)
-    family_fact = next(item for item in verification if item["path"] == ["product_family"])
+    family_fact = next(
+        item for item in verification if item["path"] == ["product_family"]
+    )
 
     assert family_fact["left"] == {"status": "unverifiable"}
     assert family_fact["right"]["status"] == "supported"

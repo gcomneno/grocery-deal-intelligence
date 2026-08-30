@@ -16,7 +16,9 @@ from grocery_deal_intelligence.comparison_policy import (
 )
 
 
-def verification(path, left_value, right_value, *, left_status="supported", right_status="supported"):
+def verification(
+    path, left_value, right_value, *, left_status="supported", right_status="supported"
+):
     left = {
         "status": left_status,
         "proposed_value": left_value,

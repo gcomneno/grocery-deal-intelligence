@@ -3,9 +3,7 @@ import copy
 from grocery_deal_intelligence.shopping_list import (
     COMPARISON_CATEGORY_REQUIRED,
     ECONOMIC_BASIS_INCOMPATIBLE,
-    ECONOMIC_NORMALIZATION_INVALID,
     ECONOMIC_NORMALIZATION_NOT_SUPPORTED,
-    EXACT_RATIO_INVALID,
     LOWEST_PRICE,
     NO_ELIGIBLE_OFFERS,
     SELECTION_SELECTED,
@@ -17,7 +15,6 @@ from grocery_deal_intelligence.shopping_list import (
     UNKNOWN_SELECTION_POLICY,
     resolve_shopping_list,
 )
-
 
 AS_OF = "2026-08-29"
 
@@ -52,11 +49,7 @@ def offer(
         },
         "provenance": {
             "source_type": "retailer_api",
-            "source_url": (
-                "https://example.invalid/source/"
-                + retailer
-                + "/campaign"
-            ),
+            "source_url": ("https://example.invalid/source/" + retailer + "/campaign"),
             "observed_at": "2026-08-29T07:00:00Z",
             "fixture_sha256": "abc123",
         },
@@ -123,7 +116,7 @@ def test_as_of_is_list_level_only():
 
 
 def test_blocking_reason_precedence_is_order_independent():
-    import grocery_deal_intelligence.shopping_list as shopping_list
+    from grocery_deal_intelligence import shopping_list
 
     reasons = [
         shopping_list.EXACT_RATIO_INVALID,
@@ -198,9 +191,7 @@ def test_unknown_policy_is_explicit_unselected_result():
     )
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
-    assert selection(result)["reason"] == {
-        "code": UNKNOWN_SELECTION_POLICY
-    }
+    assert selection(result)["reason"] == {"code": UNKNOWN_SELECTION_POLICY}
 
 
 def test_multi_offer_lowest_price_requires_comparison_category():
@@ -215,9 +206,7 @@ def test_multi_offer_lowest_price_requires_comparison_category():
     result = resolve(records, [item("chocolate", category=None)])
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
-    assert selection(result)["reason"] == {
-        "code": COMPARISON_CATEGORY_REQUIRED
-    }
+    assert selection(result)["reason"] == {"code": COMPARISON_CATEGORY_REQUIRED}
     assert selection(result)["diagnostics"] == {"pairs": []}
 
 
@@ -238,13 +227,8 @@ def test_two_comparable_offers_select_exact_normalized_lower_price():
     assert selected["selected_offer"]["retailer"] == "b"
     assert selected["sole_offer"] is None
     assert selected["reason"] is None
-    assert (
-        selected["comparative_claim"]
-        == "strict_lowest_supported_normalized_price"
-    )
-    assert selected["diagnostics"]["pairs"][0]["authorized_order"] == (
-        "right_cheaper"
-    )
+    assert selected["comparative_claim"] == "strict_lowest_supported_normalized_price"
+    assert selected["diagnostics"]["pairs"][0]["authorized_order"] == ("right_cheaper")
 
 
 def test_raw_package_price_does_not_override_normalized_comparable_price():
@@ -277,9 +261,7 @@ def test_semantic_comparison_unsupported_means_no_selection():
     result = resolve(records, [item("chocolate", category="unknown_category")])
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
-    assert selection(result)["reason"] == {
-        "code": SEMANTIC_COMPARISON_NOT_AUTHORIZED
-    }
+    assert selection(result)["reason"] == {"code": SEMANTIC_COMPARISON_NOT_AUTHORIZED}
     pair = selection(result)["diagnostics"]["pairs"][0]
     assert pair["comparison_decision"]["eligible"] is False
     assert pair["economic_normalization"] == {"left": None, "right": None}
@@ -294,9 +276,7 @@ def test_economic_normalization_unsupported_means_no_selection():
     result = resolve(records, [item("chocolate")])
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
-    assert selection(result)["reason"] == {
-        "code": ECONOMIC_NORMALIZATION_NOT_SUPPORTED
-    }
+    assert selection(result)["reason"] == {"code": ECONOMIC_NORMALIZATION_NOT_SUPPORTED}
 
 
 def test_incompatible_economic_bases_mean_no_selection():
@@ -311,9 +291,7 @@ def test_incompatible_economic_bases_mean_no_selection():
     )
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
-    assert selection(result)["reason"] == {
-        "code": ECONOMIC_BASIS_INCOMPATIBLE
-    }
+    assert selection(result)["reason"] == {"code": ECONOMIC_BASIS_INCOMPATIBLE}
 
 
 def test_exact_tie_produces_no_arbitrary_winner():
@@ -331,9 +309,7 @@ def test_exact_tie_produces_no_arbitrary_winner():
     assert selection(result)["status"] == SELECTION_UNSELECTED
     assert selection(result)["selected_offer"] is None
     assert selection(result)["reason"] == {"code": TIE_FOR_LOWEST_PRICE}
-    assert selection(result)["diagnostics"]["pairs"][0]["authorized_order"] == (
-        "equal"
-    )
+    assert selection(result)["diagnostics"]["pairs"][0]["authorized_order"] == ("equal")
 
 
 def test_reversed_presentation_order_does_not_change_tie_semantics():
@@ -368,8 +344,7 @@ def test_n_way_strict_minimum_requires_cheaper_than_every_other_proof():
     assert selection(result)["status"] == SELECTION_SELECTED
     assert selection(result)["selected_offer"]["retailer"] == "c"
     assert [
-        pair["offer_indexes"]
-        for pair in selection(result)["diagnostics"]["pairs"]
+        pair["offer_indexes"] for pair in selection(result)["diagnostics"]["pairs"]
     ] == [[0, 1], [0, 2], [1, 2]]
 
 
@@ -384,9 +359,7 @@ def test_one_missing_pair_prevents_unsupported_n_way_winner():
 
     assert selection(result)["status"] == SELECTION_UNSELECTED
     assert selection(result)["selected_offer"] is None
-    assert selection(result)["reason"] == {
-        "code": ECONOMIC_NORMALIZATION_NOT_SUPPORTED
-    }
+    assert selection(result)["reason"] == {"code": ECONOMIC_NORMALIZATION_NOT_SUPPORTED}
 
 
 def test_partial_success_aggregate_counts():

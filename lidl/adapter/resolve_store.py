@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+_LIDL_OBJECT_NUMBER_LENGTH = 7
+
 
 @dataclass(frozen=True)
 class LidlStore:
@@ -17,10 +19,8 @@ class LidlStore:
 
 
 def normalize_store_id(object_number: str) -> str:
-    if len(object_number) != 7:
-        raise ValueError(
-            f"Unexpected Lidl objectNumber: {object_number!r}"
-        )
+    if len(object_number) != _LIDL_OBJECT_NUMBER_LENGTH:
+        raise ValueError(f"Unexpected Lidl objectNumber: {object_number!r}")
 
     return object_number[2:].lstrip("0") or "0"
 

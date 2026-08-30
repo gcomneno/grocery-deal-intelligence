@@ -71,9 +71,7 @@ def test_retailer_filter_is_exact(offers):
         retailer="lidl",
     )
 
-    assert [record["product_name"] for record in results] == [
-        "Latte Fresco"
-    ]
+    assert [record["product_name"] for record in results] == ["Latte Fresco"]
 
 
 def test_retailer_filter_is_case_sensitive(offers):
@@ -115,8 +113,8 @@ def test_search_does_not_mutate_source_dataset(offers):
 
 
 def test_empty_query_is_rejected(offers):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="query must not be empty"):
         search_offers(offers, "")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="query must not be empty"):
         search_offers(offers, "   ")

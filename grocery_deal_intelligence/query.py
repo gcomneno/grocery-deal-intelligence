@@ -1,4 +1,10 @@
-def search_offers(records, query, retailer=None):
+from collections.abc import Iterable, Mapping
+from typing import Any
+
+
+def search_offers(
+    records: Iterable[Mapping[str, Any]], query: str, retailer: str | None = None
+) -> list[Mapping[str, Any]]:
     if not query or not query.strip():
         raise ValueError("query must not be empty")
 
@@ -7,9 +13,7 @@ def search_offers(records, query, retailer=None):
     matches = [
         record
         for record in records
-        if (
-            retailer is None or record["retailer"] == retailer
-        )
+        if (retailer is None or record["retailer"] == retailer)
         and normalized_query in record["product_name"].casefold()
     ]
 

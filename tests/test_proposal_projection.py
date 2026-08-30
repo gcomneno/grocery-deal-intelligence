@@ -1,7 +1,11 @@
 import copy
 
 from grocery_deal_intelligence.proposal_projection import project_proposal_to_canonical
-from grocery_deal_intelligence.source_evidence import CONTRADICTED, SUPPORTED, UNVERIFIABLE
+from grocery_deal_intelligence.source_evidence import (
+    CONTRADICTED,
+    SUPPORTED,
+    UNVERIFIABLE,
+)
 from grocery_deal_intelligence.validation import validate_offers
 
 
@@ -66,7 +70,9 @@ def test_absent_proposal_claim_can_be_supplied_by_deterministic_evidence():
 
     assert result["projectable"] is True
     assert result["candidate"]["retailer"] == "lidl"
-    assert result["candidate"]["provenance"]["source_url"] == "https://example.test/offer"
+    assert (
+        result["candidate"]["provenance"]["source_url"] == "https://example.test/offer"
+    )
 
 
 def test_contradicted_proposal_claim_is_rejected_and_does_not_override_evidence():
@@ -134,9 +140,7 @@ def test_missing_optional_canonical_fields_do_not_block_projection():
 
 def test_projection_is_read_only_and_result_is_detached():
     proposal = {"product_name": "Latte Fresco"}
-    checks = [
-        verification(["product_name"], SUPPORTED, "Latte Fresco", "Latte Fresco")
-    ]
+    checks = [verification(["product_name"], SUPPORTED, "Latte Fresco", "Latte Fresco")]
     evidence = complete_evidence()
     proposal_before = copy.deepcopy(proposal)
     checks_before = copy.deepcopy(checks)

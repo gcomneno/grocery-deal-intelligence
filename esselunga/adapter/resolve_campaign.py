@@ -1,7 +1,9 @@
-from dataclasses import dataclass
-from urllib.request import Request, urlopen
-from urllib.parse import urlsplit
 import re
+from dataclasses import dataclass
+from urllib.parse import urlsplit
+from urllib.request import Request, urlopen
+
+from url_validation import validate_esselunga_url
 
 
 @dataclass(frozen=True)
@@ -18,6 +20,8 @@ def select_campaign(
     if not store_code:
         raise ValueError("missing store code")
 
+    validate_esselunga_url(campaign_url)
+
     parts = urlsplit(campaign_url)
     path = parts.path
 
@@ -27,24 +31,15 @@ def select_campaign(
     )
 
     if not match:
-        raise ValueError(
-            f"unsupported Esselunga campaign URL: {campaign_url!r}"
-        )
+        raise ValueError(f"unsupported Esselunga campaign URL: {campaign_url!r}")
 
-    current_store = match.group(1)
     cod_promo = match.group(2)
 
     selected_store = store_code.lower()
 
-    selected_path = (
-        path[:match.start()]
-        + f".{selected_store}.{cod_promo}.html"
-    )
+    selected_path = path[: match.start()] + f".{selected_store}.{cod_promo}.html"
 
-    selected_url = (
-        f"{parts.scheme}://{parts.netloc}"
-        f"{selected_path}"
-    )
+    selected_url = f"{parts.scheme}://{parts.netloc}{selected_path}"
 
     if parts.query:
         selected_url += f"?{parts.query}"
@@ -60,12 +55,14 @@ def select_campaign(
 
 
 def verify_campaign(campaign: EsselungaCampaign) -> None:
-    request = Request(
-        campaign.url,
+    validated_url = validate_esselunga_url(campaign.url)
+
+    request = Request(  # noqa: S310
+        validated_url,
         headers={"User-Agent": "Mozilla/5.0"},
     )
 
-    with urlopen(request) as response:
+    with urlopen(request) as response:  # noqa: S310
         html = response.read().decode(
             "utf-8",
             errors="replace",
@@ -91,14 +88,12 @@ def verify_campaign(campaign: EsselungaCampaign) -> None:
 
     if actual_store != campaign.store_code:
         raise ValueError(
-            f"store mismatch: expected {campaign.store_code}, "
-            f"got {actual_store}"
+            f"store mismatch: expected {campaign.store_code}, got {actual_store}"
         )
 
     if actual_promo != campaign.cod_promo:
         raise ValueError(
-            f"campaign mismatch: expected {campaign.cod_promo}, "
-            f"got {actual_promo}"
+            f"campaign mismatch: expected {campaign.cod_promo}, got {actual_promo}"
         )
 
 
@@ -112,9 +107,7 @@ if __name__ == "__main__":
 
     assert campaign.cod_promo == "8260"
     assert campaign.store_code == "ARI"
-    assert campaign.url.endswith(
-        "volantino-digitale.sconti-fino-al-50.ari.8260.html"
-    )
+    assert campaign.url.endswith("volantino-digitale.sconti-fino-al-50.ari.8260.html")
 
     verify_campaign(campaign)
 

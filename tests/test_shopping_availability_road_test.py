@@ -65,9 +65,7 @@ def test_historical_singleton_probe_is_available_with_one_offer():
     assert availability["status"] == AVAILABLE
     assert availability["offer_count"] == 1
     assert len(availability["offers"]) == 1
-    assert availability["offers"][0]["product_name"] == (
-        "Vanini fondente 95% 90 g"
-    )
+    assert availability["offers"][0]["product_name"] == ("Vanini fondente 95% 90 g")
 
 
 def test_historical_singleton_preserves_store_price_currency_and_provenance():
@@ -127,12 +125,8 @@ def test_genuine_expired_dark_chocolate_records_reject_as_not_current():
     }
 
     assert {
-        name: rejections[name]
-        for name in _CURRENT_GENUINE_DARK_CHOCOLATE_NAMES
-    } == {
-        name: NOT_CURRENT
-        for name in _CURRENT_GENUINE_DARK_CHOCOLATE_NAMES
-    }
+        name: rejections[name] for name in _CURRENT_GENUINE_DARK_CHOCOLATE_NAMES
+    } == dict.fromkeys(_CURRENT_GENUINE_DARK_CHOCOLATE_NAMES, NOT_CURRENT)
 
 
 def test_wrong_family_records_reject_as_product_family_mismatch():
@@ -143,18 +137,13 @@ def test_wrong_family_records_reject_as_product_family_mismatch():
     }
 
     assert {
-        name: rejections[name]
-        for name in _CURRENT_WRONG_FAMILY_NAMES
-    } == {
-        name: PRODUCT_FAMILY_MISMATCH
-        for name in _CURRENT_WRONG_FAMILY_NAMES
-    }
+        name: rejections[name] for name in _CURRENT_WRONG_FAMILY_NAMES
+    } == dict.fromkeys(_CURRENT_WRONG_FAMILY_NAMES, PRODUCT_FAMILY_MISMATCH)
 
 
 def test_shopping_availability_road_test_is_deterministic():
     assert (
-        run_shopping_availability_road_test()
-        == run_shopping_availability_road_test()
+        run_shopping_availability_road_test() == run_shopping_availability_road_test()
     )
 
 

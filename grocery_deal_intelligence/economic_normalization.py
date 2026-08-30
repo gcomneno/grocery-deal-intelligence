@@ -9,7 +9,6 @@ from typing import Any
 from .comparison import COMPARABLE
 from .source_evidence import SUPPORTED
 
-
 SUPPORTED_RESULT = "supported"
 UNKNOWN_RESULT = "unknown"
 PRICE_UNAVAILABLE = "current_price_unavailable"
@@ -90,7 +89,12 @@ def normalize_economic_basis(
             continue
         quantity = _decimal_input(values.get(key))
         claim = supported_claims.get((key,))
-        if quantity is None or not quantity.is_finite() or quantity <= 0 or claim is None:
+        if (
+            quantity is None
+            or not quantity.is_finite()
+            or quantity <= 0
+            or claim is None
+        ):
             mismatched_paths.append([key])
             continue
         claim_value = _decimal_input(claim.get("normalized_value"))
@@ -160,7 +164,11 @@ def _comparison_is_admitted(decision: Mapping[str, Any]) -> bool:
     reasons = decision.get("reasons")
     evaluated_rules = decision.get("evaluated_rules")
     policy = decision.get("policy")
-    if reasons != [] or not isinstance(evaluated_rules, list) or not isinstance(policy, Mapping):
+    if (
+        reasons != []
+        or not isinstance(evaluated_rules, list)
+        or not isinstance(policy, Mapping)
+    ):
         return False
 
     authority_seen = False
@@ -176,7 +184,9 @@ def _comparison_is_admitted(decision: Mapping[str, Any]) -> bool:
     return authority_seen
 
 
-def _supported_claims_by_path(claims: list[Any]) -> dict[tuple[str, ...], dict[str, Any]]:
+def _supported_claims_by_path(
+    claims: list[Any],
+) -> dict[tuple[str, ...], dict[str, Any]]:
     supported: dict[tuple[str, ...], dict[str, Any]] = {}
     conflicted: set[tuple[str, ...]] = set()
     for claim in claims:
@@ -197,7 +207,10 @@ def _supported_claims_by_path(claims: list[Any]) -> dict[tuple[str, ...], dict[s
             supported.pop(path, None)
             conflicted.add(path)
             continue
-        if path in supported and supported[path]["normalized_value"] != candidate["normalized_value"]:
+        if (
+            path in supported
+            and supported[path]["normalized_value"] != candidate["normalized_value"]
+        ):
             supported.pop(path, None)
             conflicted.add(path)
             continue

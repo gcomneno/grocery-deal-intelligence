@@ -7,7 +7,6 @@ from typing import Any
 from .source_evidence import CONTRADICTED, SUPPORTED, UNVERIFIABLE
 from .validation import _load_schema
 
-
 _USABLE_STATUS = SUPPORTED
 _REJECTED_STATUSES = frozenset({CONTRADICTED, UNVERIFIABLE})
 
@@ -43,7 +42,9 @@ def project_proposal_to_canonical(
         if not isinstance(item, Mapping):
             raise TypeError("claim verification entries must be mappings")
         raw_path = item.get("path")
-        if not isinstance(raw_path, list) or not all(isinstance(part, str) for part in raw_path):
+        if not isinstance(raw_path, list) or not all(
+            isinstance(part, str) for part in raw_path
+        ):
             raise ValueError("claim verification path must be a list of strings")
         path = tuple(raw_path)
         status = item.get("status")
@@ -92,7 +93,7 @@ def project_proposal_to_canonical(
 def _leaf_items(value: Any, path: tuple[str, ...] = ()):
     if isinstance(value, Mapping):
         for key in sorted(value):
-            yield from _leaf_items(value[key], path + (str(key),))
+            yield from _leaf_items(value[key], (*path, str(key)))
         return
     yield path, value
 
@@ -140,12 +141,17 @@ def _missing_required_paths(
         return missing
 
     for key in sorted(required):
-        required_path = path + (str(key),)
+        required_path = (*path, str(key))
         child_schema = properties.get(key)
 
         if key not in candidate:
-            if isinstance(child_schema, Mapping) and child_schema.get("type") == "object":
-                nested_missing = _missing_required_paths({}, child_schema, path=required_path)
+            if (
+                isinstance(child_schema, Mapping)
+                and child_schema.get("type") == "object"
+            ):
+                nested_missing = _missing_required_paths(
+                    {}, child_schema, path=required_path
+                )
                 missing.extend(nested_missing or [required_path])
             else:
                 missing.append(required_path)
@@ -155,7 +161,9 @@ def _missing_required_paths(
         if isinstance(child_schema, Mapping) and child_schema.get("type") == "object":
             if isinstance(child_value, Mapping):
                 missing.extend(
-                    _missing_required_paths(child_value, child_schema, path=required_path)
+                    _missing_required_paths(
+                        child_value, child_schema, path=required_path
+                    )
                 )
             else:
                 missing.append(required_path)

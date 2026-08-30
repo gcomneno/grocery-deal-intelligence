@@ -3,15 +3,12 @@ from pathlib import Path
 
 from grocery_deal_intelligence.filtering import filter_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 DATASETS = {
     "lidl": ROOT / "lidl/data/output/lidl-lucca-current-retailer-neutral.json",
     "esselunga": (
-        ROOT
-        / "esselunga/data/output/"
-        "esselunga-porcari-current-retailer-neutral.json"
+        ROOT / "esselunga/data/output/esselunga-porcari-current-retailer-neutral.json"
     ),
 }
 
@@ -32,8 +29,7 @@ def test_real_lidl_dataset_supports_canonical_filters():
     assert results
     assert all(record["retailer"] == "lidl" for record in results)
     assert all(
-        record["verification"]["locality_status"] == "verified"
-        for record in results
+        record["verification"]["locality_status"] == "verified" for record in results
     )
 
 
@@ -49,25 +45,18 @@ def test_real_esselunga_dataset_supports_canonical_filters():
     assert results
     assert all(record["retailer"] == "esselunga" for record in results)
     assert all(
-        record["verification"]["evidence_status"] == "verified"
-        for record in results
+        record["verification"]["evidence_status"] == "verified" for record in results
     )
 
 
 def test_real_datasets_share_the_same_filter_interface():
-    datasets = {
-        retailer: load_dataset(path)
-        for retailer, path in DATASETS.items()
-    }
+    datasets = {retailer: load_dataset(path) for retailer, path in DATASETS.items()}
 
     for retailer, dataset in datasets.items():
         results = filter_offers(dataset, retailer=retailer)
 
         assert results
-        assert all(
-            record["retailer"] == retailer
-            for record in results
-        )
+        assert all(record["retailer"] == retailer for record in results)
 
 
 def test_real_filtering_does_not_mutate_dataset():
@@ -109,8 +98,7 @@ def test_real_filtering_can_select_loyalty_offers():
         )
 
         assert all(
-            record["promotion"]["requires_loyalty"] is True
-            for record in results
+            record["promotion"]["requires_loyalty"] is True for record in results
         )
 
 

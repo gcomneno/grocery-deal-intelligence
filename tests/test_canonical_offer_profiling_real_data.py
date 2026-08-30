@@ -3,7 +3,6 @@ from pathlib import Path
 
 from grocery_deal_intelligence.profiling import profile_offers
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -58,9 +57,7 @@ def test_real_canonical_datasets_are_order_independent():
     assert datasets, "No canonical offer dataset found"
 
     for path, records in datasets:
-        assert profile_offers(records) == profile_offers(
-            list(reversed(records))
-        ), path
+        assert profile_offers(records) == profile_offers(list(reversed(records))), path
 
 
 def test_real_canonical_datasets_are_read_only():

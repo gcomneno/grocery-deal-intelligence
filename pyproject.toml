@@ -13,6 +13,7 @@ ai = [
 ]
 dev = [
     "pytest>=8,<9",
+    "ruff==0.16.4",
     "giadaware-ai @ git+https://github.com/gcomneno/giadaware-ai.git@7083e8ea70dd2d822fa748718c16872c1c5c4ed6",
 ]
 
@@ -21,3 +22,156 @@ py-modules = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+
+[tool.ruff]
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+# Ruff's formatter owns these formatting decisions. Keeping the corresponding
+# lint rules enabled would make lint and format disagree.
+ignore = [
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D203",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "Q004",
+    "COM812",
+    "COM819",
+    "ISC002",
+
+    # GDI does not require per-file copyright headers.
+    "CPY001",
+
+    # GDI keeps direct, contextual exception messages at the raise site.
+    # Centralizing hundreds of one-use messages in constants or custom
+    # exception classes would reduce locality without strengthening contracts.
+    "TRY003",
+    "TRY004",
+    "EM101",
+    "EM102",
+
+    # Dynamic JSON/source/evidence boundary values are intentionally honest
+    # about their runtime shape rather than given false static precision.
+    "ANN401",
+
+    # Private helper return annotations are not mechanically required.
+    # Add them when they clarify a durable contract rather than local
+    # implementation detail.
+    "ANN202",
+
+    # Documentation is required where it explains durable contracts and
+    # authority boundaries, not mechanically for every public Python symbol.
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D107",
+
+    # Ruff formatter is canonical and intentionally leaves some constructs
+    # longer than the lint line-length threshold.
+    "E501",
+
+    # D212 and D213 are mutually exclusive; retain D212 deterministically.
+    "D213",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+    "ANN",
+    "ARG",
+    "D",
+    "INP001",
+    "PLR2004",
+    "S101",
+    "SLF001",
+    "FBT002",
+    "FBT003",
+    "PLC0415",
+    "PLR0913",
+    "PLR0917",
+]
+"tests/**/*.py" = [
+    "ANN",
+    "ARG",
+    "D",
+    "INP001",
+    "PLR2004",
+    "S101",
+    "SLF001",
+    "FBT002",
+    "FBT003",
+    "PLC0415",
+    "PLR0913",
+    "PLR0917",
+]
+
+# Retailer adapter/source trees contain intentionally standalone executable
+# verification and extraction scripts rather than importable Python packages.
+"esselunga/**/*.py" = ["INP001", "S101", "T201"]
+"lidl/**/*.py" = ["INP001", "S101", "T201"]
+
+# Historical retailer acquisition/export/verification scripts are not part of
+# the typed core API boundary. Their existing dynamic payload handling remains
+# explicit, while core package APIs continue to enforce ANN001/ANN201.
+"esselunga/adapter/export_retailer_neutral.py" = ["ANN001", "ANN201"]
+"esselunga/adapter/verify_offer_semantics.py" = ["ANN201"]
+"esselunga/adapter/verify_retailer_neutral_contract.py" = ["ANN201"]
+"esselunga/adapter/verify_semantics.py" = ["ANN001", "ANN201", "PLR2004"]
+
+"lidl/adapter/build_dataset.py" = ["ANN201"]
+"lidl/adapter/export_retailer_neutral.py" = ["ANN001", "ANN201"]
+"lidl/adapter/extract_offers.py" = ["ANN001", "ANN201", "PLR2004"]
+"lidl/adapter/verify_flyer.py" = ["ANN001", "ANN201"]
+"lidl/build_lidl_food_dataset.py" = ["ANN001", "ANN201"]
+"lidl/verify_lidl_products_in_flyer.py" = ["ANN001", "ANN201"]
+
+# Numeric literals in these executable evidence/verification scripts are
+# direct assertions about observed payload/cardinality facts rather than
+# reusable domain constants.
+"esselunga/adapter/build_normalized_offers.py" = ["PLR2004"]
+"esselunga/adapter/build_retailer_neutral_offers.py" = ["PLR2004"]
+"esselunga/adapter/extract_offers.py" = ["PLR2004"]
+"esselunga/adapter/verify_campaign_payloads.py" = ["PLR2004"]
+"grocery_deal_intelligence/*_road_test.py" = ["PLR2004", "T201"]
+"grocery_deal_intelligence/road_test.py" = ["PLR2004", "T201"]
+
+# These modules are command-line acceptance/experiment surfaces whose human
+# readable stdout is part of their explicit purpose.
+"experiments/*.py" = ["T201"]
+"validate_retailer_neutral.py" = ["T201"]
+
+# Protocol compatibility: the grounded adapter method intentionally accepts
+# source_evidence even when the base implementation does not consume it.
+"grocery_deal_intelligence/ai_adapter.py" = ["ARG002"]
+
+# Multiplication sign is intentional accepted package-quantity input.
+"grocery_deal_intelligence/product_attributes.py" = ["RUF001"]
+
+# This focused legacy test module intentionally uses unittest.TestCase idioms.
+"tests/test_economic_normalization.py" = ["PT009", "PT027"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 21
+
+[tool.ruff.lint.pylint]
+max-args = 6
+max-branches = 20
+max-returns = 11
+max-statements = 56
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"

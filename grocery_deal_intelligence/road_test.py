@@ -3,7 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from grocery_deal_intelligence.carrefour_adapter import adapt_carrefour_fixture_text
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
@@ -13,7 +16,6 @@ from grocery_deal_intelligence.source_evidence import (
     SUPPORTED,
     UNVERIFIABLE,
 )
-
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _OBSERVED_AT = "2026-08-27T00:00:00Z"
@@ -132,7 +134,8 @@ def render_report(result: dict[str, Any]) -> str:
                 f"claims unverifiable: {retailer['claims'][UNVERIFIABLE]}",
                 f"structural valid:    {retailer['structurally_valid']}/{retailer['offers_parsed']}",
                 f"canonical admission: {retailer['admission_eligible']}/{retailer['offers_parsed']} eligible",
-                "rejection reasons:    " + _format_reasons(retailer["rejection_reasons"]),
+                "rejection reasons:    "
+                + _format_reasons(retailer["rejection_reasons"]),
                 f"retailer result:     {'PASS' if retailer['pass'] else 'FAIL'}",
                 "",
             ]
@@ -157,8 +160,12 @@ def _format_reasons(reasons: dict[str, int]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run the deterministic real-fixture GDI road test")
-    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    parser = argparse.ArgumentParser(
+        description="Run the deterministic real-fixture GDI road test"
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="emit machine-readable JSON"
+    )
     args = parser.parse_args(argv)
 
     result = run_road_test()

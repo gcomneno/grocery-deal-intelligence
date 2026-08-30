@@ -1,12 +1,11 @@
-from copy import deepcopy
 import json
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any
 
 from giadaware_ai.extension import ProposeCapability
 
 from .validation import _load_schema
-
 
 _SYSTEM_PROMPT = """
 You propose candidate canonical grocery-offer data from one supplied source record.
@@ -60,7 +59,9 @@ def _serialize_mapping(value: Mapping[str, Any]) -> str:
     )
 
 
-class ProposeOfferCandidateCapability(ProposeCapability[Mapping[str, Any], dict[str, Any]]):
+class ProposeOfferCandidateCapability(
+    ProposeCapability[Mapping[str, Any], dict[str, Any]]
+):
     """Propose advisory grocery-offer candidate data from one source record."""
 
     def execute(self, value: Mapping[str, Any]) -> dict[str, Any]:
@@ -118,6 +119,8 @@ class ProposeOfferCandidateCapability(ProposeCapability[Mapping[str, Any], dict[
         forbidden = _FORBIDDEN_AUTHORITY_FIELDS.intersection(candidate)
         if forbidden:
             fields = ", ".join(sorted(forbidden))
-            raise ValueError(f"offer proposal must not include authority fields: {fields}")
+            raise ValueError(
+                f"offer proposal must not include authority fields: {fields}"
+            )
 
         return candidate

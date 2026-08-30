@@ -1,7 +1,6 @@
 import copy
 
 import pytest
-
 from giadaware_ai.extension import CapabilityFamily, ProposeCapability
 
 from grocery_deal_intelligence.giadaware_ai_adapter import GiadaWareAIAdapter
@@ -120,7 +119,9 @@ def test_capability_passes_grocery_owned_canonical_schema_to_backend():
     capability.execute(make_source_record())
 
     assert backend.calls[0]["response_schema"] == _load_schema()
-    assert backend.calls[0]["response_schema"]["$id"] == "grocery-offer-v0.1.schema.json"
+    assert (
+        backend.calls[0]["response_schema"]["$id"] == "grocery-offer-v0.1.schema.json"
+    )
 
 
 def test_backend_schema_mutation_does_not_mutate_grocery_schema_source():

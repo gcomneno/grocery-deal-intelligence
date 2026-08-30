@@ -1,11 +1,28 @@
-from html import unescape
-from urllib.parse import urljoin
-from pathlib import Path
 import json
 import re
+import shutil
 import subprocess
+from html import unescape
+from pathlib import Path
+from typing import Any
+from urllib.parse import urljoin
 
 BASE = "https://www.lidl.it"
+
+_MALFORMED_GRID_DATA = object()
+
+_CURL = shutil.which("curl")
+if _CURL is None:
+    raise RuntimeError("curl executable is required to crawl Lidl campaigns")
+CURL = str(Path(_CURL).resolve())
+
+
+def _decode_grid_data(raw: str) -> Any:
+    try:
+        return json.loads(unescape(raw))
+    except json.JSONDecodeError:
+        return _MALFORMED_GRID_DATA
+
 
 CAMPAIGNS = [
     "/c/lidl-plus-kw-34-26/a10101068",
@@ -25,27 +42,31 @@ for campaign in CAMPAIGNS:
     print(f"\n===== {url} =====")
 
     try:
-        body = subprocess.check_output(
-            ["curl", "-Ls", url],
+        # CURL is resolved once with shutil.which and executed with shell=False.
+        body = subprocess.check_output(  # noqa: S603
+            [CURL, "-Ls", url],
             text=True,
             timeout=30,
         )
-    except Exception as exc:
+    except (
+        OSError,
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+    ) as exc:
         print("ERROR:", exc)
         continue
 
     matches = re.findall(
         r'data-grid-data="([^"]+)"',
         body,
-        flags=re.I,
+        flags=re.IGNORECASE,
     )
 
     products = []
 
     for raw in matches:
-        try:
-            data = json.loads(unescape(raw))
-        except Exception:
+        data = _decode_grid_data(raw)
+        if data is _MALFORMED_GRID_DATA:
             continue
 
         if not data.get("title"):
@@ -53,10 +74,12 @@ for campaign in CAMPAIGNS:
 
         products.append(data)
 
-        all_products.append({
-            "campaign_url": url,
-            "data": data,
-        })
+        all_products.append(
+            {
+                "campaign_url": url,
+                "data": data,
+            }
+        )
 
     print("records:", len(products))
 

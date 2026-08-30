@@ -10,7 +10,6 @@ from grocery_deal_intelligence.source_evidence import (
     UNVERIFIABLE,
 )
 
-
 STRUCTURAL_INVALID = "structural_invalid"
 CONTRADICTED_CLAIM = "contradicted_claim"
 CRITICAL_CLAIM_UNSUPPORTED = "critical_claim_unsupported"
@@ -45,8 +44,12 @@ def evaluate_canonical_admission(
             raise TypeError(f"claim_verification[{index}] must be a mapping")
 
         raw_path = claim.get("path")
-        if not isinstance(raw_path, list) or not all(isinstance(part, str) for part in raw_path):
-            raise ValueError(f"claim_verification[{index}].path must be a list of strings")
+        if not isinstance(raw_path, list) or not all(
+            isinstance(part, str) for part in raw_path
+        ):
+            raise ValueError(
+                f"claim_verification[{index}].path must be a list of strings"
+            )
         path = tuple(raw_path)
         if path in by_path:
             raise ValueError(f"duplicate claim path: {list(path)!r}")
@@ -64,8 +67,9 @@ def evaluate_canonical_admission(
     contradicted_paths = sorted(
         path for path, claim in by_path.items() if claim["status"] == CONTRADICTED
     )
-    for path in contradicted_paths:
-        reasons.append({"code": CONTRADICTED_CLAIM, "path": list(path)})
+    reasons.extend(
+        {"code": CONTRADICTED_CLAIM, "path": list(path)} for path in contradicted_paths
+    )
 
     critical_claims: list[dict[str, Any]] = []
     for path in CRITICAL_CLAIM_PATHS:

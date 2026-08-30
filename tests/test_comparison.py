@@ -84,8 +84,7 @@ def test_same_product_can_be_proposed_and_facts_verified_without_granting_author
 
     assert result["proposal"]["relationship"] == SAME_PRODUCT
     assert all(
-        item["left"]["status"] == "supported"
-        and item["right"]["status"] == "supported"
+        item["left"]["status"] == "supported" and item["right"]["status"] == "supported"
         for item in result["verification"]
     )
     assert result["admission"] == {

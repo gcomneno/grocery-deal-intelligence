@@ -1,6 +1,5 @@
 from build_normalized_offers import build_normalized_offers
 
-
 CONTRACT_FIELDS = {
     "retailer",
     "product_name",

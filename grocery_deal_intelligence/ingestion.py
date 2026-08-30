@@ -1,7 +1,10 @@
 from collections import Counter
+from collections.abc import Iterable, Mapping
 from copy import deepcopy
+from typing import Any
 
 from grocery_deal_intelligence.admission import evaluate_canonical_admission
+from grocery_deal_intelligence.ai_adapter import OfferCandidateAdapter
 from grocery_deal_intelligence.proposal_projection import project_proposal_to_canonical
 from grocery_deal_intelligence.proposal_validation import validate_proposal
 from grocery_deal_intelligence.source_evidence import (
@@ -13,7 +16,6 @@ from grocery_deal_intelligence.source_evidence import (
     verify_candidate_claims,
 )
 from grocery_deal_intelligence.validation import validate_offers
-
 
 _DETERMINISTIC_CANDIDATE_FIELDS = (
     "retailer",
@@ -31,7 +33,7 @@ _DETERMINISTIC_CANDIDATE_FIELDS = (
 )
 
 
-def _candidate_from_source_evidence(source_evidence):
+def _candidate_from_source_evidence(source_evidence: Mapping[str, Any]):
     candidate = {}
     for key in _DETERMINISTIC_CANDIDATE_FIELDS:
         if key in source_evidence:
@@ -39,7 +41,11 @@ def _candidate_from_source_evidence(source_evidence):
     return candidate
 
 
-def ingest_deterministic_source_record(source_record, *, retailer):
+def ingest_deterministic_source_record(
+    source_record: Mapping[str, Any],
+    *,
+    retailer: str,
+) -> dict[str, Any]:
     """Ingest one deterministic retailer source record through canonical admission.
 
     This path is AI-free. It projects deterministic source evidence, constructs a
@@ -74,7 +80,11 @@ def ingest_deterministic_source_record(source_record, *, retailer):
     }
 
 
-def ingest_deterministic_source_records(source_records, *, retailer):
+def ingest_deterministic_source_records(
+    source_records: Iterable[Mapping[str, Any]],
+    *,
+    retailer: str,
+) -> dict[str, Any]:
     """Ingest deterministic retailer source records without adding authority.
 
     The batch layer preserves order and delegates every record to
@@ -101,9 +111,7 @@ def ingest_deterministic_source_records(source_records, *, retailer):
         structurally_valid += int(result["validated"] is True)
         admission_eligible += int(result["admission"]["eligible"] is True)
         canonical_records += int(result["canonical"] is not None)
-        claim_totals.update(
-            summarize_claim_verification(result["claim_verification"])
-        )
+        claim_totals.update(summarize_claim_verification(result["claim_verification"]))
         rejection_reasons.update(
             reason["code"] for reason in result["admission"]["reasons"]
         )
@@ -132,15 +140,14 @@ def ingest_deterministic_source_records(source_records, *, retailer):
 
 
 def ingest_offer(
-    source_record,
+    source_record: Mapping[str, Any],
     *,
-    ai=None,
-    validate=False,
-    admission=False,
-    retailer=None,
-):
-    """
-    Produce candidate canonical data from one source record.
+    ai: OfferCandidateAdapter | None = None,
+    validate: bool = False,
+    admission: bool = False,
+    retailer: str | None = None,
+) -> dict[str, Any]:
+    """Produce candidate canonical data from one source record.
 
     AI assistance is optional and advisory only.
 
@@ -159,9 +166,7 @@ def ingest_offer(
 
     source = deepcopy(source_record)
     source_evidence = (
-        project_source_evidence(source, retailer=retailer)
-        if admission
-        else None
+        project_source_evidence(source, retailer=retailer) if admission else None
     )
 
     if ai is None:
@@ -225,11 +230,11 @@ def ingest_offer(
 
 
 def ingest_offer_proposal_path(
-    source_record,
+    source_record: Mapping[str, Any],
     *,
-    ai,
-    retailer,
-):
+    ai: Any,
+    retailer: str,
+) -> dict[str, Any]:
     """Run the explicit Proposal v0.1 ingestion path without collapsing authority layers.
 
     The Proposal path is opt-in and independent from ``ingest_offer``. It keeps

@@ -1,4 +1,8 @@
-def summarize_offers(records):
+from collections.abc import Mapping, Sequence
+from typing import Any
+
+
+def summarize_offers(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     total_offers = len(records)
 
     retailers = sorted({record["retailer"] for record in records})
@@ -17,25 +21,18 @@ def summarize_offers(records):
 
     for record in records:
         retailer = record["retailer"]
-        offers_by_retailer[retailer] = (
-            offers_by_retailer.get(retailer, 0) + 1
-        )
+        offers_by_retailer[retailer] = offers_by_retailer.get(retailer, 0) + 1
 
-        currency = record["currency"]
         prices.append(record["price"])
 
         promotion_type = record["promotion"]["type"]
-        promotion_types[promotion_type] = (
-            promotion_types.get(promotion_type, 0) + 1
-        )
+        promotion_types[promotion_type] = promotion_types.get(promotion_type, 0) + 1
 
         if record["promotion"]["requires_loyalty"]:
             loyalty_required_offers += 1
 
         locality_scope = record["locality"]["scope"]
-        locality_scopes[locality_scope] = (
-            locality_scopes.get(locality_scope, 0) + 1
-        )
+        locality_scopes[locality_scope] = locality_scopes.get(locality_scope, 0) + 1
 
         locality_status = record["verification"]["locality_status"]
         locality_verification_status[locality_status] = (

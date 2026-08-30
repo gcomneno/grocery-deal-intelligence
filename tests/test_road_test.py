@@ -59,4 +59,7 @@ def test_cli_json_report_is_machine_readable(capsys):
     assert main(["--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["pass"] is True
-    assert {item["retailer"] for item in payload["retailers"]} == {"carrefour", "despar"}
+    assert {item["retailer"] for item in payload["retailers"]} == {
+        "carrefour",
+        "despar",
+    }

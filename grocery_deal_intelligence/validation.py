@@ -1,8 +1,10 @@
 import json
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 from jsonschema import Draft202012Validator
-
+from jsonschema.exceptions import ValidationError
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema/grocery-offer-v0.1.schema.json"
@@ -12,11 +14,11 @@ def _load_schema():
     return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
 
 
-def _error_path(error):
+def _error_path(error: ValidationError):
     return list(error.absolute_path)
 
 
-def validate_offers(records):
+def validate_offers(records: Sequence[object]) -> dict[str, Any]:
     validator = Draft202012Validator(_load_schema())
 
     errors = []
@@ -33,14 +35,14 @@ def validate_offers(records):
         )
 
         if record_errors:
-            for error in record_errors:
-                errors.append(
-                    {
-                        "record_index": record_index,
-                        "path": _error_path(error),
-                        "message": error.message,
-                    }
-                )
+            errors.extend(
+                {
+                    "record_index": record_index,
+                    "path": _error_path(error),
+                    "message": error.message,
+                }
+                for error in record_errors
+            )
         else:
             valid_records += 1
 

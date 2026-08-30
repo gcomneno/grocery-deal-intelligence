@@ -12,7 +12,6 @@ from grocery_deal_intelligence.shopping_availability import (
     resolve_shopping_item_availability,
 )
 
-
 AS_OF = "2026-08-29"
 
 
@@ -48,11 +47,7 @@ def offer(
         },
         "provenance": {
             "source_type": "retailer_api",
-            "source_url": (
-                "https://example.invalid/source/"
-                + retailer
-                + "/campaign"
-            ),
+            "source_url": ("https://example.invalid/source/" + retailer + "/campaign"),
             "observed_at": "2026-08-29T07:00:00Z",
             "fixture_sha256": "abc123",
         },
@@ -134,13 +129,8 @@ def test_single_offer_result_makes_no_comparative_superiority_claim():
         as_of=AS_OF,
     )
 
-    serialized_keys = {
-        key
-        for key in result
-    } | {
-        key
-        for resolved in result["offers"]
-        for key in resolved
+    serialized_keys = set(result) | {
+        key for resolved in result["offers"] for key in resolved
     }
 
     assert "best" not in serialized_keys
@@ -171,9 +161,7 @@ def test_multiple_offers_are_availability_results_not_implicit_comparison():
 
     assert result["status"] == AVAILABLE
     assert result["offer_count"] == 2
-    assert [
-        item["retailer"] for item in result["offers"]
-    ] == [
+    assert [item["retailer"] for item in result["offers"]] == [
         "a-retailer",
         "z-retailer",
     ]
@@ -200,9 +188,7 @@ def test_current_validity_must_be_explicitly_supported():
     )
 
     assert result["status"] == UNKNOWN
-    assert {
-        item["code"] for item in result["rejections"]
-    } == {VALIDITY_UNAVAILABLE}
+    assert {item["code"] for item in result["rejections"]} == {VALIDITY_UNAVAILABLE}
 
 
 def test_evidence_and_locality_must_be_verified_before_emission():
@@ -224,9 +210,7 @@ def test_evidence_and_locality_must_be_verified_before_emission():
     )
 
     assert result["status"] == UNKNOWN
-    assert {
-        item["code"] for item in result["rejections"]
-    } == {
+    assert {item["code"] for item in result["rejections"]} == {
         EVIDENCE_UNVERIFIED,
         LOCALITY_UNVERIFIED,
     }
@@ -257,9 +241,7 @@ def test_requested_locality_excludes_unrelated_verified_store():
     assert result["status"] == AVAILABLE
     assert result["offer_count"] == 1
     assert result["offers"][0]["retailer"] == "lucca"
-    assert result["rejections"][0]["code"] == (
-        OUTSIDE_REQUESTED_LOCALITY
-    )
+    assert result["rejections"][0]["code"] == (OUTSIDE_REQUESTED_LOCALITY)
 
 
 def test_wrong_family_keyword_match_is_rejected_by_hardened_verifier():
@@ -282,9 +264,7 @@ def test_wrong_family_keyword_match_is_rejected_by_hardened_verifier():
 
     assert result["status"] == UNKNOWN
     assert result["offer_count"] == 0
-    assert {
-        item["code"] for item in result["rejections"]
-    } == {PRODUCT_FAMILY_MISMATCH}
+    assert {item["code"] for item in result["rejections"]} == {PRODUCT_FAMILY_MISMATCH}
 
 
 def test_resolver_does_not_mutate_inputs_and_is_deterministic():

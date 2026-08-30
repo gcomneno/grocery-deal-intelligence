@@ -8,7 +8,6 @@ from typing import Any
 from .product_attributes import normalize_product_attributes
 from .source_evidence import SUPPORTED
 
-
 AVAILABLE = "available"
 UNKNOWN = "unknown"
 
@@ -86,11 +85,7 @@ def resolve_shopping_item_availability(
                 _rejection(
                     record,
                     PRODUCT_FAMILY_MISMATCH,
-                    details={
-                        "attribute_reasons": deepcopy(
-                            family_result["reasons"]
-                        )
-                    },
+                    details={"attribute_reasons": deepcopy(family_result["reasons"])},
                 )
             )
             continue
@@ -113,9 +108,7 @@ def resolve_shopping_item_availability(
             locality_scope=locality_scope,
             stores=requested_stores,
         ):
-            rejected.append(
-                _rejection(record, OUTSIDE_REQUESTED_LOCALITY)
-            )
+            rejected.append(_rejection(record, OUTSIDE_REQUESTED_LOCALITY))
             continue
 
         quantity_claim = _supported_claim(
@@ -137,14 +130,10 @@ def resolve_shopping_item_availability(
         }
 
         if record.get("packaging_text") is not None:
-            resolved_offer["packaging_text"] = deepcopy(
-                record["packaging_text"]
-            )
+            resolved_offer["packaging_text"] = deepcopy(record["packaging_text"])
 
         if quantity_claim is not None:
-            resolved_offer["quantity"] = deepcopy(
-                family_result["values"]["quantity"]
-            )
+            resolved_offer["quantity"] = deepcopy(family_result["values"]["quantity"])
             resolved_offer["quantity_claim"] = deepcopy(quantity_claim)
 
         eligible.append(resolved_offer)
@@ -180,13 +169,9 @@ def _coerce_date(value: str | date | datetime) -> date:
         pass
 
     try:
-        return datetime.fromisoformat(
-            observed.replace("Z", "+00:00")
-        ).date()
+        return datetime.fromisoformat(observed).date()
     except ValueError as exc:
-        raise ValueError(
-            "as_of must be an ISO date or datetime"
-        ) from exc
+        raise ValueError("as_of must be an ISO date or datetime") from exc
 
 
 def _parse_validity_date(value: Any) -> date | None:
@@ -201,9 +186,7 @@ def _parse_validity_date(value: Any) -> date | None:
         pass
 
     try:
-        return datetime.fromisoformat(
-            observed.replace("Z", "+00:00")
-        ).date()
+        return datetime.fromisoformat(observed).date()
     except ValueError:
         return None
 
@@ -239,9 +222,7 @@ def _normalize_requested_stores(
     normalized: set[str] = set()
     for store in stores:
         if not isinstance(store, str) or not store.strip():
-            raise ValueError(
-                "store identifiers must be non-empty strings"
-            )
+            raise ValueError("store identifiers must be non-empty strings")
         normalized.add(store)
 
     return tuple(sorted(normalized))
@@ -256,10 +237,7 @@ def _locality_matches(
     if not isinstance(locality, Mapping):
         return False
 
-    if (
-        locality_scope is not None
-        and locality.get("scope") != locality_scope
-    ):
+    if locality_scope is not None and locality.get("scope") != locality_scope:
         return False
 
     if not stores:

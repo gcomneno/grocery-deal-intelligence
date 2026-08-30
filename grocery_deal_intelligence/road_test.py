@@ -13,6 +13,10 @@ from grocery_deal_intelligence.corpus import assemble_corpus
 from grocery_deal_intelligence.despar_adapter import adapt_despar_fixture_text
 from grocery_deal_intelligence.ingestion import ingest_deterministic_source_records
 from grocery_deal_intelligence.ingestion_result_set import IngestionResultSet
+from grocery_deal_intelligence.lidl_fixture import (
+    LIDL_LUCCA_CURRENT_FIXTURE_SHA256,
+    load_lidl_fixture,
+)
 from grocery_deal_intelligence.retailers import list_available_retailers
 from grocery_deal_intelligence.source_evidence import (
     CONTRADICTED,
@@ -22,20 +26,59 @@ from grocery_deal_intelligence.source_evidence import (
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _OBSERVED_AT = "2026-08-27T00:00:00Z"
+_EXPECTED_CORPUS_CANONICAL_RECORDS = 64
+_EXPECTED_CORPUS_RETAILERS = ["carrefour", "despar", "lidl"]
+
+
+def _load_carrefour_records(
+    path: Path,
+    expected_sha256: str,
+) -> list[dict[str, Any]]:
+    return adapt_carrefour_fixture_text(
+        path.read_text(encoding="utf-8"),
+        observed_at=_OBSERVED_AT,
+        expected_sha256=expected_sha256,
+    )
+
+
+def _load_despar_records(
+    path: Path,
+    expected_sha256: str,
+) -> list[dict[str, Any]]:
+    return adapt_despar_fixture_text(
+        path.read_text(encoding="utf-8"),
+        observed_at=_OBSERVED_AT,
+        expected_sha256=expected_sha256,
+    )
+
+
+def _load_lidl_records(
+    path: Path,
+    expected_sha256: str,
+) -> list[dict[str, Any]]:
+    return load_lidl_fixture(path, expected_sha256=expected_sha256)
+
 
 _RETAILERS: tuple[dict[str, Any], ...] = (
     {
         "name": "carrefour",
         "fixture": _REPO_ROOT / "fixtures/carrefour/store-5190-flyer-56879.txt",
         "sha256": "25f18f28c52ae114e68bb18f93ed78d777390b0d2ebf1a070e45d99a4b52d571",
-        "adapter": adapt_carrefour_fixture_text,
+        "load_records": _load_carrefour_records,
         "expectation": "eligible",
     },
     {
         "name": "despar",
         "fixture": _REPO_ROOT / "fixtures/despar/store-191-flyer-2026-08-13.txt",
         "sha256": "54607c3e32d3984d68b6889c522cd17486c31361a8e781f1447c5abe24edaf17",
-        "adapter": adapt_despar_fixture_text,
+        "load_records": _load_despar_records,
+        "expectation": "eligible",
+    },
+    {
+        "name": "lidl",
+        "fixture": _REPO_ROOT / "lidl/data/output/lidl-lucca-current.json",
+        "sha256": LIDL_LUCCA_CURRENT_FIXTURE_SHA256,
+        "load_records": _load_lidl_records,
         "expectation": "eligible",
     },
 )
@@ -56,8 +99,10 @@ def run_road_test() -> dict[str, Any]:
     corpus = assemble_corpus(result_sets)
     represented_retailers = list_available_retailers(corpus.canonical_records)
     corpus_invariants = {
-        "expected_canonical_records": corpus.summary["canonical_records"] == 6,
-        "represented_retailers": represented_retailers == ["carrefour", "despar"],
+        "expected_canonical_records": (
+            corpus.summary["canonical_records"] == _EXPECTED_CORPUS_CANONICAL_RECORDS
+        ),
+        "represented_retailers": represented_retailers == _EXPECTED_CORPUS_RETAILERS,
         "no_ai_used": corpus.ai_used is False,
         "no_network_required": corpus.network_required is False,
     }
@@ -87,15 +132,11 @@ def run_road_test() -> dict[str, Any]:
 
 def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
     fixture_path: Path = spec["fixture"]
-    adapter: Callable[..., list[dict[str, Any]]] = spec["adapter"]
-    text = fixture_path.read_text(encoding="utf-8")
-    original = text[:]
+    load_records: Callable[[Path, str], list[dict[str, Any]]] = spec["load_records"]
+    fixture_before = fixture_path.read_bytes()
 
-    records = adapter(
-        text,
-        observed_at=_OBSERVED_AT,
-        expected_sha256=spec["sha256"],
-    )
+    records = load_records(fixture_path, spec["sha256"])
+    fixture_after = fixture_path.read_bytes()
     batch = ingest_deterministic_source_records(
         records,
         retailer=spec["name"],
@@ -103,7 +144,7 @@ def _run_retailer(spec: dict[str, Any]) -> dict[str, Any]:
     summary = batch["summary"]
 
     invariant_results = {
-        "fixture_read_only": text == original,
+        "fixture_read_only": fixture_after == fixture_before,
         "all_claims_supported": (
             summary["claims"][SUPPORTED] > 0
             and summary["claims"][CONTRADICTED] == 0

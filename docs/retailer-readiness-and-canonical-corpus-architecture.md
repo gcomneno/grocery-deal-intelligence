@@ -674,17 +674,40 @@ deterministic `IngestionResultSet` values.
 The initial acceptance path assembles:
 
 ```text
-Carrefour: 3 admitted canonical records
-Despar:    3 admitted canonical records
-Total:     6 admitted canonical records
+Carrefour:  3 admitted canonical records
+Despar:     3 admitted canonical records
+Lidl:      58 admitted canonical records
+Total:     64 admitted canonical records
 ```
 
-This implementation intentionally does not increase retailer count or introduce
+This implementation intentionally increases represented canonical retailers from two to three without introducing
 new authority.
 
-The next retailer-integration step is to bridge Lidl source-shaped captured
-records through the same deterministic ingestion and corpus assembly path,
-without treating its legacy retailer-neutral export as canonical authority.
+Lidl is now integrated into the deterministic corpus acceptance path for one
+exact pinned source-shaped fixture:
+
+```text
+lidl/data/output/lidl-lucca-current.json
+SHA-256: a74d6ffa880b46513f90cbe22b1dccd3a99a21ed80f84680808ea4cb363500df
+```
+
+That fixture deterministically reproduces:
+
+```text
+58 source records
+58 structurally valid
+58 admission eligible
+58 canonical records
+0 rejected
+0 contradicted claims
+0 unverifiable claims
+```
+
+Its current admitted locality remains store-scoped from verified store IDs.
+
+This fixture integration does not promote Lidl acquisition/build tooling as
+production-ready and does not grant authority to the historical
+retailer-neutral Lidl export.
 
 ## Durable principle
 

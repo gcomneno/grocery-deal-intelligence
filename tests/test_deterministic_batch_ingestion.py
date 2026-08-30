@@ -130,4 +130,8 @@ def test_road_test_uses_shared_batch_ingestion(monkeypatch):
 
     assert result["pass"] is True
     assert result["unsupported_facts_invented"] == 0
-    assert calls == [("carrefour", 3), ("despar", 3)]
+    assert calls == [
+        ("carrefour", 3),
+        ("despar", 3),
+        ("lidl", 58),
+    ]

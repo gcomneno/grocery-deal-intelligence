@@ -89,6 +89,30 @@ admission, querying, filtering, aggregation, profiling, or batch orchestration.
 If a retailer cannot satisfy the canonical contract from available evidence,
 preserve the evidence and fail closed.
 
+## Retailer orchestration and canonical availability
+
+A retailer or source registry, if present, is orchestration metadata only.
+
+Registry membership may describe which retailer pipelines the current build
+knows how to invoke. It must never be treated as proof that a retailer is
+represented in the current canonical corpus.
+
+Canonical retailer availability must be derived from admitted canonical records,
+for example through `list_available_retailers(records)`.
+
+Keep these states distinct:
+
+    retailer pipeline registered
+        != retailer admitted into corpus
+        != retailer has current offers at as_of
+
+Retailer-neutral structural validity is also not canonical admission.
+
+A schema-valid retailer-neutral export must not be treated as canonical authority
+unless the underlying records have passed the deterministic evidence,
+verification, structural-validation, and canonical-admission boundaries required
+by the current architecture.
+
 ## Source discovery
 
 The current investigated retailer source-discovery phase is complete.

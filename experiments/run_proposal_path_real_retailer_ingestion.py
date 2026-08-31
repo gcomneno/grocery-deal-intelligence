@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 from collections import Counter
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from giadaware_ai.backends.ollama import OllamaBackend
@@ -39,6 +41,45 @@ DIRECT_CANONICAL_BASELINE = {
     "contradicted_claims": 0,
     "unverifiable_claims": 29,
 }
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_EXPECTED_FIXTURE_SHA256 = {
+    "esselunga/all-8400.json": (
+        "581d738dc11c5ea287c7ef1b15d88369211c203e1ef3db900dfe038c0b5a669f"
+    ),
+    "lidl/data/output/lidl-lucca-current.json": (
+        "a74d6ffa880b46513f90cbe22b1dccd3a99a21ed80f84680808ea4cb363500df"
+    ),
+}
+
+
+def _verify_fixture_identity(spec: Mapping[str, Any]) -> dict[str, str]:
+    raw_path = spec.get("path")
+    if not isinstance(raw_path, str) or not raw_path:
+        raise ValueError("fixed-corpus fixture path must be a non-empty string")
+
+    expected_sha256 = _EXPECTED_FIXTURE_SHA256.get(raw_path)
+    if expected_sha256 is None:
+        raise AssertionError(
+            f"fixed-corpus fixture has no pinned SHA-256: {raw_path!r}"
+        )
+
+    fixture_path = (_REPO_ROOT / raw_path).resolve()
+    if not fixture_path.is_relative_to(_REPO_ROOT):
+        raise AssertionError(f"fixture escapes repository root: {raw_path!r}")
+
+    observed_sha256 = hashlib.sha256(fixture_path.read_bytes()).hexdigest()
+    if observed_sha256 != expected_sha256:
+        raise AssertionError(
+            "fixed-corpus fixture SHA-256 mismatch: "
+            f"{raw_path!r}: expected {expected_sha256}, observed {observed_sha256}"
+        )
+
+    return {
+        "path": raw_path,
+        "expected_sha256": expected_sha256,
+        "observed_sha256": observed_sha256,
+    }
 
 
 def _leaf_count(value: Any) -> int:
@@ -177,16 +218,21 @@ def run_experiment() -> dict[str, Any]:
         raise RuntimeError(
             f"Proposal-path real-retailer experiment is opt-in; set {RUN_ENV}=1"
         )
+
+    fixture_identities = [_verify_fixture_identity(spec) for spec in FIXTURES]
+
     base_url = os.environ.get(BASE_URL_ENV, DEFAULT_BASE_URL)
     model = os.environ.get(MODEL_ENV, DEFAULT_MODEL)
     timeout = float(os.environ.get(TIMEOUT_ENV, DEFAULT_TIMEOUT))
     backend = OllamaBackend(model=model, base_url=base_url, timeout=timeout)
     capability = ProposeOfferProposalCapability(backend)
     adapter = GiadaWareAIProposalAdapter(capability)
+
     results = []
     for spec in FIXTURES:
         source, identity = load_fixture_record(spec)
         results.append(evaluate_fixture(source, identity, adapter=adapter))
+
     return {
         "experiment": {
             "name": "fixed-real-retailer-proposal-v0.1-ingestion",
@@ -199,6 +245,7 @@ def run_experiment() -> dict[str, Any]:
                 }
                 for spec in FIXTURES
             ],
+            "fixture_sha256": fixture_identities,
         },
         "fixtures": results,
         "summary": summarize_results(results),

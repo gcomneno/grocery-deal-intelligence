@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from copy import deepcopy
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from grocery_deal_intelligence.esselunga_acquisition import (
+        EsselungaAcquisitionContext,
+    )
 
 SUPPORTED = "supported"
 CONTRADICTED = "contradicted"
@@ -21,6 +26,7 @@ def project_source_evidence(
     source_record: Mapping[str, Any],
     *,
     retailer: str,
+    esselunga_acquisition_context: EsselungaAcquisitionContext | None = None,
 ) -> dict[str, Any]:
     """Project only canonical claims deterministically supported by source evidence."""
     if not isinstance(source_record, Mapping):
@@ -34,7 +40,10 @@ def project_source_evidence(
     if normalized_retailer == "lidl":
         return _project_lidl(source)
     if normalized_retailer == "esselunga":
-        return _project_esselunga(source)
+        return _project_esselunga(
+            source,
+            acquisition_context=esselunga_acquisition_context,
+        )
     if normalized_retailer == "despar":
         return _project_despar(source)
     if normalized_retailer == "carrefour":
@@ -166,7 +175,11 @@ def _project_lidl(source: dict[str, Any]) -> dict[str, Any]:
     return evidence
 
 
-def _project_esselunga(source: dict[str, Any]) -> dict[str, Any]:
+def _project_esselunga(
+    source: dict[str, Any],
+    *,
+    acquisition_context: EsselungaAcquisitionContext | None,
+) -> dict[str, Any]:
     evidence: dict[str, Any] = {"retailer": "esselunga"}
 
     if "title" in source:
@@ -192,6 +205,15 @@ def _project_esselunga(source: dict[str, Any]) -> dict[str, Any]:
     descriptions = source.get("promozioni_desMeccanica")
     if isinstance(descriptions, list) and descriptions:
         evidence["promotion"] = {"discount_text": deepcopy(descriptions[0])}
+
+    if acquisition_context is not None and acquisition_context.campaign_store_verified:
+        evidence["locality"] = {
+            "scope": "store",
+            "stores": [acquisition_context.expected_store_code],
+        }
+        evidence["verification"] = {
+            "locality_status": "verified",
+        }
 
     return evidence
 

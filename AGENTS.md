@@ -76,6 +76,22 @@ Do not invent missing facts.
 Do not combine independently observed facts into synthetic provenance unless
 the source itself establishes their relationship.
 
+## Capture evidence
+
+Acquisition-time evidence must preserve relationships that cannot be reconstructed
+safely later.
+
+When request identity, response metadata, response body, observation time, store,
+campaign, or similar facts jointly establish provenance, preserve their
+relationship explicitly in a capture artifact or manifest.
+
+A historical response body must not be retroactively upgraded with reconstructed
+URLs, current timestamps, unrelated headers, filenames, or other metadata whose
+relationship to that exact response cannot be proven.
+
+Capture verification is separate from source-evidence projection and canonical
+admission.
+
 ## Acquisition-context authority
 
 Acquisition context is evidence-bearing input, never caller authority.

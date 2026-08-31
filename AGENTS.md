@@ -76,6 +76,21 @@ Do not invent missing facts.
 Do not combine independently observed facts into synthetic provenance unless
 the source itself establishes their relationship.
 
+## Acquisition-context authority
+
+Acquisition context is evidence-bearing input, never caller authority.
+
+A retailer-specific acquisition context may authorize source-evidence facts only
+when deterministic verification establishes the relationship between the
+captured source, store, campaign, locality, or provenance evidence involved.
+
+Caller arguments, filenames, registry metadata, current execution time, and
+historical retailer-neutral exports do not become authority merely because they
+are supplied alongside a source record.
+
+When the captured artifacts do not establish a required relationship, preserve
+the observable context and fail closed.
+
 ## Retailer boundaries
 
 Retailer-specific logic belongs in retailer adapters and source-evidence

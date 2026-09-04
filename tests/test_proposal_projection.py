@@ -75,6 +75,17 @@ def test_absent_proposal_claim_can_be_supplied_by_deterministic_evidence():
     )
 
 
+def test_projection_supplies_domain_eur_without_evidence_or_proposal_currency():
+    evidence = complete_evidence()
+    del evidence["currency"]
+
+    result = project_proposal_to_canonical({}, [], evidence)
+
+    assert result["projectable"] is True
+    assert result["candidate"]["currency"] == "EUR"
+    assert "currency" not in evidence
+
+
 def test_contradicted_proposal_claim_is_rejected_and_does_not_override_evidence():
     proposal = {"price": 99.0}
     checks = [verification(["price"], CONTRADICTED, 99.0, 1.49)]
@@ -169,13 +180,27 @@ def test_rejected_claims_are_sorted_by_path():
     ]
 
 
-def test_projectable_candidate_still_requires_separate_canonical_validation():
+def test_explicit_non_eur_evidence_remains_noncanonical():
     evidence = complete_evidence()
-    evidence["currency"] = "euro"
+    evidence["currency"] = "USD"
 
     result = project_proposal_to_canonical({}, [], evidence)
 
     assert result["projectable"] is True
+    validation = validate_offers([result["candidate"]])
+    assert validation["valid"] is False
+
+
+def test_explicit_non_eur_proposal_is_preserved_for_canonical_validation():
+    evidence = complete_evidence()
+    del evidence["currency"]
+    proposal = {"currency": "USD"}
+    checks = [verification(["currency"], UNVERIFIABLE, "USD")]
+
+    result = project_proposal_to_canonical(proposal, checks, evidence)
+
+    assert result["projectable"] is True
+    assert result["candidate"]["currency"] == "USD"
     validation = validate_offers([result["candidate"]])
     assert validation["valid"] is False
 
@@ -188,3 +213,16 @@ def test_unknown_top_level_evidence_path_is_not_copied_into_candidate():
 
     assert result["projectable"] is True
     assert "internal_debug" not in result["candidate"]
+
+
+def test_explicit_eur_proposal_does_not_become_currency_authority():
+    evidence = complete_evidence()
+    del evidence["currency"]
+    proposal = {"currency": "EUR"}
+    checks = [verification(["currency"], UNVERIFIABLE, "EUR")]
+
+    result = project_proposal_to_canonical(proposal, checks, evidence)
+
+    assert result["projectable"] is True
+    assert result["candidate"]["currency"] == "EUR"
+    assert "currency" not in evidence

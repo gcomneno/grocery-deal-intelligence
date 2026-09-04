@@ -31,7 +31,7 @@
     },
     "currency": {
       "type": "string",
-      "pattern": "^[A-Z]{3}$"
+      "const": "EUR"
     },
     "reference_price": {
       "type": [

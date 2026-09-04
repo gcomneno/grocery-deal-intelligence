@@ -76,6 +76,18 @@ Do not invent missing facts.
 Do not combine independently observed facts into synthetic provenance unless
 the source itself establishes their relationship.
 
+## Canonical currency
+
+Canonical GDI data is EUR-only: `currency = "EUR"` is a domain invariant and
+domain authority, not retailer-source evidence.
+
+Source evidence does not need to independently prove EUR for canonical
+construction. Explicit non-EUR values are unsupported and fail closed.
+
+There is no FX conversion. Retailer, geography, locale, hostname, or country
+must not authorize currency inference, and domain-supplied EUR must not be
+represented as retailer-source evidence.
+
 ## Capture evidence
 
 Acquisition-time evidence must preserve relationships that cannot be reconstructed

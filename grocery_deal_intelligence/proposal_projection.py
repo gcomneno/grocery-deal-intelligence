@@ -4,6 +4,7 @@ from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from typing import Any
 
+from .constants import GDI_CANONICAL_CURRENCY
 from .source_evidence import CONTRADICTED, SUPPORTED, UNVERIFIABLE
 from .validation import _load_schema
 
@@ -67,6 +68,10 @@ def project_proposal_to_canonical(
             _set_path(candidate, path, deepcopy(value))
 
     for path, value in sorted(_leaf_items(proposal_copy), key=lambda item: item[0]):
+        if path == ("currency",) and path not in candidate:
+            if value != GDI_CANONICAL_CURRENCY:
+                _set_path(candidate, path, deepcopy(value))
+            continue
         verification = verification_by_path.get(path)
         if verification is None:
             continue
@@ -75,6 +80,9 @@ def project_proposal_to_canonical(
         if not _path_allowed_by_schema(path, schema):
             continue
         _set_path(candidate, path, deepcopy(value))
+
+    if "currency" not in candidate:
+        candidate["currency"] = GDI_CANONICAL_CURRENCY
 
     missing_required_claims = _missing_required_paths(candidate, schema)
     projectable = not missing_required_claims

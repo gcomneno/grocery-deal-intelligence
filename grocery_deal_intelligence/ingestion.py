@@ -5,6 +5,7 @@ from typing import Any
 
 from grocery_deal_intelligence.admission import evaluate_canonical_admission
 from grocery_deal_intelligence.ai_adapter import OfferCandidateAdapter
+from grocery_deal_intelligence.constants import GDI_CANONICAL_CURRENCY
 from grocery_deal_intelligence.proposal_projection import project_proposal_to_canonical
 from grocery_deal_intelligence.proposal_validation import validate_proposal
 from grocery_deal_intelligence.source_evidence import (
@@ -38,6 +39,8 @@ def _candidate_from_source_evidence(source_evidence: Mapping[str, Any]):
     for key in _DETERMINISTIC_CANDIDATE_FIELDS:
         if key in source_evidence:
             candidate[key] = deepcopy(source_evidence[key])
+    if "currency" not in candidate:
+        candidate["currency"] = GDI_CANONICAL_CURRENCY
     return candidate
 
 

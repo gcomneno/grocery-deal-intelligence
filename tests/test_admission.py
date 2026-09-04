@@ -23,6 +23,10 @@ def supported_claims():
     ]
 
 
+def test_currency_is_not_a_critical_source_evidence_claim():
+    assert ("currency",) not in CRITICAL_CLAIM_PATHS
+
+
 def test_structurally_invalid_candidate_is_ineligible():
     result = evaluate_canonical_admission(
         structurally_valid=False,

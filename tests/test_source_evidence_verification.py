@@ -64,6 +64,7 @@ def test_lidl_projection_contains_explicit_and_justified_canonical_claims():
 
     assert evidence["retailer"] == "lidl"
     assert evidence["price"] == 2.69
+    assert evidence["currency"] == "EUR"
     assert evidence["promotion"] == {
         "type": "lidl_plus",
         "requires_loyalty": True,
@@ -133,6 +134,7 @@ def test_esselunga_projection_uses_trusted_retailer_context_and_explicit_fields_
         },
         "promotion": {"discount_text": "Sc + Facile val"},
     }
+    assert "currency" not in evidence
 
 
 def test_claim_verification_distinguishes_supported_contradicted_and_unverifiable():

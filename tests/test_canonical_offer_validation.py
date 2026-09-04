@@ -56,6 +56,25 @@ def test_valid_dataset_is_reported_as_valid():
     }
 
 
+def test_canonical_validation_accepts_eur_currency():
+    record = make_record()
+    record["currency"] = "EUR"
+
+    result = validate_offers([record])
+
+    assert result["valid"] is True
+
+
+def test_canonical_validation_rejects_uppercase_usd_currency():
+    record = make_record()
+    record["currency"] = "USD"
+
+    result = validate_offers([record])
+
+    assert result["valid"] is False
+    assert result["errors"][0]["path"] == ["currency"]
+
+
 def test_offer_without_promotion_is_valid_and_asserts_no_loyalty_default():
     record = make_record()
     del record["promotion"]
@@ -169,7 +188,7 @@ def test_schema_enum_constraint_is_enforced():
     assert result["errors"]
 
 
-def test_schema_pattern_constraint_is_enforced():
+def test_schema_currency_const_constraint_is_enforced():
     record = make_record()
     record["currency"] = "eur"
 

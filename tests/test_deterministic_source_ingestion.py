@@ -34,6 +34,28 @@ def _despar_records():
     )
 
 
+def minimal_carrefour_source_record():
+    return {
+        "product_name": "Latte Fresco",
+        "price": 1.49,
+        "valid_from": "2026-08-27",
+        "valid_to": "2026-08-30",
+        "locality": {
+            "scope": "national",
+            "stores": [],
+        },
+        "verification": {
+            "locality_status": "verified",
+            "evidence_status": "verified",
+        },
+        "provenance": {
+            "source_type": "test_fixture",
+            "source_url": "https://example.test/source",
+            "observed_at": "2026-08-27T00:00:00Z",
+        },
+    }
+
+
 def test_carrefour_real_records_are_admitted_deterministically():
     records = _carrefour_records()
 
@@ -48,6 +70,39 @@ def test_carrefour_real_records_are_admitted_deterministically():
         assert result["canonical"] == result["candidate"]
         assert summary[CONTRADICTED] == 0
         assert summary[UNVERIFIABLE] == 0
+
+
+def test_deterministic_ingestion_supplies_domain_eur_without_source_currency():
+    result = ingest_deterministic_source_record(
+        minimal_carrefour_source_record(),
+        retailer="carrefour",
+    )
+    summary = summarize_claim_verification(result["claim_verification"])
+
+    assert "currency" not in result["source_evidence"]
+    assert result["candidate"]["currency"] == "EUR"
+    assert result["validated"] is True
+    assert result["admission"]["eligible"] is True
+    assert result["canonical"] == result["candidate"]
+    assert summary[UNVERIFIABLE] == 1
+    assert any(
+        claim["path"] == ["currency"] and claim["status"] == UNVERIFIABLE
+        for claim in result["claim_verification"]
+    )
+
+
+def test_deterministic_ingestion_preserves_explicit_non_eur_and_fails_closed():
+    source_record = minimal_carrefour_source_record()
+    source_record["currency"] = "USD"
+
+    result = ingest_deterministic_source_record(source_record, retailer="carrefour")
+
+    assert result["source_evidence"]["currency"] == "USD"
+    assert result["candidate"]["currency"] == "USD"
+    assert result["validated"] is False
+    assert result["structural_validation"]["errors"][0]["path"] == ["currency"]
+    assert result["admission"]["eligible"] is False
+    assert result["canonical"] is None
 
 
 def test_despar_real_records_are_admitted_without_synthetic_promotion_claims():
